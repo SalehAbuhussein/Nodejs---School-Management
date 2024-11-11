@@ -1,11 +1,17 @@
-<form class="login-form" [formGroup]="loginForm" (ngSubmit)="onFormSubmit()">
-  <div class="form-control">
-    <label for="username" class="required">Username:</label>
-    <input id="username" type="text" formControlName="username" />
-  </div>
+<div class="login-container">
+  <h2>Welcome to SchoolManager</h2>
 
-  <div class="form-control">
-    <label for="password" class="required">Password:</label>
-    <input id="password" type="password" formControlName="password" />
-  </div>
-</form>
+  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onFormSubmit()">
+    <div class="form-control">
+      <label for="email" class="required">Email:</label>
+      <input id="email" type="text" formControlName="email" />
+    </div>
+  
+    <div class="form-control">
+      <label for="password" class="required">Password:</label>
+      <input id="password" type="password" formControlName="password" />
+    </div>
+
+    <button type="submit">Login</button>
+  </form>
+</div>

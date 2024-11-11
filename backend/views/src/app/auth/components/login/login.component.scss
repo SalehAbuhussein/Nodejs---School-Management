@@ -1,3 +1,44 @@
-.required {
-  
+:host {
+  display: flex;
+  justify-content: center;
+}
+
+h2 {
+  margin-bottom: 38px;
+}
+
+input {
+  all: unset;
+  border: 1px solid #8c8c8c;
+  padding: 8px;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+}
+
+.login-container {
+  background-color: white;
+  box-shadow: -1px -1px 19px 1px rgba(0,0,0,0.14);
+  padding: 47px 48px 52px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+
+  button {
+    all: unset;
+    background-color: #8c5348;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    text-align: center;
+  }
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
 }
