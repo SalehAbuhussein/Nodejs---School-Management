@@ -10,5 +10,9 @@ export const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./core/auth/auth.routes').then(m => m.authRoutes),
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./core/dashboard/dashboard.routes').then(m => m.dashboardRoutes),
   }
 ];
