@@ -1,0 +1,11 @@
+@import "variables/variables";
+
+:host {
+  display: block;
+  width: $side-bar-size;
+  height: 100%;
+}
+
+.dashboard-container {
+  padding-left: $side-bar-size;
+}
