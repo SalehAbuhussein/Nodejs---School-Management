@@ -1,15 +1,23 @@
 @import "variables/variables";
 
-:host {
+.side-bar-container {
   @include flex($flex-direction: column);
-  background-color: #f0f0f0;
-  height: 100%;
+  @include size(var(--side-bar-size), 100%);
+  @include toggle-transition;
+  @include size(var(--side-bar-size), 100%);
+  background-color: #eaeaea;
+  position: fixed;
+  transform: translateX(-100%);
+
+  &.opened {
+    transform: translateX(0);
+  }
 }
 
 .side-bar-header {
   @include flex($align-items: center, $gap: 16px);
+  border-bottom: 1px solid $border-color;
   padding: 16px;
-  border-bottom: 1px solid #6b3d35;
 
   img {
     @include size(25px);
@@ -34,13 +42,13 @@
     }
 
     a {
-      width: 100%;
-      padding: 16px;
       border-radius: 8px;
-      display: block;
-      text-decoration: none;
       color: black;
+      display: block;
+      padding: 16px;
+      text-decoration: none;
       transition: all 300ms;
+      width: 100%;
 
       &:hover {
         background-color: #e0e0e0;

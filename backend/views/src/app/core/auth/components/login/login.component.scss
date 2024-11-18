@@ -1,8 +1,7 @@
-// @import "variables/variables";
+@import "variables/variables";
 
 :host {
-  display: flex;
-  justify-content: center;
+  @include flex($justify-content: center);
 }
 
 h2 {
@@ -26,14 +25,11 @@ input {
 }
 
 .login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 34px;
+  @include flex($flex-direction: column, $gap: 34px);
 
   button {
     all: unset;
-    // background-color: $main-color;
-    background-color: brown;
+    background-color: $main-color;
     color: white;
     cursor: pointer;
     padding: 8px;
@@ -42,6 +38,5 @@ input {
 }
 
 .form-control {
-  display: flex;
-  flex-direction: column;
+  @include flex($flex-direction: column);
 }

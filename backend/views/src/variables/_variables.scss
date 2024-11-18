@@ -3,5 +3,9 @@
 @import './typography';
 
 $main-color: #8c5348;
-$side-bar-size: 255px;
+$border-color: #6b3d35;
 $side-bar-header-height: 56px;
+
+:root {
+  --side-bar-size: 255px
+}

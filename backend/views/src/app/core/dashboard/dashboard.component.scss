@@ -2,10 +2,16 @@
 
 :host {
   display: block;
-  width: $side-bar-size;
-  height: 100%;
 }
 
 .dashboard-container {
-  padding-left: $side-bar-size;
+  @include flex($flex-direction: column);
+  @include toggle-transition;
+  background-color: #f3f4f7;
+  padding-left: 0;
+  min-height: 100vh;
+
+  &.opened {
+    padding-left: var(--side-bar-size, 0px);
+  }
 }

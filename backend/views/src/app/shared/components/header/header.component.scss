@@ -1,8 +1,8 @@
+@import "variables/variables";
+
 :host {
-  align-items: center;
+  @include flex($justify-content: center, $gap: 8px);
   background-color: white;
-  display: flex;
-  gap: 8px;
   padding-block: 38px;
 }
 

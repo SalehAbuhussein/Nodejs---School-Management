@@ -1,5 +1,9 @@
 <app-side-bar />
 
-<div class="dashboard-container">
+<div class="dashboard-container" [ngClass]="{'opened': dashboardService.isDashboardOpened}">
+  <app-dashboard-header />
+
+  <app-breadcrumb />
+
   <router-outlet></router-outlet>
 </div>
