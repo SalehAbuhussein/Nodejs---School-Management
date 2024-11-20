@@ -1,4 +1,11 @@
+@import "variables/variables";
+
 .breadcrumb-container {
+  @include flex($gap: 8px);
   background-color: #dcdcdc;
   padding: 16px;
+
+  a {
+    color: #8c4f33;
+  }
 }
