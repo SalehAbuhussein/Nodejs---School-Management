@@ -15,3 +15,13 @@
     padding-left: var(--side-bar-size, 0px);
   }
 }
+
+.dashboard-item-container {
+  flex: 1;
+  padding: $dashboard-content-spacing;
+}
+
+.dashboard-header-sticky {
+  position: sticky;
+  top: 0;
+}

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 
 import { BreadcrumbService } from './components/breadcrumb/services/breadcrumb.service';
 import { DashboardService } from './services/dashboard.service';
@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     public dashboardService: DashboardService,
     public breadcrumbService: BreadcrumbService,
+    public router: Router
   ) {}
 
   /**

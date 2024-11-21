@@ -7,16 +7,19 @@
   <div class="side-bar-body">
     <ul class="items">
       <li>
-        <a href="#">Dashboard</a>
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
       </li>
       <li>
-        <a href="#">Courses</a>
+        <a routerLink="/dashboard/users" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Users</a>
       </li>
       <li>
-        <a href="#">Students</a>
+        <a href="/dashboard/courses" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Courses</a>
       </li>
       <li>
-        <a href="#">Teachers</a>
+        <a href="/dashboard/students" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Students</a>
+      </li>
+      <li>
+        <a href="/dashboard/teachers" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Teachers</a>
       </li>
     </ul>
   </div>

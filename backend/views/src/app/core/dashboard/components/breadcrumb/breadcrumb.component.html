@@ -1,7 +1,7 @@
 <div class="breadcrumb-container">
   @for (item of breadcrumbService.breadcrumbList; track $index; let last = $last) {
     @if (item.link) {
-      <a [href]="item.link">{{ item.text }}</a>
+      <a [href]="item.link" routerLinkActive="active">{{ item.text }}</a>
     } @else {
       <span>{{ item.text }}</span>
     }

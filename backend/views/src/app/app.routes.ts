@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 
-import { AppComponent } from './app.component';
 import { DashboardComponent } from './core/dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: AppComponent,
+    redirectTo: 'auth/login',
+    pathMatch: 'full',
   },
   {
     path: 'auth',
