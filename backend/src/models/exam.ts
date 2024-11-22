@@ -17,14 +17,17 @@ const ExamSchema = new mongoose.Schema<IExam>({
   courseId: {
     type: mongoose.Types.ObjectId,
     ref: 'Course',
+    required: true,
   },
   examTypeId: {
     type: mongoose.Types.ObjectId,
     ref: 'Exam',
+    required: true,
   },
   studentId: {
     type: mongoose.Types.ObjectId,
     ref: 'Student',
+    required: true,
   },
   fullExamGrade: {
     type: Number,

@@ -10,11 +10,13 @@ export type IEnrollment = {
 const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
   studentId: {
     type: mongoose.Types.ObjectId,
-    ref: 'Student'
+    ref: 'Student',
+    required: true,
   },
   courseId: {
     type: mongoose.Types.ObjectId,
     ref: 'Course',
+    required: true,
   },
   enrollmentDate: {
     type: Date,
@@ -22,7 +24,7 @@ const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
   },
   enrollmentFees: {
     type: Number,
-    required: true
+    required: true,
   }
 });
 
