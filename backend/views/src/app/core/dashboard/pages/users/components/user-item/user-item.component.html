@@ -1,0 +1,15 @@
+<div class="user-item-container">
+  <div class="user-item-info">
+    <div class="img-wrapper">
+      <img [src]="user.profileImg" [alt]="user.username" />
+    </div>
+     
+    <p class="user-item-name">{{ user.name }}</p>
+  </div>
+
+  <div class="user-item-actions">
+    <button class="btn view">View</button>
+    <button class="btn edit">Edit</button>
+    <button class="btn delete">Delete</button>
+  </div>
+</div>

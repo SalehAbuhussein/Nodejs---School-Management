@@ -1,0 +1,49 @@
+@import "variables/variables";
+
+.user-item-container {
+  @include flex($justify-content: space-between);
+  background-color: #eaeaea;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.user-item-info {
+  @include flex($align-items: center, $gap: 16px);
+}
+
+.user-item-name {
+  font-size: $fs-18;
+  font-weight: 700;
+}
+
+.user-item-actions {
+  @include flex($gap: 8px);
+  min-width: 205px;
+
+  .btn {
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .view {
+    background-color: $primary-btn-color;
+  }
+
+  .edit {
+    background-color: $success-btn-color;
+  }
+
+  .delete {
+    background-color: $danger-btn-color;
+  }
+}
+
+.img-wrapper {
+  @include size(50px);
+  border-radius: 50%;
+  overflow: hidden;
+}

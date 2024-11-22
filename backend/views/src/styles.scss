@@ -35,6 +35,11 @@ body {
   }
 }
 
+button,
+input {
+  all: unset;
+}
+
 ul {
   list-style: none;
 }

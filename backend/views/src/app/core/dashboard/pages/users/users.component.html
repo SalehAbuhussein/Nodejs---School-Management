@@ -1,3 +1,18 @@
-<div class="users-container">
-  <app-basic-input [inputAttrs]="{ id: 'username', label: 'Username:', isRequired: true, }" />
+<div class="users-wrapper">
+  <div class="user-actions">
+    <div class="search-container">
+      <input type="text" placeholder="Search by name..." [(ngModel)]="searchText" />
+    </div>
+
+    <button class="add-user-btn">
+      <img src="plus.svg" />
+      <span>Add New User</span>
+    </button>
+  </div>
+  
+  <div class="users-container">
+    @for (userItem of userList | filterArray : searchText : 'name'; track $index) {
+      <app-user-item [user]="userItem" />
+    }
+  </div>
 </div>

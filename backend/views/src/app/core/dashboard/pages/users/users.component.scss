@@ -1,0 +1,33 @@
+@import "variables/variables";
+
+.users-wrapper {
+  @include flex($flex-direction: column, $gap: 32px);
+}
+
+.users-container {
+  @include flex($flex-direction: column, $gap: 16px);
+}
+
+.user-actions {
+  @include flex($justify-content: space-between);
+}
+
+.search-container {
+  input {
+    border-radius: 8px;
+    border: 1px solid $border-color;
+    padding: 12px;
+  }
+}
+
+.add-user-btn {
+  @include flex($align-items: center, $gap: 4px);
+  background-color: $primary-btn-color;
+  border-radius: 8px;
+  color: white;
+  padding: 8px;
+
+  img {
+    @include size(20px);
+  }
+}
