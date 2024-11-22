@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { UserItemComponent } from './components/user-item/user-item.component';
 
@@ -36,4 +38,17 @@ export class UsersComponent {
     }
   ];
   searchText = '';
+
+  modalRef?: BsModalRef;
+
+  constructor(public modalService: BsModalService) {}
+
+  /**
+   * Open modal using ngx-bootstrap 5
+   * 
+   * @param { TemplateRef<void> } template 
+   */
+  openModal(template: TemplateRef<void>) {
+    this.modalRef = this.modalService.show(template);
+  }
 }
