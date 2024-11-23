@@ -42,6 +42,6 @@ input {
   }
 }
 
-.form-control {
+.form-field {
   @include flex($flex-direction: column);
 }

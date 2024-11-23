@@ -2,12 +2,12 @@
   <h2>Welcome to SchoolManager</h2>
 
   <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onFormSubmit()">
-    <div class="form-control">
+    <div class="form-field">
       <label for="email" class="required">Email:</label>
       <input id="email" type="text" formControlName="email" />
     </div>
   
-    <div class="form-control">
+    <div class="form-field">
       <label for="password" class="required">Password:</label>
       <input id="password" type="password" formControlName="password" />
     </div>
