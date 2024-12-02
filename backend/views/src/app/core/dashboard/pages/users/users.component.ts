@@ -1,5 +1,5 @@
 import { Component, TemplateRef } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
@@ -15,12 +15,14 @@ import { User } from './types/users.types';
   imports: [
     FilterArrayPipe,
     FormsModule,
+    ReactiveFormsModule,
     UserItemComponent,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
 export class UsersComponent {
+  userForm;
   userList: User[] = [
     {
       id: '200',
@@ -38,10 +40,16 @@ export class UsersComponent {
     }
   ];
   searchText = '';
-
   modalRef?: BsModalRef;
 
-  constructor(public modalService: BsModalService) {}
+  constructor(public modalService: BsModalService, public formBuilder: FormBuilder) {
+    this.userForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      username: ['', Validators.required],
+      profileImg: ['', Validators.required],
+      password: ['', Validators.required],
+    });
+  }
 
   /**
    * Open modal using ngx-bootstrap 5
@@ -49,6 +57,8 @@ export class UsersComponent {
    * @param { TemplateRef<void> } template 
    */
   openModal(template: TemplateRef<void>) {
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(template, {
+      class: 'modal-dialog-centered'
+    });
   }
 }

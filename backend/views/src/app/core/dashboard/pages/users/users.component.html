@@ -19,12 +19,34 @@
 
 <ng-template #template>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Modal</h4>
+    <h4 class="modal-title pull-left">Add User</h4>
     <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    This is a modal.
+    <form [formGroup]="userForm">
+      <div class="mb-3">
+        <label for="name" class="form-label">Name:</label>
+        <input id="name" class="form-control" type="text" formControlName="name">
+      </div>
+
+      <div class="mb-3">
+        <label for="username" class="form-label">Username:</label>
+        <input id="username" class="form-control" type="text" formControlName="username">
+      </div>
+
+      <div class="mb-3">
+        <label for="profileImg" class="form-label">Profile image:</label>
+        <input class="form-control" type="file" id="profileImg" formControlName="profileImg">
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <input class="form-control" type="password" id="password" formControlName="password">
+      </div>
+
+      <button class="btn btn-primary w-100" [disabled]="!userForm.valid">Add User</button>
+    </form>
   </div>
 </ng-template>

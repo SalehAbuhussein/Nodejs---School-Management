@@ -38,6 +38,7 @@ body {
 button,
 input {
   all: unset;
+  box-sizing: border-box;
 }
 
 ul {
