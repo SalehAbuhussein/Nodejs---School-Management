@@ -1,38 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 
-import User, { IUser } from '../../models/user';
 import { HydratedDocument } from 'mongoose';
 
-type PostUserBody = { username: string, email: string, password: string };
+import User, { IUser } from '../../models/user';
 
-/**
- * Render user login page
- * 
- * @param { Request } req 
- * @param { Response } res 
- * @param { NextFunction } next 
- * @returns { void }
- */
-export const getLogin = (req: Request, res: Response, next: NextFunction): void => {
-  res.render('login', {
-    path: 'login'
-  });
-};
-
-/**
- * Render user signup page
- * 
- * @param { Request } req 
- * @param { Response } res 
- * @param { NextFunction } next 
- * @returns { void }
- */
-export const getSignup = (req: Request, res: Response, next: NextFunction): void => {
-  res.render('signup', {
-    path: 'signup',
-    errorMsg: req.flash('error')
-  });
-};
+type PostUserBody = { name: string, profileImg: string, username: string, email: string, password: string };
 
 /**
  * Create User and publish to database
@@ -44,17 +16,53 @@ export const getSignup = (req: Request, res: Response, next: NextFunction): void
  * @param { NextFunction } next 
  * @returns { Promise<void> }
  */
-export const postUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const body: PostUserBody = req.body;
+  
+  console.log('req.body');
+  console.log(req.body);
+  
+  console.log('req.file');
+  console.log(req.file);
 
-  const newUser: HydratedDocument<IUser> = new User({ username: body.username, email: body.email, password: body.password });
+  const newUser: HydratedDocument<IUser> = new User({ 
+    name: body.name,
+    profileImg: body.profileImg,
+    username: body.username,
+    email: body.email,
+    password: body.password,
+  });
 
   try {
-    await newUser.save();
+    const user = await newUser.save();
+    const userObject: Partial<IUser> = user.toObject();
 
-    return res.redirect('/');
-  } catch (err) {
-    console.error(err);
-    return res.redirect('/');
+    delete userObject.password;
+
+    res.json({
+      data: userObject,
+      message: 'User created successfully',
+    });
+  } catch (error) {
+    res.status(500).send({ error });
+  }
+};
+
+/**
+ * Get All Users
+ * 
+ * @param { Request } req 
+ * @param { Response } res 
+ * @param { NextFunction } next
+ * @returns { Promise<void> }
+ */
+export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const users = await User.find({}).select('-password');
+    
+    res.json({ data: users });
+    
+  } catch (error) {
+    res.status(500).json({ error })
   }
 };

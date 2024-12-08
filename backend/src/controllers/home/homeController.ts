@@ -9,7 +9,5 @@ import { Request, Response, NextFunction } from 'express';
  * @returns { void }
  */
 export const getIndex = (req: Request, res: Response, next: NextFunction): void => {
-  res.render('index', {
-    path: '/',
-  });
+  res.json({ message: 'home' });
 };

@@ -25,7 +25,7 @@
     </button>
   </div>
   <div class="modal-body">
-    <form [formGroup]="userForm">
+    <form (ngSubmit)="onFormSubmit()" [formGroup]="userForm">
       <div class="mb-3">
         <label for="name" class="form-label">Name:</label>
         <input id="name" class="form-control" type="text" formControlName="name">
@@ -34,6 +34,11 @@
       <div class="mb-3">
         <label for="username" class="form-label">Username:</label>
         <input id="username" class="form-control" type="text" formControlName="username">
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input id="email" class="form-control" type="text" formControlName="email">
       </div>
 
       <div class="mb-3">
@@ -46,7 +51,7 @@
         <input class="form-control" type="password" id="password" formControlName="password">
       </div>
 
-      <button class="btn btn-primary w-100" [disabled]="!userForm.valid">Add User</button>
+      <button class="btn btn-primary w-100" [disabled]="!userForm.valid || isLoading">Add User</button>
     </form>
   </div>
 </ng-template>

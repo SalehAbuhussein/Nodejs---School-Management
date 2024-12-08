@@ -32,7 +32,7 @@ input {
 .login-form {
   @include flex($flex-direction: column, $gap: 34px);
 
-  button {
+  a {
     all: unset;
     background-color: $main-color;
     color: white;

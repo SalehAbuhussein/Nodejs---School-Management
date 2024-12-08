@@ -1,15 +1,20 @@
 import { Router } from 'express';
+
 import { body } from 'express-validator';
+import multer from 'multer';
 
 import * as userController from '../controllers/user/userController';
-import { showSignupFieldsError, showLoginFieldsError } from '../controllers/user/validation';
 
 const router = Router();
 
-router.get('/signup', showSignupFieldsError, userController.getSignup);
-router.get('/login', showLoginFieldsError, userController.getLogin);
+// Configure multer for file upload
+const upload = multer({ dest: 'uploads/' }); // Adjust the path as needed
 
-router.post('/user/create', 
+router.get('/users', userController.getUsers);
+router.post('/user/create',
+  body('name')
+    .notEmpty()
+    .withMessage('Name can not be enoty!'),
   body('username')
   .notEmpty()
   .withMessage('Username can not be empty!')
@@ -24,7 +29,7 @@ router.post('/user/create',
   .notEmpty()
   .withMessage('Password must not be empty!')
   .escape(),
-  userController.postUser
+  userController.createUser
 );
 
 export default router;
