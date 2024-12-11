@@ -21,14 +21,8 @@ export class UsersService {
    * @param { AddUser } user 
    * @returns 
    */
-  addUser = (user: AddUser) => {
-    return this.httpClient.post( environment.baseApi + '/user/create', {
-      name: user.name,
-      username: user.username,
-      email: user.email,
-      profileImg: user.profileImg,
-      password: user.password,
-    })
+  addUser = (formData: FormData) => {
+    return this.httpClient.post( environment.baseApi + '/user/create', formData)
   };
 
   editUser = (user: EditUser) => {

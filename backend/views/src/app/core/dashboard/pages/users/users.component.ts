@@ -9,10 +9,9 @@ import { UsersService } from './services/users.service';
 
 import { UserItemComponent } from './components/user-item/user-item.component';
 
-import { FilterArrayPipe } from '../../../../shared/pipes/filter-array.pipe';
+import { FilterArrayPipe } from 'app/shared/pipes/filter-array.pipe';
 
 import { User } from './types/users.types';
-import { environment } from '../../../../../environments/environment.development';
 
 @Component({
   selector: 'app-users',
@@ -31,6 +30,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   userList: User[] = [];
   searchText = '';
   isLoading = false;
+  profileImg?: File;
 
   modalRef?: BsModalRef;
   destory$ = new Subject<void>;
@@ -43,9 +43,9 @@ export class UsersComponent implements OnInit, OnDestroy {
   ) {
     this.userForm = this.formBuilder.group({
       name: ['', Validators.required],
+      profileImg: ['', Validators.required],
       username: ['', Validators.required],
       email: ['', Validators.required],
-      profileImg: ['', Validators.required],
       password: ['', Validators.required],
     });
   }
@@ -74,18 +74,35 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Add User
    * 
+   * @returns { void }
    */
-  onFormSubmit() {
-    this.userService.addUser({
-      name: this.userForm.get('name')?.value ?? '',
-      username: this.userForm.get('username')?.value ?? '',
-      email: this.userForm.get('email')?.value ?? '',
-      profileImg: this.userForm.get('profileImg')?.value ?? '',
-      password: this.userForm.get('password')?.value ?? '',
-    }).subscribe(value => {
+  onFormSubmit(): void {
+    const formData = new FormData();
+    formData.append('name', this.userForm.get('name')?.value ?? '');
+    formData.append('username', this.userForm.get('username')?.value ?? '');
+    formData.append('email', this.userForm.get('email')?.value ?? '');
+    formData.append('password', this.userForm.get('password')?.value ?? '');
+    if (this.profileImg) {
+      formData.append('profileImg', this.profileImg, this.profileImg.name);
+    }
+  
+    this.userService.addUser(formData).subscribe(value => {
       console.log(value);
-    })
+    });
+  }
+
+  /**
+   * Upload profile image event handler
+   * 
+   * @param { Event } event
+   * @returns { void }
+   */
+  onProfileImgUpload(event: Event): void {
+    if ((event.target as HTMLInputElement).files?.[0]) {
+      this.profileImg = (event.target as HTMLInputElement).files?.[0];
+    }
   }
 
   /**

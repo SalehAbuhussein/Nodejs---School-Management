@@ -3,7 +3,7 @@ export type User = {
   name: string,
   username: string,
   email: string,
-  profileImg?: string,
+  profileImg?: File,
 };
 
 export type AddUser = Omit<User, '_id'> & { password: string };

@@ -43,7 +43,7 @@
 
       <div class="mb-3">
         <label for="profileImg" class="form-label">Profile image:</label>
-        <input class="form-control" type="file" id="profileImg" formControlName="profileImg">
+        <input class="form-control" type="file" id="profileImg" formControlName="profileImg" (change)="onProfileImgUpload($event)" >
       </div>
 
       <div class="mb-3">
