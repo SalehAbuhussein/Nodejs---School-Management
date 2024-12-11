@@ -1,18 +1,18 @@
-import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Subject, takeUntil } from 'rxjs';
+import { SweetAlert2Module, SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 
 import { UsersService } from './services/users.service';
 
 import { UserItemComponent } from './components/user-item/user-item.component';
 
-import { FilterArrayPipe } from '../../../../shared/pipes/filter-array.pipe';
+import { FilterArrayPipe } from 'app/shared/pipes/filter-array.pipe';
 
-import { User } from './types/users.types';
-import { environment } from '../../../../../environments/environment.development';
+import { User } from './types/users.types'
 
 @Component({
   selector: 'app-users',
@@ -20,17 +20,23 @@ import { environment } from '../../../../../environments/environment.development
   imports: [
     FilterArrayPipe,
     FormsModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule,  
+    SweetAlert2Module,
     UserItemComponent,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
 export class UsersComponent implements OnInit, OnDestroy {
+  @ViewChild('addSuccessModal') public readonly addSuccessSwal!: SwalComponent;
+  @ViewChild('editSuccessModal') public readonly editSuccessSwal!: SwalComponent;
+  @ViewChild('errorModal') public readonly errorModal!: SwalComponent;
+
   userForm;
   userList: User[] = [];
   searchText = '';
   isLoading = false;
+  profileImg?: File;
 
   modalRef?: BsModalRef;
   destory$ = new Subject<void>;
@@ -43,9 +49,9 @@ export class UsersComponent implements OnInit, OnDestroy {
   ) {
     this.userForm = this.formBuilder.group({
       name: ['', Validators.required],
+      profileImg: ['', Validators.required],
       username: ['', Validators.required],
       email: ['', Validators.required],
-      profileImg: ['', Validators.required],
       password: ['', Validators.required],
     });
   }
@@ -74,18 +80,48 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Submit User Form to handle submit cases:
+   * (1) Add User.
+   * (2) Update User.
+   * (3) Error handling.
    * 
+   * @returns { void }
    */
-  onFormSubmit() {
-    this.userService.addUser({
-      name: this.userForm.get('name')?.value ?? '',
-      username: this.userForm.get('username')?.value ?? '',
-      email: this.userForm.get('email')?.value ?? '',
-      profileImg: this.userForm.get('profileImg')?.value ?? '',
-      password: this.userForm.get('password')?.value ?? '',
-    }).subscribe(value => {
-      console.log(value);
+  onFormSubmit(): void {
+    const formData = new FormData();
+    formData.append('name', this.userForm.get('name')?.value ?? '');
+    formData.append('username', this.userForm.get('username')?.value ?? '');
+    formData.append('email', this.userForm.get('email')?.value ?? '');
+    formData.append('password', this.userForm.get('password')?.value ?? '');
+    if (this.profileImg) {
+      formData.append('profileImg', this.profileImg, this.profileImg.name);
+    }
+  
+    this.userService.save(formData).subscribe({
+      next: value => {
+        if (this.userService.mode === 'add') {
+          this.modalRef?.hide()
+          this.addSuccessSwal.fire();
+          this.userForm.reset();
+        }
+      },
+      error: error => {
+        this.errorModal.fire();
+        this.userForm.reset();
+      }
     })
+  }
+
+  /**
+   * Upload profile image event handler
+   * 
+   * @param { Event } event
+   * @returns { void }
+   */
+  onProfileImgUpload(event: Event): void {
+    if ((event.target as HTMLInputElement).files?.[0]) {
+      this.profileImg = (event.target as HTMLInputElement).files?.[0];
+    }
   }
 
   /**

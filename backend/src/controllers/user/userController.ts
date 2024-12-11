@@ -19,15 +19,9 @@ type PostUserBody = { name: string, profileImg: string, username: string, email:
 export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const body: PostUserBody = req.body;
   
-  console.log('req.body');
-  console.log(req.body);
-  
-  console.log('req.file');
-  console.log(req.file);
-
   const newUser: HydratedDocument<IUser> = new User({ 
     name: body.name,
-    profileImg: body.profileImg,
+    profileImg: req.file?.filename,
     username: body.username,
     email: body.email,
     password: body.password,

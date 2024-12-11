@@ -4,7 +4,6 @@ import flash from 'express-flash';
 import session from 'express-session';
 import cors from 'cors';
 
-import multer from 'multer';
 import connectMongo from 'connect-mongodb-session';
 import { mongoConnect, connectionString } from './db/index';
 

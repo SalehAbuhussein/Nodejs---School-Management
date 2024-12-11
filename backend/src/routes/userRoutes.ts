@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { Router } from 'express';
 
 import { body } from 'express-validator';
@@ -8,7 +10,15 @@ import * as userController from '../controllers/user/userController';
 const router = Router();
 
 // Configure multer for file upload
-const upload = multer({ dest: 'uploads/' }); // Adjust the path as needed
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname))
+  },
+});
+const upload = multer({storage });
 
 router.get('/users', userController.getUsers);
 router.post('/user/create',
@@ -29,6 +39,7 @@ router.post('/user/create',
   .notEmpty()
   .withMessage('Password must not be empty!')
   .escape(),
+  upload.single('profileImg'),
   userController.createUser
 );
 
