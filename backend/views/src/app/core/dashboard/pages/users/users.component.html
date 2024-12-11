@@ -24,6 +24,7 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
+
   <div class="modal-body">
     <form (ngSubmit)="onFormSubmit()" [formGroup]="userForm">
       <div class="mb-3">
@@ -55,3 +56,24 @@
     </form>
   </div>
 </ng-template>
+
+<swal
+  #addSuccessModal
+  icon="success"
+  title="User Created Successfully!"
+>
+</swal>
+
+<swal
+  #editSuccessModal
+  icon="success"
+  title="User Updated Successfully!"
+>
+</swal>
+
+<swal
+  #errorModal
+  icon="error"
+  title="Technical Error!"
+>
+</swal> 

@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { AddUser, EditUser } from '../types/users.types';
-
-import { environment } from '../../../../../../environments/environment';
+import { environment } from 'environments/environment';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,14 +17,27 @@ export class UsersService {
   /**
    * Add User to database
    * 
-   * @param { AddUser } user 
-   * @returns 
+   * @param { FormData } formData user data
+   * @returns
    */
   addUser = (formData: FormData) => {
     return this.httpClient.post( environment.baseApi + '/user/create', formData)
   };
 
-  editUser = (user: EditUser) => {
-    
+  /**
+   * 
+   * @param { FormData } formData user data
+   */
+  editUser = (formData: FormData) => {
+    console.log(formData);
+    return of({});
+  }
+
+  save(formData: FormData): Observable<Object> {
+    if (this.mode === 'add') {
+      return this.addUser(formData);
+    } else {
+      return this.editUser(formData);
+    }
   }
 }
