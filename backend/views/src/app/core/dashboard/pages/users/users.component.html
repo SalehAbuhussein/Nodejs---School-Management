@@ -12,7 +12,11 @@
   
   <div class="users-container">
     @for (userItem of userService.userList | filterArray : searchText : 'name'; track $index) {
-      <app-user-item [user]="userItem" (editUserModalOpened)="openUserEditModal($event, template)" />
+      <app-user-item 
+        [user]="userItem"
+        (editUserModalOpened)="openUserEditModal($event, template)"
+        (userDeleteClicked)="openDeleteUserModal($event)"
+      />
     }
   </div>
 </div>
@@ -52,7 +56,9 @@
         <input class="form-control" type="password" id="password" formControlName="password">
       </div>
 
-      <button class="btn btn-primary w-100" [disabled]="!userForm.valid || isLoading">Add User</button>
+      <button class="btn btn-primary w-100" [disabled]="!userForm.valid || isLoading">
+        {{ userService.mode === 'add' ? 'Add User' : 'Update User' }}
+      </button>
     </form>
   </div>
 </ng-template>
@@ -68,6 +74,15 @@
   #editSuccessModal
   icon="success"
   title="User Updated Successfully!"
+>
+</swal>
+
+<swal #deleteUserPrompt icon="warning" 
+  cancelButtonText="Cancel" 
+  confirmButtonText="Ok" 
+  title="Are you sure you want to Remove This User ?"
+  [showCancelButton]="true"
+  (confirm)="onDeleteUserConfirm()" 
 >
 </swal>
 

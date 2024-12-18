@@ -24,7 +24,7 @@ export class UsersService {
    * 
    * @returns { Observable<GetUsersResponse> }
    */
-  getUsers(): Observable<GetUsersResponse> {
+  getUsers = (): Observable<GetUsersResponse> => {
     return this.httpClient.get<GetUsersResponse>(`${environment.baseApi}/users`);
   }
 
@@ -34,7 +34,7 @@ export class UsersService {
    * @param userId user id
    * @returns 
    */
-  getUser(userId: string): Observable<GetUserResponse> {
+  getUser = (userId: string): Observable<GetUserResponse> => {
     return this.httpClient.get<GetUserResponse>(`${environment.baseApi}/users/${userId}`);
   }
 
@@ -56,6 +56,13 @@ export class UsersService {
   editUser = (formData: FormData) => {
     return this.httpClient.patch(`${environment.baseApi}/users/${this.userId}`, formData);
   }
+
+  /**
+   * Delete User from database
+   */
+  deleteUser = () => {
+    return this.httpClient.delete(`${environment.baseApi}/users/${this.userId}`);
+  };
 
   save(formData: FormData): Observable<Object> {
     if (this.mode === 'add') {

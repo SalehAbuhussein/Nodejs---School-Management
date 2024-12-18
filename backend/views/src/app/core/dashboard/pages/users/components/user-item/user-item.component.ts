@@ -15,13 +15,27 @@ export class UserItemComponent {
   @Input({ required: true }) user: User = {} as unknown as User;
 
   @Output() editUserModalOpened = new EventEmitter<string>();
+  @Output() userDeleteClicked = new EventEmitter<string>();
 
   constructor(public userService: UsersService) {}
 
   /**
+   * Emit editUserModalOpened event
    * 
+   * @param { string } _id
+   * @returns { void }
    */
-  openEditUserModal(_id: string) {
+  openEditUserModal(_id: string): void {
     this.editUserModalOpened.emit(_id);
+  }
+
+  /**
+   * Emit editUserModalOpened event
+   * 
+   * @param { string } _id
+   * @returns { void }
+   */
+  openDeleteUserPrompt(_id: string): void {
+    this.userDeleteClicked.emit(_id);
   }
 }
