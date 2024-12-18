@@ -54,7 +54,7 @@ export class UsersService {
    * @param { FormData } formData user data
    */
   editUser = (formData: FormData) => {
-    return this.httpClient.put(`${environment.baseApi}/users/${this.userId}`, formData);
+    return this.httpClient.patch(`${environment.baseApi}/users/${this.userId}`, formData);
   }
 
   save(formData: FormData): Observable<Object> {

@@ -8,6 +8,8 @@ type PostUserBody = { name: string, profileImg: string, username: string, email:
 
 type UpdateUserBody = PostUserBody & { _id: string };
 
+type UpdateUserParams = { userId: string };
+
 type GetUserParams = { userId: string };
 
 /**
@@ -19,12 +21,12 @@ type GetUserParams = { userId: string };
  */
 export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const uploadsUrl = `${req.protocol}://${req.get('host')}/uploads/`;
     const users = await User.find({}).select('-password');
-    const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
 
     const usersWithProfileImg = users.map(user => {
       if (user.profileImg) {
-        user.profileImg = `${baseUrl}${user.profileImg}`;
+        user.profileImg = `${uploadsUrl}${user.profileImg}`;
       }
 
       return user;
@@ -106,15 +108,32 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
  * @returns { Promise<void> }
  */
 export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const body: UpdateUserBody = req.body;
-
-  let user;
+  const { username, name, email, profileImg }: UpdateUserBody = req.body;
+  const params: UpdateUserParams = req.params as UpdateUserParams;
 
   try {
-    user = await User.findById({ _id:  body._id });
+    let user = await User.findById({ _id:  params.userId });
+
+    if (user?.email && email) {
+      user.email = email;
+    }
+
+    if (user?.name && name) {
+      user.name = name;
+    }
+
+    if (user?.username && username) {
+      user.username = username;
+    }
+
+    if (user?.profileImg && profileImg) {
+      user.profileImg = profileImg;
+    }
+
+    await user?.save();
 
     res.json({ data: user, error: null });
   } catch (error) {
-    res.status(500).json({ data: null, error: error })
+    res.status(500).json({ data: null, error: error });
   }
 };
