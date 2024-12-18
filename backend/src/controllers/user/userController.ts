@@ -20,8 +20,17 @@ type GetUserParams = { userId: string };
 export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const users = await User.find({}).select('-password');
-    
-    res.json({ status: 200, data: users });
+    const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
+
+    const usersWithProfileImg = users.map(user => {
+      if (user.profileImg) {
+        user.profileImg = `${baseUrl}${user.profileImg}`;
+      }
+
+      return user;
+    });
+
+    res.json({ status: 200, data: usersWithProfileImg });
     
   } catch (error) {
     res.status(500).json({ status: 500, data: [], error: error });
@@ -38,9 +47,15 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction):
  */
 export const getUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const params: GetUserParams = req.params as GetUserParams;
+  const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
 
   try {
     const user = await User.findById(params.userId);
+
+    if (user?.profileImg) {
+      user.profileImg = `${baseUrl}/${user.profileImg}`;
+    }
+
     res.json({ status: 200, data: user });
   } catch (error) {
     res.status(500).json({ status: 500, data: [], error: error });
