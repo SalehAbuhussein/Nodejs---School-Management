@@ -46,7 +46,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   ) {
     this.userForm = this.formBuilder.group({
       name: ['', Validators.required],
-      profileImg: ['', Validators.required],
+      profileImg: [''],
       username: ['', Validators.required],
       email: ['', Validators.required],
       password: ['', Validators.required],
@@ -59,6 +59,15 @@ export class UsersComponent implements OnInit, OnDestroy {
    * @returns { void }
    */
   ngOnInit(): void {
+    this.initializeComponentData();
+  }
+
+  /**
+   * Fetch users data
+   * 
+   * @returns { void }
+   */
+  initializeComponentData(): void {
     this.userService.getUsers().subscribe(value => {
       this.userService.userList = value.data;
     });
@@ -107,7 +116,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   /**
    * Open Add User Modal
    * 
-   * @param template 
+   * @param template
    */
   openAddUserModal = (template: TemplateRef<void>): void => {
     this.userService.mode = 'add';
@@ -137,10 +146,15 @@ export class UsersComponent implements OnInit, OnDestroy {
   
     this.userService.save(formData).subscribe({
       next: value => {
+        this.modalRef?.hide();
+        this.initializeComponentData();
+
         if (this.userService.mode === 'add') {
-          this.modalRef?.hide()
           this.addSuccessSwal.fire();
           this.userForm.reset();
+          
+        } else {
+          this.editSuccessSwal.fire();
         }
       },
       error: error => {
