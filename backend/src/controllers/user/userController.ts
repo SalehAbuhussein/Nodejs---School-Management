@@ -14,6 +14,8 @@ type UpdateUserParams = { userId: string };
 
 type GetUserParams = { userId: string };
 
+type DeleteUserParams = { userId: string };
+
 /**
  * Get All Users
  * 
@@ -91,8 +93,8 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
     delete userObject.password;
 
-    res.json({
-      status: 200,
+    res.status(201).json({
+      status: 201,
       data: userObject,
       message: 'User created successfully',
     });
@@ -142,5 +144,33 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     res.json({ data: user, error: null });
   } catch (error) {
     res.status(500).json({ data: null, error: error });
+  }
+};
+
+/**
+ * Delete User
+ * 
+ * @param { Request } req 
+ * @param { Response } res 
+ * @param { NextFunction } next
+ * @returns { Promise<void> }
+ */
+export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { userId }: DeleteUserParams = req.params as DeleteUserParams;
+
+  try {
+    const user = await User.findById({ _id:  userId });
+
+    if (user?.profileImg) {
+      const uploadDirectory = `${path.dirname(path.dirname(require?.main?.filename ?? ''))}/uploads/`;
+      
+      await fs.unlink(`${uploadDirectory}/${user?.profileImg}`);
+    }
+
+    await user?.deleteOne();
+
+    res.json({ message: 'User Deleted Successfully!' })
+  } catch (error) {
+    res.status(500).json({ message: null, error: error });
   }
 };

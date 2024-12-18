@@ -26,7 +26,19 @@ const upload = multer({ storage });
  * @route GET /users
  */
 router.get('/users', userController.getUsers);
+
+/**
+ * Get a single user
+ * 
+ * @route GET /users/:userId
+ */
 router.get('/users/:userId', userController.getUser);
+
+/**
+ * Create a single user
+ * 
+ * @route POST /user/create
+ */
 router.post('/user/create',
   body('name')
     .notEmpty()
@@ -48,6 +60,12 @@ router.post('/user/create',
   upload.single('profileImg'),
   userController.createUser
 );
+
+/**
+ * Update a single user
+ * 
+ * @route PATCH /users/:userId
+ */
 router.patch('/users/:userId', 
   body('name')
     .notEmpty()
@@ -69,5 +87,7 @@ router.patch('/users/:userId',
   upload.single('profileImg'),
   userController.updateUser,
 );
+
+router.delete('/users/:userId', userController.deleteUser);
 
 export default router;
