@@ -1,13 +1,13 @@
-import { TestBed } from '@angular/core/testing';
 
+
+import { mockHttpClient } from 'app/shared/mocks/http-client.mocks';
 import { UsersService } from './users.service';
 
 describe('UsersService', () => {
   let service: UsersService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(UsersService);
+    service = new UsersService(mockHttpClient());
   });
 
   it('should be created', () => {
