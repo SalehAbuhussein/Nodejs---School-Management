@@ -6,10 +6,64 @@ import User, { IUser } from '../../models/user';
 
 type PostUserBody = { name: string, profileImg: string, username: string, email: string, password: string };
 
+type UpdateUserBody = PostUserBody & { _id: string };
+
+type GetUserParams = { userId: string };
+
 /**
- * Create User and publish to database
- * in case of error redirect to
- * landing page
+ * Get All Users
+ * 
+ * @param { Request } req 
+ * @param { Response } res 
+ * @param { NextFunction } next
+ */
+export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const users = await User.find({}).select('-password');
+    const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
+
+    const usersWithProfileImg = users.map(user => {
+      if (user.profileImg) {
+        user.profileImg = `${baseUrl}${user.profileImg}`;
+      }
+
+      return user;
+    });
+
+    res.json({ status: 200, data: usersWithProfileImg });
+    
+  } catch (error) {
+    res.status(500).json({ status: 500, data: [], error: error });
+  }
+};
+
+/**
+ * Get Single User
+ * 
+ * @param { Request } req 
+ * @param { Response } res 
+ * @param { NextFunction } next
+ * @returns { Promise<void> }
+ */
+export const getUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const params: GetUserParams = req.params as GetUserParams;
+  const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
+
+  try {
+    const user = await User.findById(params.userId);
+
+    if (user?.profileImg) {
+      user.profileImg = `${baseUrl}/${user.profileImg}`;
+    }
+
+    res.json({ status: 200, data: user });
+  } catch (error) {
+    res.status(500).json({ status: 500, data: [], error: error });
+  }
+};
+
+/**
+ * Create User
  * 
  * @param { Request } req 
  * @param { Response } res 
@@ -34,6 +88,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     delete userObject.password;
 
     res.json({
+      status: 200,
       data: userObject,
       message: 'User created successfully',
     });
@@ -43,20 +98,23 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 };
 
 /**
- * Get All Users
+ * Update User
  * 
  * @param { Request } req 
  * @param { Response } res 
  * @param { NextFunction } next
  * @returns { Promise<void> }
  */
-export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const body: UpdateUserBody = req.body;
+
+  let user;
+
   try {
-    const users = await User.find({}).select('-password');
-    
-    res.json({ data: users });
-    
+    user = await User.findById({ _id:  body._id });
+
+    res.json({ data: user, error: null });
   } catch (error) {
-    res.status(500).json({ error })
+    res.status(500).json({ data: null, error: error })
   }
 };

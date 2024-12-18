@@ -3,5 +3,15 @@ export type User = {
   name: string,
   username: string,
   email: string,
-  profileImg?: File,
+  profileImg?: string,
 };
+
+export type GetUsersResponse = {
+  status: number,
+  data: User[],
+}
+
+export type GetUserResponse = {
+  status: number,
+  data: User,
+}

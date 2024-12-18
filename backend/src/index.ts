@@ -1,8 +1,9 @@
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import flash from 'express-flash';
+import path from 'path';
 import session from 'express-session';
-import cors from 'cors';
 
 import connectMongo from 'connect-mongodb-session';
 import { mongoConnect, connectionString } from './db/index';
@@ -20,6 +21,7 @@ const store = new MongoSessionStore({
 });
 
 // Express packages
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(cors());
 app.use(session({
   secret: '4f9h8G2k1LzR',

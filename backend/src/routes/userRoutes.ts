@@ -18,29 +18,56 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname))
   },
 });
-const upload = multer({storage });
+const upload = multer({ storage });
 
+/**
+ * Get a list of users
+ * 
+ * @route GET /users
+ */
 router.get('/users', userController.getUsers);
+router.get('/users/:userId', userController.getUser);
 router.post('/user/create',
   body('name')
     .notEmpty()
     .withMessage('Name can not be enoty!'),
   body('username')
-  .notEmpty()
-  .withMessage('Username can not be empty!')
-  .escape(),
+    .notEmpty()
+    .withMessage('Username can not be empty!')
+    .escape(),
   body('email')
-  .notEmpty()
-  .withMessage('Email can not be empty!')
-  .isEmail()
-  .withMessage('Email must be valid email!')
-  .escape(),
+    .notEmpty()
+    .withMessage('Email can not be empty!')
+    .isEmail()
+    .withMessage('Email must be valid email!')
+    .escape(),
   body('password')
-  .notEmpty()
-  .withMessage('Password must not be empty!')
-  .escape(),
+    .notEmpty()
+    .withMessage('Password must not be empty!')
+    .escape(),
   upload.single('profileImg'),
   userController.createUser
+);
+router.patch('/users/:userId', 
+  body('name')
+    .notEmpty()
+    .withMessage('Name can not be enoty!'),
+  body('username')
+    .notEmpty()
+    .withMessage('Username can not be empty!')
+    .escape(),
+  body('email')
+    .notEmpty()
+    .withMessage('Email can not be empty!')
+    .isEmail()
+    .withMessage('Email must be valid email!')
+    .escape(),
+  body('password')
+    .notEmpty()
+    .withMessage('Password must not be empty!')
+    .escape(),
+  upload.single('profileImg'),
+  userController.updateUser,
 );
 
 export default router;

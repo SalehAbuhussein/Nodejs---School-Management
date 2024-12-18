@@ -3,7 +3,7 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { HttpClient } from '@angular/common/http';
 
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SweetAlert2Module, SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 
 import { UsersService } from './services/users.service';
@@ -11,8 +11,6 @@ import { UsersService } from './services/users.service';
 import { UserItemComponent } from './components/user-item/user-item.component';
 
 import { FilterArrayPipe } from 'app/shared/pipes/filter-array.pipe';
-
-import { User } from './types/users.types'
 
 @Component({
   selector: 'app-users',
@@ -33,7 +31,6 @@ export class UsersComponent implements OnInit, OnDestroy {
   @ViewChild('errorModal') public readonly errorModal!: SwalComponent;
 
   userForm;
-  userList: User[] = [];
   searchText = '';
   isLoading = false;
   profileImg?: File;
@@ -62,8 +59,8 @@ export class UsersComponent implements OnInit, OnDestroy {
    * @returns { void }
    */
   ngOnInit(): void {
-    this.userForm.valueChanges.pipe(takeUntil(this.destory$)).subscribe(value => {
-      console.log(value);
+    this.userService.getUsers().subscribe(value => {
+      this.userService.userList = value.data;
     });
   }
 
@@ -78,6 +75,47 @@ export class UsersComponent implements OnInit, OnDestroy {
       class: 'modal-dialog-centered'
     });
   }
+
+  /**
+   * Open User Edit Moda1:
+   * 
+   * (1) Fetch User Data.
+   * (2) Update form inputs with fetched data.
+   * 
+   * @param userId user id
+   * @param template template ref
+   * @returns { void }
+   */
+  openUserEditModal = (userId: string, template: TemplateRef<void>): void => {
+    this.userService.mode = 'update';
+    this.userService.userId = userId;
+    this.userService.getUser(userId).subscribe(({ data }) => {
+      this.userForm.patchValue({
+        name: data.name,
+        username: data.username,
+        email: data.email,
+      });
+
+      // if (data.profileImg) {
+      //   this.profileImg = data.profileImg ?? '';
+      // }
+    });
+
+    this.openModal(template);
+  }
+
+  /**
+   * Open Add User Modal
+   * 
+   * @param template 
+   */
+  openAddUserModal = (template: TemplateRef<void>): void => {
+    this.userService.mode = 'add';
+    this.userService.userId = null;
+
+    this.userForm.reset();
+    this.openModal(template);
+  };
 
   /**
    * Submit User Form to handle submit cases:
