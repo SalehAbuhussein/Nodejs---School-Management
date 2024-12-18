@@ -29,6 +29,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   @ViewChild('addSuccessModal') public readonly addSuccessSwal!: SwalComponent;
   @ViewChild('editSuccessModal') public readonly editSuccessSwal!: SwalComponent;
   @ViewChild('errorModal') public readonly errorModal!: SwalComponent;
+  @ViewChild('deleteUserPrompt') public readonly deleteUserPrompt!: SwalComponent;
 
   userForm;
   searchText = '';
@@ -67,7 +68,7 @@ export class UsersComponent implements OnInit, OnDestroy {
    * 
    * @returns { void }
    */
-  initializeComponentData(): void {
+  initializeComponentData = (): void => {
     this.userService.getUsers().subscribe(value => {
       this.userService.userList = value.data;
     });
@@ -124,6 +125,26 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     this.userForm.reset();
     this.openModal(template);
+  };
+
+  /**
+   * Open Delete User Modal
+   * 
+   * @param { string } userId user id
+   * @returns { void } 
+   */
+  openDeleteUserModal = (userId: string): void => {
+    this.userService.userId = userId;
+    this.deleteUserPrompt.fire();
+  };
+
+  /**
+   * On Delete User Modal Confirm
+   * 
+   * @returns { void }
+   */
+  onDeleteUserConfirm = (): void => {
+    this.userService.deleteUser().subscribe(this.initializeComponentData);
   };
 
   /**

@@ -9,9 +9,14 @@ export type User = {
 export type GetUsersResponse = {
   status: number,
   data: User[],
-}
+};
 
 export type GetUserResponse = {
   status: number,
   data: User,
-}
+};
+
+export type DeleteUserResponse = {
+  message: string,
+  error: any,
+};
