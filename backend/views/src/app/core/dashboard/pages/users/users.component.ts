@@ -33,7 +33,6 @@ export class UsersComponent implements OnInit, OnDestroy {
   @ViewChild('errorModal') public readonly errorModal!: SwalComponent;
 
   userForm;
-  userList: User[] = [];
   searchText = '';
   isLoading = false;
   profileImg?: File;
@@ -62,8 +61,8 @@ export class UsersComponent implements OnInit, OnDestroy {
    * @returns { void }
    */
   ngOnInit(): void {
-    this.userForm.valueChanges.pipe(takeUntil(this.destory$)).subscribe(value => {
-      console.log(value);
+    this.userService.getUsers().subscribe(value => {
+      this.userService.userList = value.data;
     });
   }
 
@@ -77,6 +76,21 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {
       class: 'modal-dialog-centered'
     });
+  }
+
+  /**
+   * Open User Edit Moda1:
+   * 
+   * (1) Fetch User Data.
+   * (2) Update form inputs with fetched data.
+   * 
+   * @returns { void }
+   */
+  openUserEditModal = (userId: string, template: TemplateRef<void>): void => {
+    this.userService.mode = 'update';
+    this.userService.userId = userId;
+
+    this.openModal(template);
   }
 
   /**

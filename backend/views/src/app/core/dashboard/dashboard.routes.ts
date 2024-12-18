@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
 
 import { DashboardStatisticsComponent } from "./components/dashboard-statistics/dashboard-statistics.component";
-import { UserViewComponent } from "./pages/users/components/user-view/user-view.component";
+
 import { UsersComponent } from "./pages/users/users.component";
 
 export const dashboardRoutes: Routes = [
@@ -12,9 +12,5 @@ export const dashboardRoutes: Routes = [
   {
     path: 'users',
     component: UsersComponent,
-  },
-  {
-    path: 'users/view',
-    component: UserViewComponent,
   },
 ];
