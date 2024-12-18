@@ -1,10 +1,12 @@
+import fs from 'fs/promises';
+import path from 'path';
 import { Request, Response, NextFunction } from 'express';
 
 import { HydratedDocument } from 'mongoose';
 
 import User, { IUser } from '../../models/user';
 
-type PostUserBody = { name: string, profileImg: string, username: string, email: string, password: string };
+type PostUserBody = { name: string, username: string, email: string, password: string };
 
 type UpdateUserBody = PostUserBody & { _id: string };
 
@@ -100,7 +102,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 };
 
 /**
- * Update User
+ * Update User Data and remove previous user profileImg if it is modified
  * 
  * @param { Request } req 
  * @param { Response } res 
@@ -108,8 +110,9 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
  * @returns { Promise<void> }
  */
 export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { username, name, email, profileImg }: UpdateUserBody = req.body;
+  const { username, name, email }: UpdateUserBody = req.body;
   const params: UpdateUserParams = req.params as UpdateUserParams;
+  const profileImg = req.file?.filename;
 
   try {
     let user = await User.findById({ _id:  params.userId });
@@ -127,6 +130,10 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     }
 
     if (user?.profileImg && profileImg) {
+      const uploadDirectory = `${path.dirname(path.dirname(require?.main?.filename ?? ''))}/uploads/`;
+      
+      await fs.unlink(`${uploadDirectory}/${user?.profileImg}`);
+
       user.profileImg = profileImg;
     }
 
