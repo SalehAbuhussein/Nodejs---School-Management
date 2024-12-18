@@ -1,20 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DashboardComponent } from './dashboard.component';
+
+import { mockBreadcrumbService } from './components/breadcrumb/services/breadcrumb.service.mocks';
+import { mockDashboardService } from './services/dashboard.service.mocks';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
-  let fixture: ComponentFixture<DashboardComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [DashboardComponent]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(DashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    component = new DashboardComponent(mockDashboardService(), mockBreadcrumbService(), )
   });
 
   it('should create', () => {

@@ -99,7 +99,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       message: 'User created successfully',
     });
   } catch (error) {
-    res.status(500).send({ error });
+    res.status(500).send({ status: 500, data: null, error: error, message: null });
   }
 };
 

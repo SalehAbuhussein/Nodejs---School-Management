@@ -69,8 +69,13 @@ export class UsersComponent implements OnInit, OnDestroy {
    * @returns { void }
    */
   initializeComponentData = (): void => {
-    this.userService.getUsers().subscribe(value => {
-      this.userService.userList = value.data;
+    this.userService.getUsers().subscribe({
+      next: value => {
+        this.userService.userList = value.data;
+      },
+      error: () => {
+        this.userService.userList = [];
+      }
     });
   }
 

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { GetUserResponse, GetUsersResponse, User } from '../types/users.types';
+import { AddUserResponse, DeleteUserResponse, EditUserResponse, GetUserResponse, GetUsersResponse, User } from '../types/users.types';
 
 import { environment } from 'environments/environment';
 
@@ -32,36 +32,39 @@ export class UsersService {
    * Get Single User
    * 
    * @param userId user id
-   * @returns 
+   * @returns { Observable<GetUserResponse> }
    */
   getUser = (userId: string): Observable<GetUserResponse> => {
     return this.httpClient.get<GetUserResponse>(`${environment.baseApi}/users/${userId}`);
   }
 
   /**
-   * Add User to database
+   * Add User to database through /user/create endpoint
    * 
    * @param { FormData } formData user data
-   * @returns
+   * @returns { Observable<AddUserResponse> }
    */
-  addUser = (formData: FormData) => {
-    return this.httpClient.post(`${environment.baseApi}/user/create`, formData);
+  addUser = (formData: FormData): Observable<AddUserResponse> => {
+    return this.httpClient.post<AddUserResponse>(`${environment.baseApi}/user/create`, formData);
   };
 
   /**
-   * Update User
+   * Update User in database through (/users/:userId) endpoint
    * 
    * @param { FormData } formData user data
+   * @returns { Observable<EditUserResponse> }
    */
-  editUser = (formData: FormData) => {
-    return this.httpClient.patch(`${environment.baseApi}/users/${this.userId}`, formData);
+  editUser = (formData: FormData): Observable<EditUserResponse> => {
+    return this.httpClient.patch<EditUserResponse>(`${environment.baseApi}/users/${this.userId}`, formData);
   }
 
   /**
    * Delete User from database
+   * 
+   * @returns { Observable<DeleteUserResponse> }
    */
-  deleteUser = () => {
-    return this.httpClient.delete(`${environment.baseApi}/users/${this.userId}`);
+  deleteUser = (): Observable<DeleteUserResponse> => {
+    return this.httpClient.delete<DeleteUserResponse>(`${environment.baseApi}/users/${this.userId}`);
   };
 
   save(formData: FormData): Observable<Object> {
