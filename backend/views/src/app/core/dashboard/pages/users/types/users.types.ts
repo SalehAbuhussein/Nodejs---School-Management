@@ -20,3 +20,15 @@ export type DeleteUserResponse = {
   message: string,
   error: any,
 };
+
+export type AddUserResponse = {
+  error?: any, 
+  status: number,
+  data: User | null,
+  message: string
+};
+
+export type EditUserResponse = {
+  data: User | null,
+  error?: any | null,
+};
