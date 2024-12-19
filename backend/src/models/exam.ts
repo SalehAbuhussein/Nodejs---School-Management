@@ -36,6 +36,6 @@ const ExamSchema = new mongoose.Schema<IExam>({
   studentGrade: {
     type: Number,
   },
-});
+}, { timestamps: true });
 
 export default mongoose.model<IExam>('Exam', ExamSchema);
