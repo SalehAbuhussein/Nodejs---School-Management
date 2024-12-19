@@ -2,9 +2,10 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Request, Response, NextFunction } from 'express';
 
-import { HydratedDocument } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 import User, { IUser } from '../../models/user';
+import { HydratedDocument } from 'mongoose';
 
 type PostUserBody = { name: string, username: string, email: string, password: string };
 
@@ -79,12 +80,14 @@ export const getUser = async (req: Request, res: Response, next: NextFunction): 
 export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const body: PostUserBody = req.body;
   
+  const hashedPassword = await bcrypt.hash(body.password, 10);
+
   const newUser: HydratedDocument<IUser> = new User({ 
     name: body.name,
     profileImg: req.file?.filename,
     username: body.username,
     email: body.email,
-    password: body.password,
+    password: hashedPassword,
   });
 
   try {
@@ -112,7 +115,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
  * @returns { Promise<void> }
  */
 export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { username, name, email }: UpdateUserBody = req.body;
+  const { username, name, email, password }: UpdateUserBody = req.body;
   const params: UpdateUserParams = req.params as UpdateUserParams;
   const profileImg = req.file?.filename;
 
@@ -129,6 +132,12 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
     if (user?.username && username) {
       user.username = username;
+    }
+
+    if (user?.password && password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      user.password = hashedPassword;
     }
 
     if (user?.profileImg && profileImg) {
