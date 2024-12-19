@@ -33,6 +33,6 @@ const UserSchema = new mongoose.Schema<IUser>({
     type: mongoose.Types.ObjectId,
     ref: 'Person',
   },
-});
+}, { timestamps: true });
 
 export default mongoose.model<IUser>('User', UserSchema);

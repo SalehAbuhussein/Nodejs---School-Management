@@ -26,6 +26,6 @@ const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
     type: Number,
     required: true,
   }
-});
+}, { timestamps: true });
 
 export default mongoose.model('Enrollment', EnrollmentSchema);

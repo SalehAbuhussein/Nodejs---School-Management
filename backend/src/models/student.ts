@@ -28,6 +28,6 @@ const StudentSchema = new mongoose.Schema<IStudent>({
   studentTierId: {
     type: mongoose.Types.ObjectId
   },
-});
+}, { timestamps: true });
 
 export default mongoose.model<IStudent>('Student', StudentSchema);

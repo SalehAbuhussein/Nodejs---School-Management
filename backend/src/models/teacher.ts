@@ -33,6 +33,6 @@ const TeacherSchema = new mongoose.Schema<ITeacher>({
     type: mongoose.Types.ObjectId,
     required: true,
   },
-});
+}, { timestamps: true });
 
 export default mongoose.model<ITeacher>('Teacher', TeacherSchema);
