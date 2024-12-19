@@ -48,7 +48,6 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.userForm = this.formBuilder.group({
       name: ['', Validators.required],
       profileImg: [''],
-      username: ['', Validators.required],
       email: ['', Validators.required],
       password: ['', Validators.required],
     });
@@ -107,7 +106,6 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.userService.getUser(userId).subscribe(({ data }) => {
       this.userForm.patchValue({
         name: data.name,
-        username: data.username,
         email: data.email,
       });
 
@@ -163,7 +161,6 @@ export class UsersComponent implements OnInit, OnDestroy {
   onFormSubmit(): void {
     const formData = new FormData();
     formData.append('name', this.userForm.get('name')?.value ?? '');
-    formData.append('username', this.userForm.get('username')?.value ?? '');
     formData.append('email', this.userForm.get('email')?.value ?? '');
     formData.append('password', this.userForm.get('password')?.value ?? '');
     if (this.profileImg) {

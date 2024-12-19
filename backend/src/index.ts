@@ -10,6 +10,7 @@ import { mongoConnect, connectionString } from './db/index';
 
 import homeRoutes from './routes/homeRoutes';
 import userRoutes from './routes/userRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app = express();
 const PORT = 80;
@@ -36,5 +37,6 @@ app.use(express.json());
 // Routes
 app.use(homeRoutes);
 app.use(userRoutes);
+app.use(authRoutes);
 
 mongoConnect(() => app.listen(PORT));
