@@ -7,6 +7,8 @@ import bcrypt from 'bcrypt';
 import User, { IUser } from '../../models/user';
 import { HydratedDocument } from 'mongoose';
 
+import { IGetUserAuthInfoRequest } from '../../middlewares/validateToken';
+
 type PostUserBody = { name: string, email: string, password: string };
 
 type UpdateUserBody = PostUserBody & { _id: string };
@@ -77,9 +79,9 @@ export const getUser = async (req: Request, res: Response, next: NextFunction): 
  * @param { NextFunction } next 
  * @returns { Promise<void> }
  */
-export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createUser = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction): Promise<void> => {
   const body: PostUserBody = req.body;
-  
+
   const hashedPassword = await bcrypt.hash(body.password, 10);
 
   const newUser: HydratedDocument<IUser> = new User({ 

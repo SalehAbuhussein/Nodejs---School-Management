@@ -1,6 +1,5 @@
 import path from 'path';
-
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 
 import { body } from 'express-validator';
 import multer from 'multer';
@@ -42,7 +41,7 @@ router.get('/users/:userId', userController.getUser);
 router.post('/user/create',
   body('name')
     .notEmpty()
-    .withMessage('Name can not be enoty!'),
+    .withMessage('Name can not be empty!'),
   body('username')
     .notEmpty()
     .withMessage('Username can not be empty!')
@@ -57,8 +56,9 @@ router.post('/user/create',
     .notEmpty()
     .withMessage('Password must not be empty!')
     .escape(),
+  // validateToken as (req: Request, res: Response, next: NextFunction) => Promise<void>,
   upload.single('profileImg'),
-  userController.createUser
+  userController.createUser as (req: Request, res: Response, next: NextFunction) => Promise<void>,
 );
 
 /**

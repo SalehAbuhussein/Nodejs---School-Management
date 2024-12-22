@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
-interface IGetUserAuthInfoRequest extends Request {
-  user: string | any
-}
+export interface IGetUserAuthInfoRequest extends Request {
+  user?: string | JwtPayload
+};
 
 /**
  * Validate JWT token

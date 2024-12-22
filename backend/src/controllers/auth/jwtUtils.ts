@@ -3,7 +3,7 @@ import { JwtPayload, SignOptions, sign } from 'jsonwebtoken';
 /**
  * Generate JWT token
  * 
- * @param { any } payload 
+ * @param { JwtPayload } payload 
  * @returns { string }
  */
 export const generateToken = (payload: JwtPayload): string => {
