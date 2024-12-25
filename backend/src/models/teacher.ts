@@ -32,6 +32,7 @@ const TeacherSchema = new mongoose.Schema<ITeacher>({
   userId: {
     type: mongoose.Types.ObjectId,
     required: true,
+    ref: 'User',
   },
 }, { timestamps: true });
 
