@@ -95,11 +95,10 @@ export const getUser = async (req: Request, res: Response<GetUserResponse>, next
  * Create User
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<CreateUserResponse> } res 
  * @param { NextFunction } next 
- * @returns { Promise<void> }
  */
-export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<CreateUserResponse>, next: NextFunction): Promise<any> => {
+export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<CreateUserResponse>, next: NextFunction) => {
   const body: PostUserBody = req.body;
 
   const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -136,7 +135,7 @@ export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<Cre
  * Update User Data and remove previous user profileImg if it is modified
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<UpdateUserResponse> } res 
  * @param { NextFunction } next
  */
 export const updateUser = async (req: Request, res: Response<UpdateUserResponse>, next: NextFunction) => {
@@ -154,7 +153,6 @@ export const updateUser = async (req: Request, res: Response<UpdateUserResponse>
         message: 'User Not Found!' 
       });
     }
-
 
     if (user?.email && email) {
       user.email = email;
@@ -184,7 +182,6 @@ export const updateUser = async (req: Request, res: Response<UpdateUserResponse>
       status: 200, 
       data: user,
       message: 'User Updated Successfully!', 
-      error: null
      });
   } catch (error) {
     return res.status(500).json({ 
@@ -200,7 +197,7 @@ export const updateUser = async (req: Request, res: Response<UpdateUserResponse>
  * Delete User
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<DeleteUserResponse> } res 
  * @param { NextFunction } next
  */
 export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>, next: NextFunction) => {
