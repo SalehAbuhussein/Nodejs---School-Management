@@ -3,30 +3,33 @@ import path from 'path';
 import { Request, Response, NextFunction } from 'express';
 
 import bcrypt from 'bcrypt';
-
-import User, { IUser } from '../../models/user';
 import { HydratedDocument } from 'mongoose';
 
-import { IGetUserAuthInfoRequest } from '../../middlewares/validateToken';
+import User, { IUser } from 'src/models/user';
 
-type PostUserBody = { name: string, email: string, password: string };
+import { IGetUserAuthInfoRequest } from 'src/middlewares/validateToken';
 
-type UpdateUserBody = PostUserBody & { _id: string };
-
-type UpdateUserParams = { userId: string };
-
-type GetUserParams = { userId: string };
-
-type DeleteUserParams = { userId: string };
+import { 
+  DeleteUserParams, 
+  GetUserParams,
+  PostUserBody,
+  UpdateUserBody,
+  UpdateUserParams,
+  GetUserResponse, 
+  GetUsersResponse,
+  CreateUserResponse,
+  UpdateUserResponse,
+  DeleteUserResponse,
+} from 'src/shared/types/userController.types';
 
 /**
  * Get All Users
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<GetUsersResponse> } res 
  * @param { NextFunction } next
  */
-export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getUsers = async (req: Request, res: Response<GetUsersResponse>, next: NextFunction) => {
   try {
     const uploadsUrl = `${req.protocol}://${req.get('host')}/uploads/`;
     const users = await User.find({}).select('-password');
@@ -39,10 +42,19 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction):
       return user;
     });
 
-    res.json({ status: 200, data: usersWithProfileImg });
+    return res.json({ 
+      status: 200, 
+      data: usersWithProfileImg,
+      message: 'Users Fetched Successfully!',
+     });
     
   } catch (error) {
-    res.status(500).json({ status: 500, data: [], error: error });
+    return res.status(500).json({ 
+      status: 500, 
+      data: null, 
+      error: error, 
+      message: "Server Error"
+     });
   }
 };
 
@@ -50,11 +62,10 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction):
  * Get Single User
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<GetUserResponse> } res 
  * @param { NextFunction } next
- * @returns { Promise<void> }
  */
-export const getUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getUser = async (req: Request, res: Response<GetUserResponse>, next: NextFunction) => {
   const params: GetUserParams = req.params as GetUserParams;
   const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
 
@@ -65,9 +76,18 @@ export const getUser = async (req: Request, res: Response, next: NextFunction): 
       user.profileImg = `${baseUrl}/${user.profileImg}`;
     }
 
-    res.json({ status: 200, data: user });
+    return res.json({ 
+      status: 200, 
+      data: user,
+      message: 'User Fetched Successfully!',
+     });
   } catch (error) {
-    res.status(500).json({ status: 500, data: [], error: error });
+    return res.status(500).json({ 
+      status: 500, 
+      data: null, 
+      error: error, 
+      message: 'Server Error',
+     });
   }
 };
 
@@ -75,11 +95,10 @@ export const getUser = async (req: Request, res: Response, next: NextFunction): 
  * Create User
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<CreateUserResponse> } res 
  * @param { NextFunction } next 
- * @returns { Promise<void> }
  */
-export const createUser = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction): Promise<void> => {
+export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<CreateUserResponse>, next: NextFunction) => {
   const body: PostUserBody = req.body;
 
   const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -97,31 +116,43 @@ export const createUser = async (req: IGetUserAuthInfoRequest, res: Response, ne
 
     delete userObject.password;
 
-    res.status(201).json({
+    return res.status(201).json({
       status: 201,
       data: userObject,
       message: 'User created successfully',
     });
   } catch (error) {
-    res.status(500).send({ status: 500, data: null, error: error, message: null });
+    return res.status(500).send({ 
+      status: 500, 
+      data: null, 
+      message: "Server Error",
+      error: error, 
+     });
   }
-};
+}; 
 
 /**
  * Update User Data and remove previous user profileImg if it is modified
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<UpdateUserResponse> } res 
  * @param { NextFunction } next
- * @returns { Promise<void> }
  */
-export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateUser = async (req: Request, res: Response<UpdateUserResponse>, next: NextFunction) => {
   const { name, email, password }: UpdateUserBody = req.body;
-  const params: UpdateUserParams = req.params as UpdateUserParams;
+  const { userId }: UpdateUserParams = req.params as UpdateUserParams;
   const profileImg = req.file?.filename;
 
   try {
-    let user = await User.findById({ _id:  params.userId });
+    let user = await User.findById({ _id:  userId });
+
+    if (!user) {
+      return res.status(404).json({ 
+        status: 404, 
+        data: null, 
+        message: 'User Not Found!' 
+      });
+    }
 
     if (user?.email && email) {
       user.email = email;
@@ -147,9 +178,18 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
     await user?.save();
 
-    res.json({ data: user, error: null });
+    return res.json({ 
+      status: 200, 
+      data: user,
+      message: 'User Updated Successfully!', 
+     });
   } catch (error) {
-    res.status(500).json({ data: null, error: error });
+    return res.status(500).json({ 
+      status: 500, 
+      data: null, 
+      message: 'Server Error',
+      error: error, 
+    });
   }
 };
 
@@ -157,11 +197,10 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
  * Delete User
  * 
  * @param { Request } req 
- * @param { Response } res 
+ * @param { Response<DeleteUserResponse> } res 
  * @param { NextFunction } next
- * @returns { Promise<void> }
  */
-export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>, next: NextFunction) => {
   const { userId }: DeleteUserParams = req.params as DeleteUserParams;
 
   try {
@@ -175,8 +214,15 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
     await user?.deleteOne();
 
-    res.json({ message: 'User Deleted Successfully!', error: null });
+    return res.json({ 
+      status: 200, 
+      message: 'User Deleted Successfully!',
+     });
   } catch (error) {
-    res.status(500).json({ message: null, error: error });
+    return res.status(500).json({ 
+      status: 500, 
+      message: 'Server Error', 
+      error: error
+     });
   }
 };
