@@ -1,5 +1,5 @@
 import path from 'path';
-import { Router, Request, Response, NextFunction } from 'express';
+import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 import multer from 'multer';
@@ -24,21 +24,21 @@ const upload = multer({ storage });
  * 
  * @route GET /users
  */
-router.get('/users', userController.getUsers);
+router.get('/users', userController.getUsers as Application);
 
 /**
  * Get a single user
  * 
  * @route GET /users/:userId
  */
-router.get('/users/:userId', userController.getUser);
+router.get('/users/:userId', userController.getUser as Application);
 
 /**
  * Create a single user
  * 
- * @route POST /user/create
+ * @route POST /users/create
  */
-router.post('/user/create',
+router.post('/users/create',
   body('name')
     .notEmpty()
     .withMessage('Name can not be empty!'),
@@ -58,7 +58,7 @@ router.post('/user/create',
     .escape(),
   // validateToken as (req: Request, res: Response, next: NextFunction) => Promise<void>,
   upload.single('profileImg'),
-  userController.createUser as (req: Request, res: Response, next: NextFunction) => Promise<void>,
+  userController.createUser as Application,
 );
 
 /**
@@ -85,9 +85,9 @@ router.patch('/users/:userId',
     .withMessage('Password must not be empty!')
     .escape(),
   upload.single('profileImg'),
-  userController.updateUser,
+  userController.updateUser as Application,
 );
 
-router.delete('/users/:userId', userController.deleteUser);
+router.delete('/users/:userId', userController.deleteUser as Application);
 
 export default router;

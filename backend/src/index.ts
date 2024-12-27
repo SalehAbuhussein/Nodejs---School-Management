@@ -11,6 +11,8 @@ import { mongoConnect, connectionString } from './db/index';
 import homeRoutes from './routes/homeRoutes';
 import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
+import roleRoutes from './routes/roleRoutes';
+import teacherRoutes from './routes/teacherRoutes';
 
 const app = express();
 const PORT = 80;
@@ -38,5 +40,7 @@ app.use(express.json());
 app.use(homeRoutes);
 app.use(userRoutes);
 app.use(authRoutes);
+app.use(roleRoutes);
+app.use(teacherRoutes);
 
 mongoConnect(() => app.listen(PORT));

@@ -45,7 +45,7 @@ export class UsersService {
    * @returns { Observable<AddUserResponse> }
    */
   addUser = (formData: FormData): Observable<AddUserResponse> => {
-    return this.httpClient.post<AddUserResponse>(`${environment.baseApi}/user/create`, formData);
+    return this.httpClient.post<AddUserResponse>(`${environment.baseApi}/users/create`, formData);
   };
 
   /**
