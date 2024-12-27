@@ -26,13 +26,21 @@ export type GetTeacherResponse = {
 };
 
 export type CreateTeacherResponse = {
-
+  status: number,
+  data: ITeacher | null,
+  message: string,
+  error?: any,
 };
 
 export type UpdateTeacherResponse = {
-
+  status: number,
+  data: ITeacher | null,
+  message: string,
+  error?: any,
 };
 
 export type DeleteTeacherResponse = {
-
+  status: number,
+  message: string,
+  error?: any,
 };

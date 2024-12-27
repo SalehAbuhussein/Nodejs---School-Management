@@ -6,6 +6,8 @@ import Teacher, { ITeacher } from 'src/models/teacher';
 
 import { 
   CreateTeacherResponse,
+  DeleteTeacherParams,
+  DeleteTeacherResponse,
   GetTeacherParams,
   GetTeacherResponse,
   GetTeachersResponse,
@@ -104,7 +106,7 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
  * @param { Response<UpdateTeacherResponse> } res 
  * @param { NextFunction } next 
  */
-export const updateTeacher = async (req: Request, res: Response<UpdateTeacherResponse>, next: NextFunction)=> {
+export const updateTeacher = async (req: Request, res: Response<UpdateTeacherResponse>, next: NextFunction) => {
   const { firstName, lastName, secondName, thirdName, isActive }: UpdateTeacherBody = req.body;
   const { teacherId }: UpdateTeacherParams = req.params as UpdateTeacherParams;
 
@@ -143,13 +145,41 @@ export const updateTeacher = async (req: Request, res: Response<UpdateTeacherRes
       status: 200,
       data: teacher,
       message: 'Teacher Updated Successfully!',
-      error: null,
     })
   } catch (error) {
     return res.status(500).json({
+      status: 500,
       data: null, 
       message: 'Server Error', 
       error: error, 
     });
+  }
+};
+
+/**
+ * Update Teacher
+ * 
+ * @param { Request } req 
+ * @param { Response<UpdateTeacherResponse> } res 
+ * @param { NextFunction } next 
+ */
+export const deleteTeacher = async (req: Request, res: Response<DeleteTeacherResponse>, next: NextFunction) => {
+  const { teacherId }: DeleteTeacherParams = req.params as DeleteTeacherParams;
+
+  try {
+    const teacher = await Teacher.findById(teacherId);
+
+    await teacher?.deleteOne();
+
+    return res.json({ 
+      status: 200, 
+      message: 'Teacher Deleted Successfully!',
+     });
+  } catch (error) {
+    return res.status(500).json({ 
+      status: 500, 
+      message: 'Server Error', 
+      error: error
+     });
   }
 };
