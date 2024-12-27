@@ -16,6 +16,7 @@ import teacherRoutes from './routes/teacherRoutes';
 import studentRoutes from './routes/studentRoutes';
 import studentTierRoutes from './routes/studentTierRoutes';
 import courseRoutes from './routes/courseRoutes';
+import examTypeRoutes from './routes/examTypeRoutes';
 import examRoutes from './routes/examRoutes';
 
 const app = express();
@@ -50,5 +51,6 @@ app.use('/students', studentRoutes);
 app.use('/studentTiers', studentTierRoutes);
 app.use('/courseRoutes', courseRoutes);
 app.use('/exams', examRoutes);
+app.use('/examTypes', examTypeRoutes);
 
 mongoConnect(() => app.listen(PORT));
