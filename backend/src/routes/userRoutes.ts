@@ -24,21 +24,21 @@ const upload = multer({ storage });
  * 
  * @route GET /users
  */
-router.get('/users', userController.getUsers as Application);
+router.get('', userController.getUsers as Application);
 
 /**
  * Get a single user
  * 
  * @route GET /users/:userId
  */
-router.get('/users/:userId', userController.getUser as Application);
+router.get('/:userId', userController.getUser as Application);
 
 /**
  * Create a single user
  * 
  * @route POST /users/create
  */
-router.post('/users/create',
+router.post('/create',
   body('name')
     .notEmpty()
     .withMessage('Name can not be empty!'),
@@ -64,9 +64,9 @@ router.post('/users/create',
 /**
  * Update a single user
  * 
- * @route PATCH /users/:userId
+ * @route PATCH /:userId
  */
-router.patch('/users/:userId', 
+router.patch('/:userId', 
   body('name')
     .notEmpty()
     .withMessage('Name can not be enoty!'),
@@ -88,6 +88,6 @@ router.patch('/users/:userId',
   userController.updateUser as Application,
 );
 
-router.delete('/users/:userId', userController.deleteUser as Application);
+router.delete('/:userId', userController.deleteUser as Application);
 
 export default router;

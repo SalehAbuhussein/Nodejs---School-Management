@@ -2,28 +2,28 @@ import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 
-import * as teacherController from '../controllers/teacher/teacherController';
+import * as studentController from '../controllers/student/studentController';
 
 const router = Router();
 
 /**
- * Get a list of Teachers
+ * Get a list of students
  * 
- * @route GET /teachers
+ * @route GET /students
  */
-router.get('', teacherController.getTeachers as Application);
+router.get('', studentController.getStudents as Application);
 
 /**
- * Get a single Teacher
+ * Get a single student
  * 
- * @route GET /teachers/teacherId
+ * @route GET /students/:studentId
  */
-router.get('/:teacherId', teacherController.getTeacher as Application);
+router.get('/:studentId', studentController.getStudent as Application);
 
 /**
- * Create a single Teacher
+ * Create student
  * 
- * @route POST /teachers/create
+ * @route POST /students/create
  */
 router.post('/create',
   body('firstName')
@@ -46,15 +46,15 @@ router.post('/create',
     .notEmpty()
     .withMessage('User id can not be empty!')
     .escape(),
-  teacherController.createTeacher as Application
+  studentController.createStudent as Application
 );
 
 /**
- * Update a single Teacher
+ * Update student
  * 
- * @router PATCH /teachers/:teacherId
+ * @route PATCH /students/:studentId
  */
-router.patch('/:teacherId',
+router.patch('/:studentId',
   body('firstName')
     .notEmpty()
     .withMessage('First name can not be empty!')
@@ -74,15 +74,15 @@ router.patch('/:teacherId',
   body('userId')
     .notEmpty()
     .withMessage('User id can not be empty!')
-    .escape(),
-  teacherController.updateTeacher as Application
+    .escape(),  
+  studentController.updateStudent as Application
 );
 
 /**
- * Delete a single Teacher
+ * Delete student
  * 
- * @router DELETE /teachers/:teacherId
+ * @route DELETE /students/:studentId
  */
-router.delete('/:teacherId', teacherController.deleteTeacher as Application);
+router.delete('/:studentId', studentController.deleteStudent as Application);
 
 export default router;

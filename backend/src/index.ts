@@ -13,6 +13,7 @@ import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
 import roleRoutes from './routes/roleRoutes';
 import teacherRoutes from './routes/teacherRoutes';
+import studentRoutes from './routes/studentRoutes';
 
 const app = express();
 const PORT = 80;
@@ -38,9 +39,10 @@ app.use(express.json());
 
 // Routes
 app.use(homeRoutes);
-app.use(userRoutes);
 app.use(authRoutes);
-app.use(roleRoutes);
-app.use(teacherRoutes);
+app.use('/users', userRoutes);
+app.use('/roles', roleRoutes);
+app.use('/teachers', teacherRoutes);
+app.use('/students', studentRoutes);
 
 mongoConnect(() => app.listen(PORT));

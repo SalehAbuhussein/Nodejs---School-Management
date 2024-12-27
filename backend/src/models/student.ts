@@ -7,6 +7,7 @@ export type IStudent = {
   lastName: string | null,
   isActive: boolean,
   studentTierId: { type: mongoose.Types.ObjectId },
+  userId: { type: mongoose.Types.ObjectId }
 }
 
 const StudentSchema = new mongoose.Schema<IStudent>({
@@ -21,12 +22,21 @@ const StudentSchema = new mongoose.Schema<IStudent>({
   thirdName: {
     type: String,
   },
+  lastName: {
+    type: String,
+    required: true,
+  },
   isActive: {
     type: Boolean,
     default: true,
   },
   studentTierId: {
     type: mongoose.Types.ObjectId
+  },
+  userId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: 'User',
   },
 }, { timestamps: true });
 

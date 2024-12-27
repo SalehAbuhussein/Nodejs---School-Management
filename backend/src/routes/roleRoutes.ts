@@ -11,21 +11,21 @@ const router = Router();
  * 
  * @route GET /roles
  */
-router.get('/roles', roleController.getRoles as Application);
+router.get('', roleController.getRoles as Application);
 
 /**
  * Get a single Role
  * 
  * @route GET /roles
  */
-router.get('/roles/:roleId', roleController.getRole as Application);
+router.get('/:roleId', roleController.getRole as Application);
 
 /**
  * Create a single role
  * 
  * @route POST /roles/create
  */
-router.post('/roles/create',
+router.post('/create',
   body('roleName')
     .notEmpty()
     .withMessage('Role name can not be empty!')
@@ -42,7 +42,7 @@ router.post('/roles/create',
  * 
  * @router PATCH /roles/:roleId
  */
-router.patch('/roles/:roleId',
+router.patch('/:roleId',
   body('roleName')
   .notEmpty()
   .withMessage('Role name can not be empty!')
@@ -59,6 +59,6 @@ router.patch('/roles/:roleId',
  * 
  * @router DELETE /roles/:roleId
  */
-router.delete('/roles/:roleId', roleController.deleteRole as Application);
+router.delete('/:roleId', roleController.deleteRole as Application);
 
 export default router;
