@@ -4,6 +4,8 @@ import express from 'express';
 import flash from 'express-flash';
 import path from 'path';
 import session from 'express-session';
+import morgan from 'morgan';
+import helmet from 'helmet';
 
 import connectMongo from 'connect-mongodb-session';
 import { mongoConnect, connectionString } from './db/index';
@@ -29,6 +31,13 @@ const store = new MongoSessionStore({
 });
 
 // Express packages
+
+// Setting Security headers
+app.use(helmet());
+
+// logging http requests
+app.use(morgan('dev'));
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(cors());
 app.use(session({
