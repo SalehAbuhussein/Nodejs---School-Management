@@ -57,6 +57,14 @@ export const getTeacher = async (req: Request, res: Response<GetTeacherResponse>
   try {
     const teacher = await Teacher.findById(params.teacherId);
 
+    if (!teacher) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: 'Teacher not found!',
+      });
+    }
+
     return res.json({ status: 200, data: teacher, message: 'Teacher Fetched Successfully!' });
   } catch(error) {
     return res.status(500).json({ 
