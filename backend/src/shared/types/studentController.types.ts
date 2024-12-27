@@ -32,7 +32,7 @@ export type GetStudentResponse = {
 
 export type CreateStudentResponse = {
   status: number,
-  data: Partial<IStudent> | null,
+  data: IStudent | null,
   message: string,
   error?: any,
 };

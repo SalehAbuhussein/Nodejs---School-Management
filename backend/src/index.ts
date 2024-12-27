@@ -14,6 +14,7 @@ import authRoutes from './routes/authRoutes';
 import roleRoutes from './routes/roleRoutes';
 import teacherRoutes from './routes/teacherRoutes';
 import studentRoutes from './routes/studentRoutes';
+import studentTierRoutes from './routes/studentTierRoutes';
 
 const app = express();
 const PORT = 80;
@@ -44,5 +45,7 @@ app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/teachers', teacherRoutes);
 app.use('/students', studentRoutes);
+app.use('/studentTiers', studentTierRoutes);
+
 
 mongoConnect(() => app.listen(PORT));
