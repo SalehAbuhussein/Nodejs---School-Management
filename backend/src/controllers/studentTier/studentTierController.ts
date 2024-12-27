@@ -5,7 +5,17 @@ import { HydratedDocument } from 'mongoose';
 import StudentTier, { IStudentTier } from 'src/models/studentTier';
 import { DeleteStudentResponse } from 'src/shared/types/studentController.types';
 
-import { CreateStudentTierResponse, DeleteStudentTierParams, GetStudentTierParams, GetStudentTierResponse, GetStudentTiersResponse, PostStudentTierBody, UpdateStudentTierBody, UpdateStudentTierParams, UpdateStudentTierResponse } from 'src/shared/types/studentTierController.types';
+import { 
+  DeleteStudentTierParams, 
+  GetStudentTierParams, 
+  PostStudentTierBody, 
+  UpdateStudentTierBody, 
+  UpdateStudentTierParams, 
+  GetStudentTierResponse,
+  GetStudentTiersResponse, 
+  UpdateStudentTierResponse,
+  CreateStudentTierResponse,
+} from 'src/shared/types/studentTierController.types';
 
 /**
  * Get All Student-Tiers
@@ -152,7 +162,7 @@ export const updateStudentTier = async (req: Request, res: Response<UpdateStuden
  * Delete Student-Tier
  * 
  * @param { Request } req 
- * @param { Response<DeleteStudentResponse } res 
+ * @param { Response<DeleteStudentResponse> } res 
  * @param { NextFunction } next
  */
 export const deleteStudentTier = async (req: Request, res: Response<DeleteStudentResponse>, next: NextFunction) => {
