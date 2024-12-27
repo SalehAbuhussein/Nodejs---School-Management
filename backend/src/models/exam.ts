@@ -21,7 +21,7 @@ const ExamSchema = new mongoose.Schema<IExam>({
   },
   examTypeId: {
     type: mongoose.Types.ObjectId,
-    ref: 'Exam',
+    ref: 'ExamType',
     required: true,
   },
   studentId: {
