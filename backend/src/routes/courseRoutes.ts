@@ -2,7 +2,7 @@ import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 
-import * as courseController from '../controllers/course/courseController';
+import * as courseController from 'src/controllers/course/courseController';
 
 const router = Router();
 
@@ -34,6 +34,10 @@ router.post('/create',
     .notEmpty()
     .withMessage('Course fees can not be empty!')
     .escape(),
+  body('teacherId')
+    .notEmpty()
+    .withMessage('Course can not be created without teacher!')
+    .escape(),
   courseController.createCourse as Application
 );
 
@@ -51,6 +55,10 @@ router.patch('/:courseId',
     .notEmpty()
     .withMessage('Course fees can not be empty!')
     .escape(), 
+  body('teachersIds')
+    .notEmpty()
+    .withMessage('Teachers can not be empty!')
+    .escape(),
   courseController.updateCourse as Application
 );
 

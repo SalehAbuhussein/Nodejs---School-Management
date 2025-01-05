@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import Course, { ICourse } from "src/models/course";
+import Course from "src/models/course";
 
 import { CreateCourseResponse, DeleteCourseParams, DeleteCourseResponse, GetCourseParams, GetCourseResponse, GetCoursesResponse, PostCourseBody, UpdateCourseBody, UpdateCourseParams, UpdateCourseResponse } from "src/shared/types/courseController.types";
 
@@ -67,18 +67,19 @@ export const getCourse = async (req: Request, res: Response<GetCourseResponse>, 
 };
 
 /**
- * Create Course
+ * Create Course and link it with Teacher using junction table (TeacherCourse)
  * 
  * @param { Request } req 
  * @param { Response<CreateCourseResponse> } res 
  * @param { NextFunction } next 
  */
 export const createCourse = async (req: Request, res: Response<CreateCourseResponse>, next: NextFunction) => {
-  const { courseName, courseFees }: PostCourseBody = req.body;
+  const { courseName, courseFees, teacherId }: PostCourseBody = req.body;
 
   const newCourse = new Course({
     courseName,
     courseFees,
+    teachers: [teacherId],
   });
 
   try {
@@ -106,7 +107,7 @@ export const createCourse = async (req: Request, res: Response<CreateCourseRespo
  * @param { NextFunction } next 
  */
 export const updateCourse = async (req: Request, res: Response<UpdateCourseResponse>, next: NextFunction) => {
-  const { courseName, courseFees, isActive }: UpdateCourseBody = req.body;
+  const { courseName, courseFees, isActive, teachersIds }: UpdateCourseBody = req.body;
   const { courseId }: UpdateCourseParams = req.params as UpdateCourseParams;
 
   try {
@@ -116,7 +117,7 @@ export const updateCourse = async (req: Request, res: Response<UpdateCourseRespo
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Role not found!',
+        message: 'Course not found!',
       })
     }
 
@@ -128,7 +129,22 @@ export const updateCourse = async (req: Request, res: Response<UpdateCourseRespo
       course.courseFees = courseFees;
     }
 
-    course = await course.save();
+    course.isActive = !!isActive;
+
+    // Add new teachers to the course (ensure no duplicates)
+    if (teachersIds && teachersIds.length > 0) {
+      // Use Mongoose's $addToSet to add teachers, ensuring no duplicates
+      course = await Course.findByIdAndUpdate(
+        courseId,
+        { $addToSet: { teachers: { $each: teachersIds } } }, // $each allows adding multiple teachers at once
+        { new: true } // Return the updated course document
+      );
+    }
+
+    if (course) {
+      course = await course.save();
+    }
+
 
     return res.json({
       status: 200,

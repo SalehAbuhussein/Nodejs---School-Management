@@ -8,18 +8,18 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 
 import connectMongo from 'connect-mongodb-session';
-import { mongoConnect, connectionString } from './db/index';
+import { mongoConnect, connectionString } from 'src/db/index';
 
-import homeRoutes from './routes/homeRoutes';
-import userRoutes from './routes/userRoutes';
-import authRoutes from './routes/authRoutes';
-import roleRoutes from './routes/roleRoutes';
-import teacherRoutes from './routes/teacherRoutes';
-import studentRoutes from './routes/studentRoutes';
-import studentTierRoutes from './routes/studentTierRoutes';
-import courseRoutes from './routes/courseRoutes';
-import examTypeRoutes from './routes/examTypeRoutes';
-import examRoutes from './routes/examRoutes';
+import homeRoutes from 'src/routes/homeRoutes';
+import userRoutes from 'src/routes/userRoutes';
+import authRoutes from 'src/routes/authRoutes';
+import roleRoutes from 'src/routes/roleRoutes';
+import teacherRoutes from 'src/routes/teacherRoutes';
+import studentRoutes from 'src/routes/studentRoutes';
+import studentTierRoutes from 'src/routes/studentTierRoutes';
+import courseRoutes from 'src/routes/courseRoutes';
+import examTypeRoutes from 'src/routes/examTypeRoutes';
+import examRoutes from 'src/routes/examRoutes';
 
 const app = express();
 const PORT = 80;
