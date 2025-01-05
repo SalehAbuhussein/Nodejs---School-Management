@@ -7,6 +7,7 @@ export type ITeacher = {
   lastName: string,
   isActive: boolean,
   userId: { type: mongoose.Types.ObjectId },
+  courses: { type: mongoose.Types.ObjectId[] },
 };
 
 const TeacherSchema = new mongoose.Schema<ITeacher>({
@@ -34,6 +35,10 @@ const TeacherSchema = new mongoose.Schema<ITeacher>({
     required: true,
     ref: 'User',
   },
+  courses: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Course',
+  }
 }, { timestamps: true });
 
 export default mongoose.model<ITeacher>('Teacher', TeacherSchema);
