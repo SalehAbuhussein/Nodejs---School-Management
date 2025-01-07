@@ -16,14 +16,14 @@ const CourseSchema = new mongoose.Schema<ICourse>({
     type: Number,
     required: true,
   },
+  teachers: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Teacher',
+  }],
   isActive: {
     type: Boolean,
     default: true,
   },
-  teachers: [{
-    type: mongoose.Types.ObjectId,
-    ref: 'Teacher',
-  }]
 }, { timestamps: true });
 
 export default mongoose.model<ICourse>('Course', CourseSchema);

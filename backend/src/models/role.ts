@@ -13,6 +13,7 @@ const RoleSchema = new mongoose.Schema<IRole>({
   permissions: {
     type: [String],
     required: true,
+    default: ['guest'],
   },
 }, { timestamps: true });
 

@@ -5,6 +5,7 @@ export type IEnrollment = {
   courseId: { type: mongoose.Types.ObjectId },
   enrollmentDate: Date,
   enrollmentFees: number,
+  isActive: boolean,
 };
 
 const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
@@ -25,6 +26,10 @@ const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
   enrollmentFees: {
     type: Number,
     required: true,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   }
 }, { timestamps: true });
 

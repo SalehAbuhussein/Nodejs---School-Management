@@ -26,10 +26,6 @@ const TeacherSchema = new mongoose.Schema<ITeacher>({
     type: String,
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
   userId: {
     type: mongoose.Types.ObjectId,
     required: true,
@@ -38,7 +34,11 @@ const TeacherSchema = new mongoose.Schema<ITeacher>({
   courses: {
     type: mongoose.Types.ObjectId,
     ref: 'Course',
-  }
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 }, { timestamps: true });
 
 export default mongoose.model<ITeacher>('Teacher', TeacherSchema);

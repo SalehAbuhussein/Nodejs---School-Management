@@ -13,7 +13,7 @@ const StudentTierSchema = new mongoose.Schema<IStudentTier>({
   monthlySubscriptionFees: {
     type: Number,
     required: true,
-  }
+  },
 });
 
 export default mongoose.model<IStudentTier>('StudentTier', StudentTierSchema);

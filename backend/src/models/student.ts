@@ -5,10 +5,11 @@ export type IStudent = {
   secondName: string,
   thirdName: string | null,
   lastName: string | null,
-  isActive: boolean,
   studentTierId: { type: mongoose.Types.ObjectId },
-  userId: { type: mongoose.Types.ObjectId }
-}
+  enrollments: { type: mongoose.Types.ObjectId }[],
+  userId: { type: mongoose.Types.ObjectId },
+  isActive: boolean,
+};
 
 const StudentSchema = new mongoose.Schema<IStudent>({
   firstName: {
@@ -26,17 +27,23 @@ const StudentSchema = new mongoose.Schema<IStudent>({
     type: String,
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
   studentTierId: {
     type: mongoose.Types.ObjectId
   },
+  enrollments: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: 'Enrollment',
+    }
+  ],
   userId: {
     type: mongoose.Types.ObjectId,
     required: true,
     ref: 'User',
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   },
 }, { timestamps: true });
 
