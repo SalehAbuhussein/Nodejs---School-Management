@@ -10,7 +10,6 @@ import helmet from 'helmet';
 import connectMongo from 'connect-mongodb-session';
 import { mongoConnect, connectionString } from 'src/db/index';
 
-import homeRoutes from 'src/routes/homeRoutes';
 import userRoutes from 'src/routes/userRoutes';
 import authRoutes from 'src/routes/authRoutes';
 import roleRoutes from 'src/routes/roleRoutes';
@@ -51,7 +50,6 @@ app.use(flash());
 app.use(express.json());
 
 // Routes
-app.use(homeRoutes);
 app.use(authRoutes);
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
