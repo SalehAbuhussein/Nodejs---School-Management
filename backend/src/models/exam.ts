@@ -7,6 +7,7 @@ export type IExam = {
   courseId: { type: mongoose.Types.ObjectId },
   fullExamGrade: number,
   studentGrade: number,
+  createdBy: { type: mongoose.Types.ObjectId },
 }
 
 const ExamSchema = new mongoose.Schema<IExam>({
@@ -28,6 +29,10 @@ const ExamSchema = new mongoose.Schema<IExam>({
     type: mongoose.Types.ObjectId,
     ref: 'Student',
     required: true,
+  },
+  createdBy: {
+    type: mongoose.Types.ObjectId,
+    ref: 'User',
   },
   fullExamGrade: {
     type: Number,
