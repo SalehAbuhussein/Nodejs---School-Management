@@ -72,6 +72,14 @@ export const getUser = async (req: Request, res: Response<GetUserResponse>, next
   try {
     const user = await User.findById(params.userId);
 
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: 'Not Found!',
+      })
+    }
+
     if (user?.profileImg) {
       user.profileImg = `${baseUrl}/${user.profileImg}`;
     }
@@ -205,6 +213,13 @@ export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>
 
   try {
     const user = await User.findById({ _id:  userId });
+
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Not Found!',
+      });
+    }
 
     if (user?.profileImg) {
       const uploadDirectory = `${path.dirname(path.dirname(require?.main?.filename ?? ''))}/uploads/`;

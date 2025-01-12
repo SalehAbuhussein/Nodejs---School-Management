@@ -1,3 +1,5 @@
+import { Request, Response, NextFunction } from 'express';
+
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
@@ -10,6 +12,7 @@ import helmet from 'helmet';
 import connectMongo from 'connect-mongodb-session';
 import { mongoConnect, connectionString } from 'src/db/index';
 
+import swaggerDocs from 'src/swagger';
 import userRoutes from 'src/routes/userRoutes';
 import authRoutes from 'src/routes/authRoutes';
 import roleRoutes from 'src/routes/roleRoutes';
@@ -60,4 +63,7 @@ app.use('/courseRoutes', courseRoutes);
 app.use('/exams', examRoutes);
 app.use('/examTypes', examTypeRoutes);
 
-mongoConnect(() => app.listen(PORT));
+mongoConnect(() => {
+  app.listen(PORT);
+  swaggerDocs(app, PORT);
+});
