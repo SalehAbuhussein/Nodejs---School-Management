@@ -3,18 +3,18 @@ import { Request, Response, NextFunction } from 'express';
 import { HydratedDocument } from 'mongoose';
 
 import StudentTier, { IStudentTier } from 'src/models/studentTier';
-import { DeleteStudentResponse } from 'src/shared/types/studentController.types';
 
-import { 
-  DeleteStudentTierParams, 
-  GetStudentTierParams, 
-  PostStudentTierBody, 
-  UpdateStudentTierBody, 
-  UpdateStudentTierParams, 
+import {
+  DeleteStudentTierParams,
+  GetStudentTierParams,
+  PostStudentTierBody,
+  UpdateStudentTierBody,
+  UpdateStudentTierParams,
   GetStudentTierResponse,
-  GetStudentTiersResponse, 
+  GetStudentTiersResponse,
   UpdateStudentTierResponse,
   CreateStudentTierResponse,
+  DeleteStudentTierResponse,
 } from 'src/shared/types/studentTierController.types';
 
 /**
@@ -60,7 +60,7 @@ export const getStudentTier = async (req: Request, res: Response<GetStudentTierR
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Student Tier not found!',
+        message: 'Not Found!',
       });
     }
 
@@ -73,7 +73,7 @@ export const getStudentTier = async (req: Request, res: Response<GetStudentTierR
     return res.status(500).json({ 
       status: 200,
       data: null,
-      message: 'Servier Error',
+      message: 'Server Error',
       error: error, 
     });
   }
@@ -106,7 +106,7 @@ export const createStudentTier = async (req: Request, res: Response<CreateStuden
     return res.status(500).json({ 
       status: 500, 
       data: null, 
-      message: "", 
+      message: "Server error", 
     });
   }
 };
@@ -129,7 +129,7 @@ export const updateStudentTier = async (req: Request, res: Response<UpdateStuden
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Student Tier Not Found!', 
+        message: 'Not Found!', 
       });
     }
 
@@ -162,10 +162,10 @@ export const updateStudentTier = async (req: Request, res: Response<UpdateStuden
  * Delete Student-Tier
  * 
  * @param { Request } req 
- * @param { Response<DeleteStudentResponse> } res 
+ * @param { Response<DeleteStudentTierResponse> } res 
  * @param { NextFunction } next
  */
-export const deleteStudentTier = async (req: Request, res: Response<DeleteStudentResponse>, next: NextFunction) => {
+export const deleteStudentTier = async (req: Request, res: Response<DeleteStudentTierResponse>, next: NextFunction) => {
   const { studentTierId }: DeleteStudentTierParams = req.params as DeleteStudentTierParams;
 
   try {
