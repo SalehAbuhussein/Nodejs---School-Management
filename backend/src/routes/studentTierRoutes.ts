@@ -135,17 +135,12 @@ router.patch('/:studentTierId',
 );
 
 /**
- * Delete student tier
- * 
- * @route DELETE /studentTiers/:studentTierId
- */
-/**
  * @openapi
  * /studentTiers/{studentTierId}:
  *   delete:
  *     tags:
  *       - StudentTier Controller
- *     summary: Delete student tier
+ *     summary: Delete student-tier
  *     parameters:
  *       - name: studentTierId
  *         in: path
@@ -155,7 +150,7 @@ router.patch('/:studentTierId',
  *           type: string
  *     responses:
  *       200:
- *         description: Student tier Updated Successfully!
+ *         description: Student Tier Deleted Successfully!
  *       404:
  *         description: Not Found!
  *       500:
