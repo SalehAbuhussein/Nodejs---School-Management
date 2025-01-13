@@ -33,7 +33,6 @@ function swaggerDocs(app: Application, port: number) {
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
   // Documentation in JSON format
   app.get('/docs.json', (req, res) => {
-    console.log(swaggerSpec);
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
   })
