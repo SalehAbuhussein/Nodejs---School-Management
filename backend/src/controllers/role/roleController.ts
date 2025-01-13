@@ -58,7 +58,7 @@ export const getRole = async (req: Request, res: Response<GetRoleResponse>, next
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Role not found!',
+        message: 'Not Found!',
       });
     }
 
@@ -174,7 +174,7 @@ export const deleteRole = async (req: Request, res: Response<DeleteRoleResponse>
     if (!role) {
       return res.status(404).json({
         status: 404,
-        message: 'Role not found!',
+        message: 'Not Found!',
       });
     }
 
