@@ -117,7 +117,7 @@ export const updateCourse = async (req: Request, res: Response<UpdateCourseRespo
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Course not found!',
+        message: 'Not Found!',
       })
     }
 

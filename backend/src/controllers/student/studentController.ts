@@ -60,7 +60,7 @@ export const getStudent = async (req: Request, res: Response<GetStudentResponse>
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Student not found!',
+        message: 'Not Found!',
       });
     }
 
@@ -102,7 +102,11 @@ export const createStudent = async (req: Request, res: Response<CreateStudentRes
       message: "Student Created Successfully"
     });
   } catch (error) {
-    return res.status(500).json({ status: 500, data: null, message: "" })
+    return res.status(500).json({ 
+      status: 500, 
+      data: null, 
+      message: "Server error" 
+    });
   }
 };
 
@@ -124,7 +128,7 @@ export const updateStudent = async (req: Request, res: Response<UpdateStudentRes
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Teacher Not Found!', 
+        message: 'Not Found!', 
       });
     }
 
@@ -183,7 +187,7 @@ export const deleteStudent = async (req: Request, res: Response<DeleteStudentRes
     if (!student) {
       return res.status(404).json({
         status: 404,
-        message: 'Student not found!',
+        message: 'Not Found!',
       });
     }
 

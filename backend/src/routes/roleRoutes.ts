@@ -7,21 +7,46 @@ import * as roleController from '../controllers/role/roleController';
 const router = Router();
 
 /**
- * Get a list of Roles
- * 
- * @route GET /roles
+ * @openapi
+ * /roles:
+ *   get:
+ *     tags:
+ *       - Role Controller
+ *     summary: Get a list of Roles
+ *     responses:
+ *       200:
+ *         description: Roles Fetched Successfully!
+ *       500:
+ *         description: Server error
  */
 router.get('', roleController.getRoles as Application);
 
 /**
- * Get a single Role
- * 
- * @route GET /roles
+ * @openapi
+ * /roles/{roleId}:
+ *   get:
+ *     tags:
+ *       - Role Controller
+ *     summary: Get a Role
+ *     parameters:
+ *       - name: roleId
+ *         in: path
+ *         description: role ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Role fetched successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server error
  */
 router.get('/:roleId', roleController.getRole as Application);
 
 /**
- * Create a single role
+ * Create a role
  * 
  * @route POST /roles/create
  */
@@ -38,7 +63,7 @@ router.post('/create',
 );
 
 /**
- * Update a single role
+ * Update a role
  * 
  * @router PATCH /roles/:roleId
  */
@@ -55,9 +80,9 @@ router.patch('/:roleId',
 );
 
 /**
- * Delete a single role
+ * Delete a role
  * 
- * @router DELETE /roles/:roleId
+ * @router PATCH /roles/:roleId
  */
 router.delete('/:roleId', roleController.deleteRole as Application);
 

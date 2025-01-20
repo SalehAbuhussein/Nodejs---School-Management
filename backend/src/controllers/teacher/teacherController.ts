@@ -61,16 +61,20 @@ export const getTeacher = async (req: Request, res: Response<GetTeacherResponse>
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Teacher not found!',
+        message: 'Not Found!',
       });
     }
 
-    return res.json({ status: 200, data: teacher, message: 'Teacher Fetched Successfully!' });
+    return res.json({ 
+      status: 200, 
+      data: teacher, 
+      message: 'Teacher Fetched Successfully!',
+    });
   } catch(error) {
     return res.status(500).json({ 
       status: 200,
       data: null,
-      message: 'Servier Error',
+      message: 'Server Error',
       error: error, 
     });
   }
@@ -103,7 +107,11 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
       message: "Teacher Created Successfully"
     });
   } catch (error) {
-    return res.status(500).json({ status: 500, data: null, message: "" })
+    return res.status(500).json({ 
+      status: 500, 
+      data: null, 
+      message: "Server error" 
+    });
   }
 };
 
@@ -125,7 +133,7 @@ export const updateTeacher = async (req: Request, res: Response<UpdateTeacherRes
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Teacher Not Found!', 
+        message: 'Not Found!', 
       });
     }
 
@@ -176,6 +184,13 @@ export const deleteTeacher = async (req: Request, res: Response<DeleteTeacherRes
 
   try {
     const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      return res.json({
+        status: 404,
+        message: 'Not Found!',
+      });
+    }
 
     await teacher?.deleteOne();
 

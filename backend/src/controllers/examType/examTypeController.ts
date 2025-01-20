@@ -58,7 +58,7 @@ export const getExamType = async (req: Request, res: Response<GetExamTypeRespons
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Exam type not found!',
+        message: 'Not Found!',
       });
     }
 
@@ -102,6 +102,7 @@ export const createExamType = async (req: Request, res: Response<CreateExamTypeR
       status: 500,
       data: null,
       message: 'Server Error',
+      error: error,
     });
   }
 };
@@ -124,7 +125,7 @@ export const updateExamType = async (req: Request, res: Response<UpdateExamTypeR
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Exam type not found!',
+        message: 'Not Found!',
       })
     }
 

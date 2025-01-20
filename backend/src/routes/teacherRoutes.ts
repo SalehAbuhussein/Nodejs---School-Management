@@ -7,23 +7,84 @@ import * as teacherController from '../controllers/teacher/teacherController';
 const router = Router();
 
 /**
- * Get a list of Teachers
- * 
- * @route GET /teachers
+ * @openapi
+ * /teachers:
+ *   get:
+ *     tags:
+ *       - Teacher Controller
+ *     summary: Get a list of Teachers
+ *     responses:
+ *       200:
+ *         description: Teachers Fetched Successfully!
+ *       500:
+ *         description: Server Error
  */
 router.get('', teacherController.getTeachers as Application);
 
 /**
- * Get a single Teacher
- * 
- * @route GET /teachers/teacherId
+ * @openapi
+ * /teachers/{teacherId}:
+ *   get:
+ *     tags:
+ *       - Teacher Controller
+ *     summary: Get a single Teacher
+ *     parameters:
+ *       - name: teacherId
+ *         in: path
+ *         description: The teacher ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Teacher Fetched Successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server Error
  */
 router.get('/:teacherId', teacherController.getTeacher as Application);
 
 /**
- * Create a single Teacher
- * 
- * @route POST /teachers/create
+ * @openapi
+ * /users/create:
+ *   post:
+ *     tags:
+ *       - Teacher Controller
+ *     summary: Create a new Teacher
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - secondName
+ *               - thirdName
+ *               - lastName
+ *               - userId
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 default: johndoe
+ *               secondName:
+ *                 type: string
+ *                 default: secondName
+ *               thirdName:
+ *                 type: string
+ *                 default: thirdName
+ *               lastName:
+ *                 type: string
+ *                 default: lastName
+ *               userId:
+ *                 type: string
+ *                 default: asd45646
+ *     responses:
+ *       201:
+ *         description: Teacher Created Successfully
+ *       500:
+ *         description: Server error
  */
 router.post('/create',
   body('firstName')
@@ -50,9 +111,54 @@ router.post('/create',
 );
 
 /**
- * Update a single Teacher
- * 
- * @router PATCH /teachers/:teacherId
+ * @openapi
+ * /teachers/{teacherId}:
+ *   patch:
+ *     tags:
+ *       - Teacher Controller
+ *     summary: Update a Teacher
+ *     parameters:
+ *       - name: teacherId
+ *         in: path
+ *         description: The Teacher ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - secondName
+ *               - thirdName
+ *               - lastName
+ *               - userId
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 default: johndoe
+ *               secondName:
+ *                 type: string
+ *                 default: secondName
+ *               thirdName:
+ *                 type: string
+ *                 default: thirdName
+ *               lastName:
+ *                 type: string
+ *                 default: lastName
+ *               userId:
+ *                 type: string
+ *                 default: asd45646
+ *     responses:
+ *       200:
+ *         description: Teacher Updated Successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server error
  */
 router.patch('/:teacherId',
   body('firstName')
@@ -79,9 +185,26 @@ router.patch('/:teacherId',
 );
 
 /**
- * Delete a single Teacher
- * 
- * @router DELETE /teachers/:teacherId
+ * @openapi
+ * /users/{teacherId}:
+ *   delete:
+ *     tags:
+ *       - Teacher Controller
+ *     summary: Delete a Teacher
+ *     parameters:
+ *       - name: teacherId
+ *         in: path
+ *         description: Teacher Id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Teacher Deleted Successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server error
  */
 router.delete('/:teacherId', teacherController.deleteTeacher as Application);
 

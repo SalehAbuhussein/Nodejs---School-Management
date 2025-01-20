@@ -7,23 +7,73 @@ import * as courseController from 'src/controllers/course/courseController';
 const router = Router();
 
 /**
- * Get a list of courses
- * 
- * @route GET /courseRoutes
+ * @openapi
+ * /courses:
+ *   get:
+ *     tags:
+ *       - Course Controller
+ *     summary: Get a list of courses
+ *     responses:
+ *       200:
+ *         description: Courses Fetched Successfully!
+ *       500:
+ *         description: Server error
  */
 router.get('', courseController.getCourses as Application);
 
 /**
- * Get a single course
- * 
- * @route GET /courseRoutes/:courseId
+ * @openapi
+ * /courses/{courseId}:
+ *   get:
+ *     tags:
+ *       - Course Controller
+ *     summary: Get a course
+ *     parameters:
+ *       - name: courseId
+ *         in: path
+ *         description: course ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Courses Fetched Successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server error
  */
 router.get('/:courseId', courseController.getCourse as Application);
 
 /**
- * Create a course
- * 
- * @route POST /courseRoutes/create
+ * @openapi
+ * /courses/create:
+ *   post:
+ *     tags:
+ *       - Course Controller
+ *     summary: Create a course
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - courseName
+ *               - courseFees
+ *               - teacherId
+ *             properties:
+ *               courseName:
+ *                 type: string
+ *               courseFees:
+ *                 type: number
+ *               teacherId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Course created successfully!
+ *       500:
+ *         description: Server error
  */
 router.post('/create',
   body('courseName')
@@ -44,7 +94,46 @@ router.post('/create',
 /**
  * Update course
  * 
- * @route PATCH /courseRoutes/:courseId
+ * @route PATCH /courses/:courseId
+ */
+/**
+ * @openapi
+ * /courses/{courseId}:
+ *   patch:
+ *     tags:
+ *       - Course Controller
+ *     summary: Update course
+ *     parameters:
+ *       - name: courseId
+ *         in: path
+ *         description: course ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - courseName
+ *               - courseFees
+ *               - teacherId
+ *             properties:
+ *               courseName:
+ *                 type: string
+ *               courseFees:
+ *                 type: number
+ *               teacherId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Course Updated Successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server error
  */
 router.patch('/:courseId',
   body('courseName')
