@@ -2,7 +2,7 @@ import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 
-import * as studentController from '../controllers/student/studentController';
+import * as studentController from 'src/controllers/student/studentController';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.get('', studentController.getStudents as Application);
 
 /**
  * @openapi
- * /students/{studentId}
+ * /students/{studentId}:
  *   get:
  *     tags:
  *       - Student Controller
@@ -46,17 +46,12 @@ router.get('', studentController.getStudents as Application);
 router.get('/:studentId', studentController.getStudent as Application);
 
 /**
- * Create student
- * 
- * @route POST /students/create
- */
-/**
  * @openapi
- * /studentTiers/create:
+ * /students/create:
  *   post:
  *     tags:
- *       - StudentTier Controller
- *     summary: Create student tier
+ *       - Student Controller
+ *     summary: Create a student
  *     requestBody:
  *       required: true
  *       content:

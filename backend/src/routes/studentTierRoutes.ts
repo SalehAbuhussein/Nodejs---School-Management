@@ -23,7 +23,7 @@ router.get('', studentTierController.getStudentTiers as Application);
 
 /**
  * @openapi
- * /studentTiers/{studentTierId}
+ * /studentTiers/{studentTierId}:
  *   get:
  *     tags:
  *       - StudentTier Controller

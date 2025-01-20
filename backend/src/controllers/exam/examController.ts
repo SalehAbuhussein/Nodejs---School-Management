@@ -48,7 +48,7 @@ export const getExam = async (req: Request, res: Response<GetExamResponse>, next
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Exam not found!',
+        message: 'Not Found!',
       });
     }
 
@@ -121,7 +121,7 @@ export const updateExam = async (req: Request, res: Response<UpdateExamResponse>
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Role not found!',
+        message: 'Not Found!',
       })
     }
 

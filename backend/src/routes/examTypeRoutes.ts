@@ -2,28 +2,72 @@ import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 
-import * as examTypeController from '../controllers/examType/examTypeController';
+import * as examTypeController from 'src/controllers/examType/examTypeController';
 
 const router = Router();
 
 /**
- * Get a list of exam types
- * 
- * @route GET /examTypes
+ * @openapi
+ * /examTypes:
+ *   get:
+ *     tags:
+ *       - ExamType Controller
+ *     summary: Get a list of exam types
+ *     responses:
+ *       200:
+ *         description: Exam types Fetched Successfully!
+ *       500:
+ *         description: Server error
  */
 router.get('', examTypeController.getExamTypes as Application);
 
 /**
- * Get a single exam type
- * 
- * @route GET /examTypes/:examTypeId
+ * @openapi
+ * /examTypes/{examTypeId}:
+ *   get:
+ *     tags:
+ *       - ExamType Controller
+ *     summary: Get exam type
+ *     parameters:
+ *       - name: examTypeId
+ *         in: path
+ *         description: exam type ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Exam type fetched successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server error
  */
 router.get('/:examTypeId', examTypeController.getExamType as Application);
 
 /**
- * Create exam type
- * 
- * @route POST /examTypes/create
+ * @openapi
+ * /examTypes/create:
+ *   post:
+ *     tags:
+ *       - ExamType Controller
+ *     summary: Create exam type
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Exam Type created successfully!
+ *       500:
+ *         description: Server error
  */
 router.post('/create',
   body('name')
@@ -34,9 +78,37 @@ router.post('/create',
 );
 
 /**
- * Update exam type
- * 
- * @route PATCH /examTypes/:examTypeId
+ * @openapi
+ * /examTypes/{examTypeId}:
+ *   patch:
+ *     tags:
+ *       - ExamType Controller
+ *     summary: Update exam type
+ *     parameters:
+ *       - name: examTypeId
+ *         in: path
+ *         description: exam type ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Exam type Updated Successfully!
+ *       404:
+ *         description: Not Found!
+ *       500:
+ *         description: Server error
  */
 router.patch('/:examTypeId',
   body('name')

@@ -59,7 +59,7 @@ app.use('/roles', roleRoutes);
 app.use('/teachers', teacherRoutes);
 app.use('/students', studentRoutes);
 app.use('/studentTiers', studentTierRoutes);
-app.use('/courseRoutes', courseRoutes);
+app.use('/courses', courseRoutes);
 app.use('/exams', examRoutes);
 app.use('/examTypes', examTypeRoutes);
 
