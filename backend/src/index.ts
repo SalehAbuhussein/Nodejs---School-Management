@@ -1,13 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import flash from 'express-flash';
-import path from 'path';
-import session from 'express-session';
-import morgan from 'morgan';
 import helmet from 'helmet';
+import morgan from 'morgan';
+import path from 'path';
+import rateLimit from 'express-rate-limit';
+import session from 'express-session';
 
 import connectMongo from 'connect-mongodb-session';
 import { mongoConnect, connectionString } from 'src/db/index';
@@ -22,6 +21,7 @@ import studentTierRoutes from 'src/routes/studentTierRoutes';
 import courseRoutes from 'src/routes/courseRoutes';
 import examTypeRoutes from 'src/routes/examTypeRoutes';
 import examRoutes from 'src/routes/examRoutes';
+import slowDown from 'express-slow-down';
 
 const app = express();
 const PORT = 80;
@@ -32,13 +32,32 @@ const store = new MongoSessionStore({
   collection: 'sessions',
 });
 
-// Express packages
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // limit each IP to 50 requests per 15 minutes
+})
+
+const speedLimiter = slowDown({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  delayAfter: 1,
+  delayMs: () => 2000,
+});
+
+/**
+ * Express packages
+ */
 
 // Setting Security headers
 app.use(helmet());
 
 // logging http requests
 app.use(morgan('dev'));
+
+// API rate limit
+app.use(limiter);
+
+// API Speed limiter after certain amount of requests
+app.use(speedLimiter);
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(cors());
