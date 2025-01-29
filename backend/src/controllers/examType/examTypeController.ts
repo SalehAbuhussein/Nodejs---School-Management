@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import ExamType from "src/models/examTypes";
+import ExamType from "src/models/examType.model";
 
 import { 
   DeleteExamTypeParams,

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import Role from "src/models/role";
+import Role from "src/models/role.model";
 
 import { 
   GetRoleParams, 

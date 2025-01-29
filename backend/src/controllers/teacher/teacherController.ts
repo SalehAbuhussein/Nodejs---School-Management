@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { HydratedDocument } from 'mongoose';
 
-import Teacher, { ITeacher } from 'src/models/teacher';
+import Teacher, { ITeacher } from 'src/models/teacher.model';
 
 import { 
   CreateTeacherResponse,

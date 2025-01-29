@@ -8,13 +8,15 @@ const router = Router();
 
 router.post('/login', 
   body('email')
+    .trim()
     .notEmpty()
     .withMessage('Email can not be empty!')
-    .escape(),
+    .isEmail()
+    .withMessage('Email is not valid Email!'),
   body('password')
+    .trim()
     .notEmpty()
-    .withMessage('Password can not be empty!')
-    .escape(),
+    .withMessage('Password can not be empty!'),
   authController.postLogin,
 );
 

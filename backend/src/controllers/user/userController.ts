@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import { HydratedDocument } from 'mongoose';
 
-import User, { IUser } from 'src/models/user';
+import User, { IUser } from 'src/models/user.model';
 
 import { IGetUserAuthInfoRequest } from 'src/middlewares/jwt/verifyToken';
 

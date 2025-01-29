@@ -1,4 +1,4 @@
-import { IRole } from "src/models/role";
+import { IRole } from "src/models/role.model";
 
 export type GetRoleParams = { roleId: string };
 

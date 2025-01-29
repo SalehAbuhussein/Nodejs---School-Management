@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { HydratedDocument, Types } from "mongoose";
 
-import Student, { IStudent } from "src/models/student";
+import Student, { IStudent } from "src/models/student.model";
 
 import {
   DeleteStudentParams,

@@ -4,7 +4,7 @@ import bcrypto from 'bcrypt';
 
 import { generateToken } from 'src/middlewares/jwt/jwtUtils';
 
-import User from 'src/models/user';
+import User from 'src/models/user.model';
 
 type PostLoginBody = { email: string, password: string };
 

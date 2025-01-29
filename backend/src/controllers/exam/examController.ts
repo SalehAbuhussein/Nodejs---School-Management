@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Types } from "mongoose";
 
-import Exam, { IExam } from "src/models/exam";
+import Exam, { IExam } from "src/models/exam.model";
 
 import { CreateExamResponse, DeleteExamParams, DeleteExamResponse, GetExamParams, GetExamResponse, GetExamsResponse, PostExamBody, UpdateExamBody, UpdateExamParams, UpdateExamResponse } from "src/shared/types/examController.types";
 

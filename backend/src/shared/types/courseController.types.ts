@@ -1,4 +1,4 @@
-import { ICourse } from "src/models/course";
+import { ICourse } from "src/models/course.model";
 
 export type GetCourseParams = { courseId: string };
 
