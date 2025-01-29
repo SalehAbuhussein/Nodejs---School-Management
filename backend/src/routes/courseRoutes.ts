@@ -91,11 +91,7 @@ router.post('/create',
   courseController.createCourse as Application
 );
 
-/**
- * Update course
- * 
- * @route PATCH /courses/:courseId
- */
+// TODO: This needs to be tested
 /**
  * @openapi
  * /courses/{courseId}:

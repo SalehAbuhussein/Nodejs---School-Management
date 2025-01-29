@@ -6,6 +6,8 @@ import multer from 'multer';
 
 import * as userController from 'src/controllers/user/userController';
 
+import { verifyToken } from 'src/middlewares/jwt/verifyToken';
+
 const router = Router();
 
 // Configure multer for file upload
@@ -32,7 +34,7 @@ const upload = multer({ storage });
  *       500:
  *         description: Server error
  */
-router.get('', userController.getUsers as Application);
+router.get('', verifyToken, userController.getUsers as Application);
 
 /**
  * @openapi
