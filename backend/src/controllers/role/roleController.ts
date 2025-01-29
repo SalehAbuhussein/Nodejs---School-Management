@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
+import mongoose from "mongoose";
 import Role from "src/models/role.model";
 
 import { 
@@ -136,7 +137,7 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
     }
 
     if (role.permissions && permissions.length > 0) {
-      role.permissions = permissions;
+      role.permissions = permissions.map(id => new mongoose.Schema.Types.ObjectId(id));
     }
 
     role = await role.save();

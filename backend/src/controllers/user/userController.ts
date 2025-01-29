@@ -7,7 +7,7 @@ import { HydratedDocument } from 'mongoose';
 
 import User, { IUser } from 'src/models/user.model';
 
-import { IGetUserAuthInfoRequest } from 'src/middlewares/jwt/verifyToken';
+import { IGetUserAuthInfoRequest } from 'src/middlewares/verifyTokenMiddleware';
 
 import { 
   DeleteUserParams, 

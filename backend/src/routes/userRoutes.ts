@@ -6,7 +6,7 @@ import multer from 'multer';
 
 import * as userController from 'src/controllers/user/userController';
 
-import { verifyToken } from 'src/middlewares/jwt/verifyToken';
+import { verifyToken } from 'src/middlewares/verifyTokenMiddleware';
 
 const router = Router();
 

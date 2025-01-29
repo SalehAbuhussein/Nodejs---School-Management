@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import bcrypto from 'bcrypt';
 
-import { generateToken } from 'src/middlewares/jwt/jwtUtils';
+import { generateToken } from 'src/shared/utils/jwtUtils';
 
 import User from 'src/models/user.model';
 
