@@ -2,7 +2,7 @@ import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 
-import * as examTypeController from 'src/controllers/examType/examTypeController';
+import * as permissionController from 'src/controllers/permission/permissionController';
 
 import { handleValidation } from 'src/shared/controllers/controllerValidator';
 
@@ -10,50 +10,50 @@ const router = Router();
 
 /**
  * @openapi
- * /examTypes:
+ * /permissions:
  *   get:
  *     tags:
- *       - ExamType Controller
- *     summary: Get a list of exam types
+ *       - Permission Controller
+ *     summary: Get a list of permissions
  *     responses:
  *       200:
- *         description: Exam types Fetched Successfully!
+ *         description: Students Fetched Successfully!
  *       500:
- *         description: Server error
+ *         description: Server Error
  */
-router.get('', examTypeController.getExamTypes as Application);
+router.get('', permissionController.getPermissions as Application);
 
 /**
  * @openapi
- * /examTypes/{examTypeId}:
+ * /permissions/{permissionId}:
  *   get:
  *     tags:
- *       - ExamType Controller
- *     summary: Get exam type
+ *       - Permission Controller
+ *     summary: Get a Permission
  *     parameters:
- *       - name: examTypeId
+ *       - name: permissionId
  *         in: path
- *         description: exam type ID
+ *         description: Permission ID
  *         required: true
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Exam type fetched successfully!
+ *         description: Permission fetched Successfully!
  *       404:
  *         description: Not Found!
  *       500:
  *         description: Server error
  */
-router.get('/:examTypeId', examTypeController.getExamType as Application);
+router.get('/:permissionId', permissionController.getPermission as Application);
 
 /**
  * @openapi
- * /examTypes/create:
+ * /permissions/create:
  *   post:
  *     tags:
- *       - ExamType Controller
- *     summary: Create exam type
+ *       - Student Controller
+ *     summary: Create a permission
  *     requestBody:
  *       required: true
  *       content:
@@ -67,7 +67,7 @@ router.get('/:examTypeId', examTypeController.getExamType as Application);
  *                 type: string
  *     responses:
  *       201:
- *         description: Exam Type created successfully!
+ *         description: Permission Created Successfully
  *       500:
  *         description: Server error
  */
@@ -77,20 +77,20 @@ router.post('/create',
     .isEmpty()
     .withMessage('name can not be empty!'),
   handleValidation as Application,
-  examTypeController.createExamType as Application
+  permissionController.createPermission as Application
 );
 
 /**
  * @openapi
- * /examTypes/{examTypeId}:
+ * /permissions/{permissionId}:
  *   patch:
  *     tags:
- *       - ExamType Controller
- *     summary: Update exam type
+ *       - Permission Controller
+ *     summary: Update a Permission
  *     parameters:
- *       - name: examTypeId
+ *       - name: permissionId
  *         in: path
- *         description: exam type ID
+ *         description: Permission ID
  *         required: true
  *         schema:
  *           type: string
@@ -107,43 +107,43 @@ router.post('/create',
  *                 type: string
  *     responses:
  *       200:
- *         description: Exam type Updated Successfully!
+ *         description: Teacher Updated Successfully!
  *       404:
  *         description: Not Found!
  *       500:
  *         description: Server error
  */
-router.patch('/:examTypeId',
+router.patch('/:permissionId',
   body('name')
     .trim()
     .isEmpty()
     .withMessage('name can not be empty!'),
   handleValidation as Application,
-  examTypeController.updateExamType as Application
+  permissionController.updatePermission as Application
 );
 
 /**
  * @openapi
- * /examTypes/{examTypeId}:
+ * /permissions/{permissionId}:
  *   delete:
  *     tags:
- *       - ExamType Controller
- *     summary: Delete exam type
+ *       - Permission Controller
+ *     summary: Delete a Permission
  *     parameters:
- *       - name: examTypeId
+ *       - name: permissionId
  *         in: path
- *         description: exam type ID
+ *         description: Permission Id
  *         required: true
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Exam type Deleted Successfully!
+ *         description: Permission Deleted Successfully!
  *       404:
  *         description: Not Found!
  *       500:
  *         description: Server error
  */
-router.delete('/:examTypeId', examTypeController.deleteExamType as Application);
+router.delete('/:permissionId', permissionController.deletePermission as Application);
 
 export default router;

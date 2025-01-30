@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { validationResult } from "express-validator";
 
 import mongoose from "mongoose";
 import Role from "src/models/role.model";
@@ -86,25 +87,26 @@ export const getRole = async (req: Request, res: Response<GetRoleResponse>, next
  * @param { NextFunction } next 
  */
 export const createRole = async (req: Request, res: Response<CreateRoleResponse>, next: NextFunction) => {
-  const { roleName, permissions }: PostRoleBody = req.body;
-
-  const newRole = new Role({
-    roleName,
-    permissions,
-  });
-
   try {
-    const role = await newRole.save();
+    const { roleName, permissions }: PostRoleBody = req.body;
+
+    const permissionObjectIds = permissions.map((permissionId: string) => new mongoose.Types.ObjectId(permissionId)) ?? [];
+
+    const newRole = await new Role({
+      roleName,
+      permissions: permissionObjectIds,
+    }).save();
 
     return res.status(201).json({
       status: 201,
-      data: role,
+      data: newRole,
       message: 'Role created successfully!'
     })
   } catch (error) {
     return res.status(500).json({
       status: 500,
       data: null,
+      error: error,
       message: 'Server Error',
     });
   }

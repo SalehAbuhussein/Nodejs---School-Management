@@ -4,16 +4,16 @@ import { HydratedDocument } from "mongoose";
 import Permission, { IPermission } from "src/models/permission.model";
 
 import { 
-  CreatePermissionResponse, 
   DeletePermissionParams, 
-  DeletePermissionResponse, 
   GetPermissionParams, 
-  GetPermissionResponse, 
-  GetPermissionsResponse, 
   PostPermissionBody, 
   UpdatePermissionBody, 
   UpdatePermissionParams, 
-  UpdatePermissionResponse 
+  CreatePermissionResponse,
+  DeletePermissionResponse, 
+  GetPermissionResponse, 
+  GetPermissionsResponse, 
+  UpdatePermissionResponse,
 } from "src/shared/types/permissionController.types";
 
 /**
@@ -97,9 +97,10 @@ export const createPermission = async (req: Request, res: Response<CreatePermiss
       message: "Permission Created Successfully"
     });
   } catch (error) {
-    return res.status(500).json({ 
+    return res.status(500).json({
       status: 500, 
       data: null, 
+      error: error,
       message: "Server error" 
     });
   }
@@ -112,7 +113,7 @@ export const createPermission = async (req: Request, res: Response<CreatePermiss
  * @param { Response<UpdatePermissionResponse> } res 
  * @param { NextFunction } next 
  */
-export const UpdatePermission = async (req: Request, res: Response<UpdatePermissionResponse>, next: NextFunction) => {
+export const updatePermission = async (req: Request, res: Response<UpdatePermissionResponse>, next: NextFunction) => {
   try {
     const { name }: UpdatePermissionBody = req.body;
     const { permissionId }: UpdatePermissionParams = req.params as UpdatePermissionParams;

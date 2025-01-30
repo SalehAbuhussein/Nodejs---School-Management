@@ -6,6 +6,8 @@ import multer from 'multer';
 
 import * as userController from 'src/controllers/user/userController';
 
+import { handleValidation } from 'src/shared/controllers/controllerValidator';
+
 import { verifyToken } from 'src/middlewares/verifyTokenMiddleware';
 
 const router = Router();
@@ -98,10 +100,25 @@ router.get('/:userId', userController.getUser as Application);
  *         description: Server error
  */
 router.post('/create',
-  body('name').notEmpty().withMessage('Name cannot be empty!'),
-  body('username').notEmpty().withMessage('Username cannot be empty!').escape(),
-  body('email').notEmpty().withMessage('Email cannot be empty!').isEmail().withMessage('Email must be valid!').escape(),
-  body('password').notEmpty().withMessage('Password cannot be empty!').escape(),
+  body('name')
+    .trim()
+    .isEmpty()
+    .withMessage('Name cannot be empty!'),
+  body('username')
+    .trim()
+    .isEmpty()
+    .withMessage('Username cannot be empty!'),
+  body('email')
+    .trim()
+    .isEmpty()
+    .withMessage('Email cannot be empty!')
+    .isEmail()
+    .withMessage('Email must be valid!'),
+  body('password')
+    .trim()
+    .isEmpty()
+    .withMessage('Password cannot be empty!'),
+  handleValidation as Application,
   upload.single('profileImg'),
   userController.createUser as Application
 );
@@ -153,10 +170,25 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:userId',
-  body('name').notEmpty().withMessage('Name cannot be empty!'),
-  body('username').notEmpty().withMessage('Username cannot be empty!').escape(),
-  body('email').notEmpty().withMessage('Email cannot be empty!').isEmail().withMessage('Email must be valid!').escape(),
-  body('password').notEmpty().withMessage('Password cannot be empty!').escape(),
+  body('name')
+    .trim()
+    .isEmpty()
+    .withMessage('Name cannot be empty!'),
+  body('username')
+    .trim()
+    .isEmpty()
+    .withMessage('Username cannot be empty!'),
+  body('email')
+    .trim()
+    .isEmpty()
+    .withMessage('Email cannot be empty!')
+    .isEmail()
+    .withMessage('Email must be valid!'),
+  body('password')
+    .trim()
+    .isEmpty()
+    .withMessage('Password cannot be empty!'),
+  handleValidation as Application,
   upload.single('profileImg'),
   userController.updateUser as Application
 );

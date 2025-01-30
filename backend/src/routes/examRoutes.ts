@@ -4,6 +4,8 @@ import { body } from 'express-validator';
 
 import * as examController from 'src/controllers/exam/examController';
 
+import { handleValidation } from 'src/shared/controllers/controllerValidator';
+
 const router = Router();
 
 /**
@@ -83,25 +85,26 @@ router.get('/:examId', examController.getExam as Application);
  */
 router.post('/create',
   body('title')
-    .notEmpty()
-    .withMessage('Title can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Title can not be empty!'),
   body('studentGrade')
-    .notEmpty()
-    .withMessage('Student grade can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Student grade can not be empty!'),
   body('fullExamGrade')
-    .notEmpty()
-    .withMessage('Full exam grade can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Full exam grade can not be empty!'),
   body('courseId')
-    .notEmpty()
-    .withMessage('Course Id can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Course Id can not be empty!'),
   body('examTypeId')
-    .notEmpty()
-    .withMessage('Exam type Id can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Exam type Id can not be empty!'),
+  handleValidation as Application,
   examController.createExam as Application
 );
 
@@ -152,25 +155,25 @@ router.post('/create',
  */
 router.patch('/:examId',
   body('title')
+    .trim()
     .notEmpty()
-    .withMessage('Title can not be empty!')
-    .escape(),
+    .withMessage('Title can not be empty!'),
   body('studentGrade')
+    .trim()
     .notEmpty()
-    .withMessage('Student grade can not be empty!')
-    .escape(),
+    .withMessage('Student grade can not be empty!'),
   body('fullExamGrade')
+    .trim()
     .notEmpty()
-    .withMessage('Full exam grade can not be empty!')
-    .escape(),
+    .withMessage('Full exam grade can not be empty!'),
   body('courseId')
+    .trim()
     .notEmpty()
-    .withMessage('Course Id can not be empty!')
-    .escape(),
+    .withMessage('Course Id can not be empty!'),
   body('examTypeId')
+    .trim()
     .notEmpty()
-    .withMessage('Exam type Id can not be empty!')
-    .escape(),
+    .withMessage('Exam type Id can not be empty!'),
   examController.updateExam as Application
 );
 

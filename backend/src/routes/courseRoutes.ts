@@ -4,6 +4,8 @@ import { body } from 'express-validator';
 
 import * as courseController from 'src/controllers/course/courseController';
 
+import { handleValidation } from 'src/shared/controllers/controllerValidator';
+
 const router = Router();
 
 /**
@@ -77,17 +79,18 @@ router.get('/:courseId', courseController.getCourse as Application);
  */
 router.post('/create',
   body('courseName')
-    .notEmpty()
-    .withMessage('Course name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Course name can not be empty!'),
   body('courseFees')
-    .notEmpty()
-    .withMessage('Course fees can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Course fees can not be empty!'),
   body('teacherId')
-    .notEmpty()
-    .withMessage('Course can not be created without teacher!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Course can not be created without teacher!'),
+  handleValidation as Application,
   courseController.createCourse as Application
 );
 
@@ -133,17 +136,18 @@ router.post('/create',
  */
 router.patch('/:courseId',
   body('courseName')
-  .notEmpty()
-  .withMessage('Course name can not be empty!')
-  .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Course name can not be empty!'),
   body('courseFees')
-    .notEmpty()
-    .withMessage('Course fees can not be empty!')
-    .escape(), 
+    .trim()
+    .isEmpty()
+    .withMessage('Course fees can not be empty!'), 
   body('teachersIds')
-    .notEmpty()
-    .withMessage('Teachers can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Teachers can not be empty!'),
+  handleValidation as Application,
   courseController.updateCourse as Application
 );
 

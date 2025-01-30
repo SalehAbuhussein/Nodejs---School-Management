@@ -2,7 +2,9 @@ import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 
-import * as studentTierController from '../controllers/studentTier/studentTierController';
+import * as studentTierController from 'src/controllers/studentTier/studentTierController';
+
+import { handleValidation } from 'src/shared/controllers/controllerValidator';
 
 const router = Router();
 
@@ -76,13 +78,14 @@ router.get('/:studentTierId', studentTierController.getStudentTier as Applicatio
  */
 router.post('/create',
   body('tierName')
-    .notEmpty()
-    .withMessage('Tier name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Tier name can not be empty!'),
   body('monthlySubscriptionFees')
-    .notEmpty()
-    .withMessage('Monthly subscription fees can not be empty!')
-    .escape(), 
+    .trim()
+    .isEmpty()
+    .withMessage('Monthly subscription fees can not be empty!'),
+  handleValidation as Application,
   studentTierController.createStudentTier as Application
 );
 
@@ -124,13 +127,14 @@ router.post('/create',
  */
 router.patch('/:studentTierId',
   body('tierName')
-    .notEmpty()
-    .withMessage('Tier name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Tier name can not be empty!'),
   body('monthlySubscriptionFees')
-    .notEmpty()
-    .withMessage('Monthly subscription fees can not be empty!')
-    .escape(),  
+    .trim()
+    .isEmpty()
+    .withMessage('Monthly subscription fees can not be empty!'),  
+  handleValidation as Application,
   studentTierController.updateStudentTier as Application
 );
 

@@ -2,7 +2,9 @@ import { Application, Router } from 'express';
 
 import { body } from 'express-validator';
 
-import * as teacherController from '../controllers/teacher/teacherController';
+import * as teacherController from 'src/controllers/teacher/teacherController';
+
+import { handleValidation } from 'src/shared/controllers/controllerValidator';
 
 const router = Router();
 
@@ -88,25 +90,26 @@ router.get('/:teacherId', teacherController.getTeacher as Application);
  */
 router.post('/create',
   body('firstName')
-    .notEmpty()
-    .withMessage('First name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('First name can not be empty!'),
   body('secondName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('thirdName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('lastName')
-    .notEmpty()
-    .withMessage('Last name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Last name can not be empty!'),
   body('userId')
-    .notEmpty()
-    .withMessage('User id can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('User id can not be empty!'),
+  handleValidation as Application,
   teacherController.createTeacher as Application
 );
 
@@ -162,25 +165,26 @@ router.post('/create',
  */
 router.patch('/:teacherId',
   body('firstName')
-    .notEmpty()
-    .withMessage('First name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('First name can not be empty!'),
   body('secondName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('thirdName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('lastName')
-    .notEmpty()
-    .withMessage('Last name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Last name can not be empty!'),
   body('userId')
-    .notEmpty()
-    .withMessage('User id can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('User id can not be empty!'),
+  handleValidation as Application,
   teacherController.updateTeacher as Application
 );
 

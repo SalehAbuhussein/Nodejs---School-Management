@@ -1,8 +1,9 @@
 import { Application, Router } from 'express';
-
 import { body } from 'express-validator';
 
-import * as roleController from '../controllers/role/roleController';
+import * as roleController from 'src/controllers/role/roleController';
+
+import { handleValidation } from 'src/shared/controllers/controllerValidator';
 
 const router = Router();
 
@@ -52,13 +53,14 @@ router.get('/:roleId', roleController.getRole as Application);
  */
 router.post('/create',
   body('roleName')
-    .notEmpty()
-    .withMessage('Role name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Role name can not be empty!'),
   body('permissions')
-    .notEmpty()
-    .withMessage('Permissions can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Permissions can not be empty!'),
+  handleValidation as Application,
   roleController.createRole as Application
 );
 
@@ -69,13 +71,14 @@ router.post('/create',
  */
 router.patch('/:roleId',
   body('roleName')
-  .notEmpty()
-  .withMessage('Role name can not be empty!')
-  .escape(),
+    .trim()
+  .isEmpty()
+  .withMessage('Role name can not be empty!'),
   body('permissions')
-    .notEmpty()
-    .withMessage('Permissions can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Permissions can not be empty!'),
+  handleValidation as Application,
   roleController.updateRole as Application
 );
 

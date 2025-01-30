@@ -8,6 +8,7 @@ const PermissionSchema = new mongoose.Schema<IPermission>({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
 });
 

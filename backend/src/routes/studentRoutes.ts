@@ -4,6 +4,8 @@ import { body } from 'express-validator';
 
 import * as studentController from 'src/controllers/student/studentController';
 
+import { handleValidation } from 'src/shared/controllers/controllerValidator';
+
 const router = Router();
 
 /**
@@ -84,25 +86,26 @@ router.get('/:studentId', studentController.getStudent as Application);
  */
 router.post('/create',
   body('firstName')
-    .notEmpty()
-    .withMessage('First name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('First name can not be empty!'),
   body('secondName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('thirdName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('lastName')
-    .notEmpty()
-    .withMessage('Last name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Last name can not be empty!'),
   body('userId')
-    .notEmpty()
-    .withMessage('User id can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('User id can not be empty!'),
+  handleValidation as Application,
   studentController.createStudent as Application
 );
 
@@ -151,25 +154,26 @@ router.post('/create',
  */
 router.patch('/:studentId',
   body('firstName')
-    .notEmpty()
-    .withMessage('First name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('First name can not be empty!'),
   body('secondName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('thirdName')
-    .notEmpty()
-    .withMessage('Second name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Second name can not be empty!'),
   body('lastName')
-    .notEmpty()
-    .withMessage('Last name can not be empty!')
-    .escape(),
+    .trim()
+    .isEmpty()
+    .withMessage('Last name can not be empty!'),
   body('userId')
-    .notEmpty()
-    .withMessage('User id can not be empty!')
-    .escape(),  
+    .trim()
+    .isEmpty()
+    .withMessage('User id can not be empty!'),
+  handleValidation as Application,
   studentController.updateStudent as Application
 );
 
