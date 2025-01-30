@@ -1,27 +1,27 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import flash from 'express-flash';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
 import rateLimit from 'express-rate-limit';
+import slowDown from 'express-slow-down';
 import session from 'express-session';
 
 import connectMongo from 'connect-mongodb-session';
 import { mongoConnect, connectionString } from 'src/db/index';
 
 import swaggerDocs from 'src/swagger';
-import userRoutes from 'src/routes/userRoutes';
 import authRoutes from 'src/routes/authRoutes';
+import courseRoutes from 'src/routes/courseRoutes';
+import examRoutes from 'src/routes/examRoutes';
+import examTypeRoutes from 'src/routes/examTypeRoutes';
+import permissionRoutes from 'src/routes/permissionRoutes';
 import roleRoutes from 'src/routes/roleRoutes';
-import teacherRoutes from 'src/routes/teacherRoutes';
 import studentRoutes from 'src/routes/studentRoutes';
 import studentTierRoutes from 'src/routes/studentTierRoutes';
-import courseRoutes from 'src/routes/courseRoutes';
-import examTypeRoutes from 'src/routes/examTypeRoutes';
-import examRoutes from 'src/routes/examRoutes';
-import slowDown from 'express-slow-down';
+import teacherRoutes from 'src/routes/teacherRoutes';
+import userRoutes from 'src/routes/userRoutes';
 
 const app = express();
 const PORT = 80;
@@ -67,8 +67,6 @@ app.use(session({
   saveUninitialized: false,
   store: store,
 }));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(flash());
 app.use(express.json());
 
 // Routes
@@ -81,6 +79,7 @@ app.use('/studentTiers', studentTierRoutes);
 app.use('/courses', courseRoutes);
 app.use('/exams', examRoutes);
 app.use('/examTypes', examTypeRoutes);
+app.use('/permissions', permissionRoutes);
 
 mongoConnect(() => {
   app.listen(PORT);
