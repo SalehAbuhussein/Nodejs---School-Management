@@ -9,6 +9,7 @@ import slowDown from 'express-slow-down';
 import session from 'express-session';
 
 import connectMongo from 'connect-mongodb-session';
+import mongoSanitize from 'express-mongo-sanitize';
 import { mongoConnect, connectionString } from 'src/db/index';
 
 import swaggerDocs from 'src/swagger';
@@ -67,7 +68,12 @@ app.use(session({
   saveUninitialized: false,
   store: store,
 }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.json());
+
+// Protect mongodb against nosql attacks
+app.use(mongoSanitize());
 
 // Routes
 app.use(authRoutes);
