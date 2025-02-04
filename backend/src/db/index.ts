@@ -6,7 +6,7 @@ export const connectionString = "mongodb+srv://salehabuhussein:3996949@cluster0.
  * Connect to database 
  * Then assign MongoClient instance to global variable called _db
  * Then fire the callback which is listening to the server in this case
- * 
+ *  
  * @param { void } callback 
  * @returns { Promise<void> }
  */
