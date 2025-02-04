@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export interface IUser {
   name: string,
   email: string,
-  profileImg: string,
+  profileImg?: string,
   password: string,
   role: mongoose.Types.ObjectId,
 };
