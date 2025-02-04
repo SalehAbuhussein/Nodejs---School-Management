@@ -1,4 +1,4 @@
-import { IStudent } from "src/models/student";
+import { IStudent } from "src/models/student.model";
 
 export type GetStudentParams = { studentId: string };
 

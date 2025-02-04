@@ -5,9 +5,9 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import { HydratedDocument } from 'mongoose';
 
-import User, { IUser } from 'src/models/user';
+import User, { IUser } from 'src/models/user.model';
 
-import { IGetUserAuthInfoRequest } from 'src/middlewares/validateToken';
+import { IGetUserAuthInfoRequest } from 'src/middlewares/verifyTokenMiddleware';
 
 import { 
   DeleteUserParams, 
@@ -22,6 +22,10 @@ import {
   DeleteUserResponse,
 } from 'src/shared/types/userController.types';
 
+export interface UserRequest extends Request {
+  user: IUser,
+};
+
 /**
  * Get All Users
  * 
@@ -29,7 +33,12 @@ import {
  * @param { Response<GetUsersResponse> } res 
  * @param { NextFunction } next
  */
-export const getUsers = async (req: Request, res: Response<GetUsersResponse>, next: NextFunction) => {
+export const getUsers = async (req: UserRequest, res: Response<GetUsersResponse>, next: NextFunction) => {
+  const currentUser: IUser = User.hydrate(req.user);
+  currentUser.password = '';
+
+  console.log(currentUser);
+
   try {
     const uploadsUrl = `${req.protocol}://${req.get('host')}/uploads/`;
     const users = await User.find({}).select('-password');
@@ -55,7 +64,7 @@ export const getUsers = async (req: Request, res: Response<GetUsersResponse>, ne
       error: error, 
       message: "Server Error"
      });
-  }
+  };
 };
 
 /**

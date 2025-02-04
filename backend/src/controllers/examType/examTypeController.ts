@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import ExamType from "src/models/examTypes";
+import ExamType from "src/models/examType.model";
 
 import { 
   DeleteExamTypeParams,
@@ -166,7 +166,7 @@ export const deleteExamType = async (req: Request, res: Response<DeleteExamTypeR
     if (!examType) {
       return res.status(404).json({
         status: 404,
-        message: 'Exam type not found!',
+        message: 'Not Found!',
       });
     }
 

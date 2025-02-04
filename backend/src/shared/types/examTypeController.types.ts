@@ -1,4 +1,4 @@
-import { IExamType } from "src/models/examTypes";
+import { IExamType } from "src/models/examType.model";
 
 export type GetExamTypeParams = { examTypeId: string };
 

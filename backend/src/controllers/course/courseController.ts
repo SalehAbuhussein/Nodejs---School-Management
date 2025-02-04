@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import Course from "src/models/course";
+import Course from "src/models/course.model";
 
 import { CreateCourseResponse, DeleteCourseParams, DeleteCourseResponse, GetCourseParams, GetCourseResponse, GetCoursesResponse, PostCourseBody, UpdateCourseBody, UpdateCourseParams, UpdateCourseResponse } from "src/shared/types/courseController.types";
 

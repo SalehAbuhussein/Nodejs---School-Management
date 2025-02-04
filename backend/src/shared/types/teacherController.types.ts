@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ITeacher } from "src/models/teacher";
+import { ITeacher } from "src/models/teacher.model";
 
 export type GetTeacherParams = { teacherId: string };
 

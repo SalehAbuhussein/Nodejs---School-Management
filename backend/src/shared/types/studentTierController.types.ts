@@ -1,4 +1,4 @@
-import { IStudentTier } from "src/models/studentTier";
+import { IStudentTier } from "src/models/studentTier.model";
 
 export type GetStudentTierParams = { studentTierId: string };
 

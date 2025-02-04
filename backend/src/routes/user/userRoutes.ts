@@ -1,10 +1,18 @@
 import path from 'path';
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import multer from 'multer';
 
 import * as userController from 'src/controllers/user/userController';
+
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
+import { verifyToken } from 'src/middlewares/verifyTokenMiddleware';
+
+import { checkRoleExist } from 'src/routes/role/roleValidator';
+
+import { isObjectId } from 'src/validators';
+import { checkUserExist } from 'src/routes/user/userValidator';
 
 const router = Router();
 
@@ -32,7 +40,7 @@ const upload = multer({ storage });
  *       500:
  *         description: Server error
  */
-router.get('', userController.getUsers as Application);
+router.get('', verifyToken, userController.getUsers as Application);
 
 /**
  * @openapi
@@ -56,7 +64,14 @@ router.get('', userController.getUsers as Application);
  *       500:
  *         description: Server error
  */
-router.get('/:userId', userController.getUser as Application);
+router.get('/:userId',
+  param('userId')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkUserExist),
+  handleValidation as Application,
+  userController.getUser as Application
+);
 
 /**
  * @openapi
@@ -79,16 +94,14 @@ router.get('/:userId', userController.getUser as Application);
  *             properties:
  *               name:
  *                 type: string
- *                 default: johndoe
  *               username:
  *                 type: string
- *                 default: johndoe123
  *               email:
  *                 type: string
- *                 default: johndoe@mail.com
  *               password:
  *                 type: string
- *                 default: johndoe1234#
+ *               role:
+ *                 type: string
  *     responses:
  *       201:
  *         description: User created successfully
@@ -96,10 +109,29 @@ router.get('/:userId', userController.getUser as Application);
  *         description: Server error
  */
 router.post('/create',
-  body('name').notEmpty().withMessage('Name cannot be empty!'),
-  body('username').notEmpty().withMessage('Username cannot be empty!').escape(),
-  body('email').notEmpty().withMessage('Email cannot be empty!').isEmail().withMessage('Email must be valid!').escape(),
-  body('password').notEmpty().withMessage('Password cannot be empty!').escape(),
+  body('name')
+    .trim()
+    .notEmpty()
+    .withMessage('Name cannot be empty!'),
+  body('username')
+    .trim()
+    .notEmpty()
+    .withMessage('Username cannot be empty!'),
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email cannot be empty!')
+    .isEmail()
+    .withMessage('Email must be valid!'),
+  body('password')
+    .trim()
+    .notEmpty()
+    .withMessage('Password cannot be empty!'),
+  body('role')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkRoleExist),
+  handleValidation as Application,
   upload.single('profileImg'),
   userController.createUser as Application
 );
@@ -151,10 +183,33 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:userId',
-  body('name').notEmpty().withMessage('Name cannot be empty!'),
-  body('username').notEmpty().withMessage('Username cannot be empty!').escape(),
-  body('email').notEmpty().withMessage('Email cannot be empty!').isEmail().withMessage('Email must be valid!').escape(),
-  body('password').notEmpty().withMessage('Password cannot be empty!').escape(),
+  param('userId')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkUserExist),
+  body('name')
+    .trim()
+    .notEmpty()
+    .withMessage('Name cannot be empty!'),
+  body('username')
+    .trim()
+    .notEmpty()
+    .withMessage('Username cannot be empty!'),
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email cannot be empty!')
+    .isEmail()
+    .withMessage('Email must be valid!'),
+  body('password')
+    .trim()
+    .notEmpty()
+    .withMessage('Password cannot be empty!'),
+  body('role')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkRoleExist),
+  handleValidation as Application,
   upload.single('profileImg'),
   userController.updateUser as Application
 );
@@ -181,6 +236,13 @@ router.patch('/:userId',
  *       500:
  *         description: Server error
  */
-router.delete('/:userId', userController.deleteUser as Application);
+router.delete('/:userId',
+  param('userId')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkUserExist),
+  handleValidation as Application,
+  userController.deleteUser as Application
+);
 
 export default router;

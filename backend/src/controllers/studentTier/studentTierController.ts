@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { HydratedDocument } from 'mongoose';
 
-import StudentTier, { IStudentTier } from 'src/models/studentTier';
+import StudentTier, { IStudentTier } from 'src/models/studentTier.model';
 
 import {
   DeleteStudentTierParams,

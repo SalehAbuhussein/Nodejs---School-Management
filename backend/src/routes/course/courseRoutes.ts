@@ -1,8 +1,12 @@
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
+
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 
 import * as courseController from 'src/controllers/course/courseController';
+import { isObjectId } from 'src/validators';
+import { checkCourseExist } from './courseValidator';
 
 const router = Router();
 
@@ -43,7 +47,18 @@ router.get('', courseController.getCourses as Application);
  *       500:
  *         description: Server error
  */
-router.get('/:courseId', courseController.getCourse as Application);
+router.get('/:courseId',
+  param('courseId')
+    .trim()
+    .notEmpty()
+    .withMessage('course id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkCourseExist),
+  handleValidation as Application,
+  courseController.getCourse as Application
+);
 
 /**
  * @openapi
@@ -77,25 +92,22 @@ router.get('/:courseId', courseController.getCourse as Application);
  */
 router.post('/create',
   body('courseName')
+    .trim()
     .notEmpty()
-    .withMessage('Course name can not be empty!')
-    .escape(),
+    .withMessage('Course name can not be empty!'),
   body('courseFees')
+    .trim()
     .notEmpty()
-    .withMessage('Course fees can not be empty!')
-    .escape(),
+    .withMessage('Course fees can not be empty!'),
   body('teacherId')
+    .trim()
     .notEmpty()
-    .withMessage('Course can not be created without teacher!')
-    .escape(),
+    .withMessage('Course can not be created without teacher!'),
+  handleValidation as Application,
   courseController.createCourse as Application
 );
 
-/**
- * Update course
- * 
- * @route PATCH /courses/:courseId
- */
+// TODO: This needs to be tested
 /**
  * @openapi
  * /courses/{courseId}:
@@ -136,18 +148,27 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:courseId',
+  param('courseId')
+    .trim()
+    .notEmpty()
+    .withMessage('course id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkCourseExist),
   body('courseName')
-  .notEmpty()
-  .withMessage('Course name can not be empty!')
-  .escape(),
+    .trim()
+    .notEmpty()
+    .withMessage('Course name can not be empty!'),
   body('courseFees')
+    .trim()
     .notEmpty()
-    .withMessage('Course fees can not be empty!')
-    .escape(), 
+    .withMessage('Course fees can not be empty!'), 
   body('teachersIds')
+    .trim()
     .notEmpty()
-    .withMessage('Teachers can not be empty!')
-    .escape(),
+    .withMessage('Teachers can not be empty!'),
+  handleValidation as Application,
   courseController.updateCourse as Application
 );
 
@@ -156,6 +177,16 @@ router.patch('/:courseId',
  * 
  * @route DELETE /courseRoutes/:courseId
  */
-router.delete('/:courseId', courseController.deleteCourse as Application);
+router.delete('/:courseId',
+  param('courseId')
+    .trim()
+    .notEmpty()
+    .withMessage('course id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkCourseExist),
+  courseController.deleteCourse as Application
+);
 
 export default router;

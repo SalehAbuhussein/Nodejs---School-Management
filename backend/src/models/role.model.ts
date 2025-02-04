@@ -1,20 +1,23 @@
-import mongoose from "mongoose"
+import mongoose, { Schema } from "mongoose"
 
 export interface IRole {
   roleName: string,
-  permissions: string[],
+  permissions: mongoose.Types.ObjectId[],
 };
 
 const RoleSchema = new mongoose.Schema<IRole>({
   roleName: {
     type: String,
     required: true,
+    unique: true,
   },
-  permissions: {
-    type: [String],
-    required: true,
-    default: ['guest'],
-  },
+  permissions: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Permission',
+      required: true,
+    }
+  ],
 }, { timestamps: true });
 
 export default mongoose.model<IRole>('Role', RoleSchema);
