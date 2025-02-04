@@ -1,10 +1,12 @@
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
+
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 
 import * as teacherController from 'src/controllers/teacher/teacherController';
-
-import { handleValidation } from 'src/shared/controllers/controllerValidator';
+import { isObjectId } from 'src/validators';
+import { checkTeacherExist } from 'src/routes/teacher/teacherValidator';
 
 const router = Router();
 
@@ -45,7 +47,14 @@ router.get('', teacherController.getTeachers as Application);
  *       500:
  *         description: Server Error
  */
-router.get('/:teacherId', teacherController.getTeacher as Application);
+router.get('/:teacherId',
+  param('teacherId')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkTeacherExist),
+  handleValidation as Application, 
+  teacherController.getTeacher as Application
+);
 
 /**
  * @openapi
@@ -91,23 +100,23 @@ router.get('/:teacherId', teacherController.getTeacher as Application);
 router.post('/create',
   body('firstName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('First name can not be empty!'),
   body('secondName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('thirdName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('lastName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Last name can not be empty!'),
   body('userId')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('User id can not be empty!'),
   handleValidation as Application,
   teacherController.createTeacher as Application
@@ -164,25 +173,29 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:teacherId',
+  param('teacherId')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkTeacherExist),
   body('firstName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('First name can not be empty!'),
   body('secondName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('thirdName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('lastName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Last name can not be empty!'),
   body('userId')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('User id can not be empty!'),
   handleValidation as Application,
   teacherController.updateTeacher as Application
@@ -210,6 +223,13 @@ router.patch('/:teacherId',
  *       500:
  *         description: Server error
  */
-router.delete('/:teacherId', teacherController.deleteTeacher as Application);
+router.delete('/:teacherId',
+  param('teacherId')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkTeacherExist),
+  handleValidation as Application, 
+  teacherController.deleteTeacher as Application
+);
 
 export default router;

@@ -1,10 +1,12 @@
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
+
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 
 import * as studentTierController from 'src/controllers/studentTier/studentTierController';
-
-import { handleValidation } from 'src/shared/controllers/controllerValidator';
+import { isObjectId } from 'src/validators';
+import { checkStudentTierExist } from './studentTierValidator';
 
 const router = Router();
 
@@ -45,7 +47,17 @@ router.get('', studentTierController.getStudentTiers as Application);
  *       500:
  *         description: Server Error
  */
-router.get('/:studentTierId', studentTierController.getStudentTier as Application);
+router.get('/:studentTierId',
+  param('studentTierId')
+    .notEmpty()
+    .withMessage('student tier id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkStudentTierExist),
+  handleValidation as Application,
+  studentTierController.getStudentTier as Application
+);
 
 /**
  * @openapi
@@ -79,11 +91,11 @@ router.get('/:studentTierId', studentTierController.getStudentTier as Applicatio
 router.post('/create',
   body('tierName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Tier name can not be empty!'),
   body('monthlySubscriptionFees')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Monthly subscription fees can not be empty!'),
   handleValidation as Application,
   studentTierController.createStudentTier as Application
@@ -126,13 +138,20 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:studentTierId',
+  param('studentTierId')
+    .notEmpty()
+    .withMessage('student tier id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkStudentTierExist),
   body('tierName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Tier name can not be empty!'),
   body('monthlySubscriptionFees')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Monthly subscription fees can not be empty!'),  
   handleValidation as Application,
   studentTierController.updateStudentTier as Application
@@ -160,6 +179,15 @@ router.patch('/:studentTierId',
  *       500:
  *         description: Server error
  */
-router.delete('/:studentTierId', studentTierController.deleteStudentTier as Application);
+router.delete('/:studentTierId',
+  param('studentTierId')
+    .notEmpty()
+    .withMessage('student tier id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkStudentTierExist),
+  studentTierController.deleteStudentTier as Application
+);
 
 export default router;

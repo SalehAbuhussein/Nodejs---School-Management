@@ -2,13 +2,14 @@ import mongoose, { Schema } from "mongoose"
 
 export interface IRole {
   roleName: string,
-  permissions: mongoose.ObjectId[],
+  permissions: mongoose.Types.ObjectId[],
 };
 
 const RoleSchema = new mongoose.Schema<IRole>({
   roleName: {
     type: String,
     required: true,
+    unique: true,
   },
   permissions: [
     {

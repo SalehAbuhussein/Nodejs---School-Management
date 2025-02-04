@@ -3,10 +3,10 @@ import Permission from 'src/models/permission.model';
 /**
  * Check if Permission exist in database
  * 
- * @param { string } id 
+ * @param { string } permissionId 
  */
-export const checkPermissionExist = async (id: string) => {
-  const foundPermission = await Permission.findOne({ _id: id });
+export const checkPermissionExist = async (permissionId: string) => {
+  const foundPermission = await Permission.findOne({ _id: permissionId });
 
   if (!foundPermission) {
     throw new Error('Permission does not exist');

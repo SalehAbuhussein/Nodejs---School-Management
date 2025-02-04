@@ -1,10 +1,12 @@
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import * as examController from 'src/controllers/exam/examController';
+import { checkExamExist } from 'src/routes/exam/examValidator';
 
-import { handleValidation } from 'src/shared/controllers/controllerValidator';
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
+import { isObjectId } from 'src/validators';
 
 const router = Router();
 
@@ -45,7 +47,14 @@ router.get('', examController.getExams as Application);
  *       500:
  *         description: Server error
  */
-router.get('/:examId', examController.getExam as Application);
+router.get('/:examId',
+  param('examId')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkExamExist),
+  handleValidation as Application,
+  examController.getExam as Application
+);
 
 /**
  * @openapi
@@ -86,23 +95,23 @@ router.get('/:examId', examController.getExam as Application);
 router.post('/create',
   body('title')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Title can not be empty!'),
   body('studentGrade')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Student grade can not be empty!'),
   body('fullExamGrade')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Full exam grade can not be empty!'),
   body('courseId')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Course Id can not be empty!'),
   body('examTypeId')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Exam type Id can not be empty!'),
   handleValidation as Application,
   examController.createExam as Application
@@ -154,6 +163,14 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:examId',
+  param('examId')
+    .trim()
+    .notEmpty()
+    .withMessage('exam id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkExamExist),
   body('title')
     .trim()
     .notEmpty()
@@ -174,6 +191,7 @@ router.patch('/:examId',
     .trim()
     .notEmpty()
     .withMessage('Exam type Id can not be empty!'),
+  handleValidation as Application,
   examController.updateExam as Application
 );
 
@@ -182,6 +200,17 @@ router.patch('/:examId',
  * 
  * @route DELETE /exams/:examId
  */
-router.delete('/:examId', examController.deleteExam as Application);
+router.delete('/:examId',
+  param('examId')
+    .trim()
+    .notEmpty()
+    .withMessage('exam id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkExamExist),
+  handleValidation as Application,
+  examController.deleteExam as Application
+);
 
 export default router;

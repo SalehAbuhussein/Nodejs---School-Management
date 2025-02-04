@@ -1,10 +1,13 @@
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import * as examTypeController from 'src/controllers/examType/examTypeController';
 
-import { handleValidation } from 'src/shared/controllers/controllerValidator';
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
+
+import { isObjectId } from 'src/validators';
+import { checkExamTypeExist } from 'src/routes/examType/examTypeValidator';
 
 const router = Router();
 
@@ -45,7 +48,18 @@ router.get('', examTypeController.getExamTypes as Application);
  *       500:
  *         description: Server error
  */
-router.get('/:examTypeId', examTypeController.getExamType as Application);
+router.get('/:examTypeId',
+  param('examTypeId')
+    .trim()
+    .notEmpty()
+    .withMessage('exam type id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkExamTypeExist),
+  handleValidation as Application,
+  examTypeController.getExamType as Application
+);
 
 /**
  * @openapi
@@ -74,7 +88,7 @@ router.get('/:examTypeId', examTypeController.getExamType as Application);
 router.post('/create',
   body('name')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('name can not be empty!'),
   handleValidation as Application,
   examTypeController.createExamType as Application
@@ -114,9 +128,17 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:examTypeId',
+  param('examTypeId')
+    .trim()
+    .notEmpty()
+    .withMessage('exam type id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkExamTypeExist),
   body('name')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('name can not be empty!'),
   handleValidation as Application,
   examTypeController.updateExamType as Application
@@ -144,6 +166,17 @@ router.patch('/:examTypeId',
  *       500:
  *         description: Server error
  */
-router.delete('/:examTypeId', examTypeController.deleteExamType as Application);
+router.delete('/:examTypeId', 
+  param('examTypeId')
+    .trim()
+    .notEmpty()
+    .withMessage('exam type id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkExamTypeExist),
+  handleValidation as Application,
+  examTypeController.deleteExamType as Application
+);
 
 export default router;

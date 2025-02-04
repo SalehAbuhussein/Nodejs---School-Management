@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
 
 import mongoose from "mongoose";
 import Role from "src/models/role.model";
@@ -89,7 +88,6 @@ export const getRole = async (req: Request, res: Response<GetRoleResponse>, next
 export const createRole = async (req: Request, res: Response<CreateRoleResponse>, next: NextFunction) => {
   try {
     const { roleName, permissions }: PostRoleBody = req.body;
-
     const permissionObjectIds = permissions.map((permissionId: string) => new mongoose.Types.ObjectId(permissionId)) ?? [];
 
     const newRole = await new Role({
@@ -113,7 +111,7 @@ export const createRole = async (req: Request, res: Response<CreateRoleResponse>
 };
 
 /**
- * Get role
+ * Update role
  * 
  * @param { Request } req 
  * @param { Response<UpdateRoleResponse> } res 
@@ -130,7 +128,7 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
       return res.status(404).json({
         status: 404,
         data: null,
-        message: 'Role not found!',
+        message: 'Not Found!',
       })
     }
 
@@ -139,7 +137,7 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
     }
 
     if (role.permissions && permissions.length > 0) {
-      role.permissions = permissions.map(id => new mongoose.Schema.Types.ObjectId(id));
+      role.permissions = permissions.map(id => new mongoose.Types.ObjectId(id));
     }
 
     role = await role.save();
@@ -148,7 +146,7 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
       status: 200,
       data: role,
       message: 'Role Updated Successfully!',
-    })
+    });
   } catch (error) {
     return res.status(500).json({
       status: 500,

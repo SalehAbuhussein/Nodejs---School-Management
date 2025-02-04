@@ -13,16 +13,16 @@ import mongoSanitize from 'express-mongo-sanitize';
 import { mongoConnect, connectionString } from 'src/db/index';
 
 import swaggerDocs from 'src/swagger';
-import authRoutes from 'src/routes/authRoutes';
-import courseRoutes from 'src/routes/courseRoutes';
-import examRoutes from 'src/routes/examRoutes';
-import examTypeRoutes from 'src/routes/examTypeRoutes';
-import permissionRoutes from 'src/routes/permissionRoutes';
-import roleRoutes from 'src/routes/roleRoutes';
-import studentRoutes from 'src/routes/studentRoutes';
-import studentTierRoutes from 'src/routes/studentTierRoutes';
-import teacherRoutes from 'src/routes/teacherRoutes';
-import userRoutes from 'src/routes/userRoutes';
+import authRoutes from 'src/routes/auth/authRoutes';
+import courseRoutes from 'src/routes/course/courseRoutes';
+import examRoutes from 'src/routes/exam/examRoutes';
+import examTypeRoutes from 'src/routes/examType/examTypeRoutes';
+import permissionRoutes from 'src/routes/permission/permissionRoutes';
+import roleRoutes from 'src/routes/role/roleRoutes';
+import studentRoutes from 'src/routes/student/studentRoutes';
+import studentTierRoutes from 'src/routes/studentTier/studentTierRoutes';
+import teacherRoutes from 'src/routes/teacher/teacherRoutes';
+import userRoutes from 'src/routes/user/userRoutes';
 
 const app = express();
 const PORT = 80;

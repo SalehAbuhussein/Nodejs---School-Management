@@ -1,10 +1,14 @@
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import * as studentController from 'src/controllers/student/studentController';
 
-import { handleValidation } from 'src/shared/controllers/controllerValidator';
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
+
+import { isObjectId } from 'src/validators';
+import { checkStudentExist } from 'src/routes/student/studentValidator';
+import { checkUserExist } from '../user/userValidator';
 
 const router = Router();
 
@@ -45,7 +49,18 @@ router.get('', studentController.getStudents as Application);
  *       500:
  *         description: Server Error
  */
-router.get('/:studentId', studentController.getStudent as Application);
+router.get('/:studentId',
+  param('studentId')
+    .trim()
+    .notEmpty()
+    .withMessage('student id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkStudentExist),
+  handleValidation as Application,
+  studentController.getStudent as Application
+);
 
 /**
  * @openapi
@@ -87,24 +102,26 @@ router.get('/:studentId', studentController.getStudent as Application);
 router.post('/create',
   body('firstName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('First name can not be empty!'),
   body('secondName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('thirdName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('lastName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Last name can not be empty!'),
   body('userId')
     .trim()
-    .isEmpty()
-    .withMessage('User id can not be empty!'),
+    .notEmpty()
+    .withMessage('User id can not be empty')
+    .bail()
+    .custom(checkUserExist),
   handleValidation as Application,
   studentController.createStudent as Application
 );
@@ -153,26 +170,35 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:studentId',
+  param('studentId')
+    .trim()
+    .notEmpty()
+    .withMessage('student id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkStudentExist),
   body('firstName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('First name can not be empty!'),
   body('secondName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('thirdName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Second name can not be empty!'),
   body('lastName')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('Last name can not be empty!'),
   body('userId')
     .trim()
-    .isEmpty()
-    .withMessage('User id can not be empty!'),
+    .notEmpty()
+    .withMessage('User id can not be empty!')
+    .custom(checkUserExist),
   handleValidation as Application,
   studentController.updateStudent as Application
 );
@@ -199,6 +225,17 @@ router.patch('/:studentId',
  *       500:
  *         description: Server error
  */
-router.delete('/:studentId', studentController.deleteStudent as Application);
+router.delete('/:studentId',
+  param('studentId')
+    .trim()
+    .notEmpty()
+    .withMessage('student id can not be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkStudentExist),
+  handleValidation as Application,
+  studentController.deleteStudent as Application
+);
 
 export default router;

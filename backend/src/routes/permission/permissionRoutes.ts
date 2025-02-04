@@ -1,10 +1,13 @@
 import { Application, Router } from 'express';
 
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import * as permissionController from 'src/controllers/permission/permissionController';
 
-import { handleValidation } from 'src/shared/controllers/controllerValidator';
+import { handleValidation } from 'src/middlewares/validatorsMiddleware';
+
+import { isObjectId } from 'src/validators';
+import { checkPermissionExist } from './permissionValidator';
 
 const router = Router();
 
@@ -45,7 +48,16 @@ router.get('', permissionController.getPermissions as Application);
  *       500:
  *         description: Server error
  */
-router.get('/:permissionId', permissionController.getPermission as Application);
+router.get('/:permissionId',
+  param('permissionId')
+    .trim()
+    .notEmpty()
+    .withMessage('permission id can not be empty')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkPermissionExist),
+  permissionController.getPermission as Application
+);
 
 /**
  * @openapi
@@ -74,7 +86,7 @@ router.get('/:permissionId', permissionController.getPermission as Application);
 router.post('/create',
   body('name')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('name can not be empty!'),
   handleValidation as Application,
   permissionController.createPermission as Application
@@ -114,9 +126,16 @@ router.post('/create',
  *         description: Server error
  */
 router.patch('/:permissionId',
+  param('permissionId')
+    .trim()
+    .notEmpty()
+    .withMessage('permission id can not be empty')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkPermissionExist),
   body('name')
     .trim()
-    .isEmpty()
+    .notEmpty()
     .withMessage('name can not be empty!'),
   handleValidation as Application,
   permissionController.updatePermission as Application
@@ -144,6 +163,15 @@ router.patch('/:permissionId',
  *       500:
  *         description: Server error
  */
-router.delete('/:permissionId', permissionController.deletePermission as Application);
+router.delete('/:permissionId',
+  param('permissionId')
+    .trim()
+    .notEmpty()
+    .withMessage('permission id can not be empty')
+    .custom(isObjectId)
+    .bail()
+    .custom(checkPermissionExist),
+  permissionController.deletePermission as Application
+);
 
 export default router;

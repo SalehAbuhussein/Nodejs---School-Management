@@ -5,7 +5,7 @@ export interface IUser {
   email: string,
   profileImg: string,
   password: string,
-  personId: { type: mongoose.Types.ObjectId }
+  role: mongoose.Types.ObjectId,
 };
 
 const UserSchema = new mongoose.Schema<IUser>({
@@ -25,6 +25,11 @@ const UserSchema = new mongoose.Schema<IUser>({
     type: String,
     required: true,
   },
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Role',
+    required: true,
+  }
 }, { timestamps: true });
 
 export default mongoose.model<IUser>('User', UserSchema);
