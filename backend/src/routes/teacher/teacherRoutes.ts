@@ -5,8 +5,11 @@ import { body, param } from 'express-validator';
 import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 
 import * as teacherController from 'src/controllers/teacher/teacherController';
-import { isObjectId } from 'src/validators';
+
+import { checkCoursesExist } from 'src/routes/course/courseValidator';
 import { checkTeacherExist } from 'src/routes/teacher/teacherValidator';
+import { checkUserExist } from 'src/routes/user/userValidator';
+import { isObjectId, isObjectIds, removeDuplicates } from 'src/validators';
 
 const router = Router();
 
@@ -49,6 +52,10 @@ router.get('', teacherController.getTeachers as Application);
  */
 router.get('/:teacherId',
   param('teacherId')
+    .trim()
+    .notEmpty()
+    .withMessage('teacher id can not be empty')
+    .bail()
     .custom(isObjectId)
     .bail()
     .custom(checkTeacherExist),
@@ -117,7 +124,11 @@ router.post('/create',
   body('userId')
     .trim()
     .notEmpty()
-    .withMessage('User id can not be empty!'),
+    .withMessage('User id can not be empty!')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkUserExist),
   handleValidation as Application,
   teacherController.createTeacher as Application
 );
@@ -174,6 +185,10 @@ router.post('/create',
  */
 router.patch('/:teacherId',
   param('teacherId')
+    .trim()
+    .notEmpty()
+    .withMessage('teacher id can not be empty')
+    .bail()
     .custom(isObjectId)
     .bail()
     .custom(checkTeacherExist),
@@ -193,10 +208,15 @@ router.patch('/:teacherId',
     .trim()
     .notEmpty()
     .withMessage('Last name can not be empty!'),
-  body('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('User id can not be empty!'),
+  body('courses')
+    .optional()
+    .isArray({ min: 1 })
+    .withMessage('courses must be array')
+    .bail()
+    .customSanitizer(value => removeDuplicates<string>(value))
+    .custom(isObjectIds)
+    .bail()
+    .custom(checkCoursesExist),
   handleValidation as Application,
   teacherController.updateTeacher as Application
 );
@@ -225,6 +245,10 @@ router.patch('/:teacherId',
  */
 router.delete('/:teacherId',
   param('teacherId')
+    .trim()
+    .notEmpty()
+    .withMessage('teacher id can not be empty')
+    .bail()
     .custom(isObjectId)
     .bail()
     .custom(checkTeacherExist),

@@ -101,7 +101,7 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
   try {
     const newTeacher = await teacher.save();
 
-    return res.status(201).json({ 
+    return res.status(201).json({
       status: 201,
       data: newTeacher,
       message: "Teacher Created Successfully"
@@ -109,7 +109,8 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
   } catch (error) {
     return res.status(500).json({ 
       status: 500, 
-      data: null, 
+      data: null,
+      error: error,
       message: "Server error" 
     });
   }
@@ -123,11 +124,11 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
  * @param { NextFunction } next 
  */
 export const updateTeacher = async (req: Request, res: Response<UpdateTeacherResponse>, next: NextFunction) => {
-  const { firstName, lastName, secondName, thirdName, isActive }: UpdateTeacherBody = req.body;
+  const { firstName, lastName, secondName, thirdName, isActive, courses }: UpdateTeacherBody = req.body;
   const { teacherId }: UpdateTeacherParams = req.params as UpdateTeacherParams;
 
   try {
-    let teacher = await Teacher.findById({ _id: teacherId });
+    let teacher = await Teacher.findById(teacherId);
 
     if (!teacher) {
       return res.status(404).json({
@@ -139,29 +140,29 @@ export const updateTeacher = async (req: Request, res: Response<UpdateTeacherRes
 
     teacher.isActive = !!isActive;
 
-    if (teacher.firstName && firstName) {
+    if (firstName) {
       teacher.firstName = firstName;
     }
-
-    if (teacher.secondName && secondName) {
+    if (secondName) {
       teacher.secondName = secondName;
     }
-
-    if (teacher.thirdName && thirdName) {
+    if (thirdName) {
       teacher.thirdName = thirdName;
     }
-
-    if (teacher.lastName && lastName) {
+    if (lastName) {
       teacher.lastName = lastName;
+    }
+    if (courses) {
+      teacher.courses = courses;
     }
 
     teacher = await teacher.save();
 
-    res.json({
+    return res.json({
       status: 200,
       data: teacher,
       message: 'Teacher Updated Successfully!',
-    })
+    });
   } catch (error) {
     return res.status(500).json({
       status: 500,

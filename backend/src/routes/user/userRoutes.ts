@@ -88,13 +88,10 @@ router.get('/:userId',
  *             type: object
  *             required:
  *               - name
- *               - username
  *               - email
  *               - password
  *             properties:
  *               name:
- *                 type: string
- *               username:
  *                 type: string
  *               email:
  *                 type: string
@@ -113,10 +110,6 @@ router.post('/create',
     .trim()
     .notEmpty()
     .withMessage('Name cannot be empty!'),
-  body('username')
-    .trim()
-    .notEmpty()
-    .withMessage('Username cannot be empty!'),
   body('email')
     .trim()
     .notEmpty()
@@ -158,16 +151,12 @@ router.post('/create',
  *             type: object
  *             required:
  *               - name
- *               - username
  *               - email
  *               - password
  *             properties:
  *               name:
  *                 type: string
  *                 default: johndoe
- *               username:
- *                 type: string
- *                 default: johndoe123
  *               email:
  *                 type: string
  *                 default: johndoe@mail.com
@@ -191,10 +180,6 @@ router.patch('/:userId',
     .trim()
     .notEmpty()
     .withMessage('Name cannot be empty!'),
-  body('username')
-    .trim()
-    .notEmpty()
-    .withMessage('Username cannot be empty!'),
   body('email')
     .trim()
     .notEmpty()

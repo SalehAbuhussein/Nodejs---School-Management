@@ -5,8 +5,10 @@ import { body, param } from 'express-validator';
 import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 
 import * as courseController from 'src/controllers/course/courseController';
-import { isObjectId } from 'src/validators';
+
 import { checkCourseExist } from './courseValidator';
+import { checkTeacherExist, checkTeachersExist } from 'src/routes/teacher/teacherValidator';
+import { isObjectId, isObjectIds, removeDuplicates } from 'src/validators';
 
 const router = Router();
 
@@ -98,11 +100,20 @@ router.post('/create',
   body('courseFees')
     .trim()
     .notEmpty()
-    .withMessage('Course fees can not be empty!'),
+    .withMessage('Course fees can not be empty!')
+    .bail()
+    .isFloat({ min: 0 })
+    .withMessage('Course fees must be a valid number')
+    .bail()
+    .customSanitizer(fees => parseFloat(fees).toFixed(2)),
   body('teacherId')
     .trim()
     .notEmpty()
-    .withMessage('Course can not be created without teacher!'),
+    .withMessage('Course can not be created without teacher!')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkTeacherExist),
   handleValidation as Application,
   courseController.createCourse as Application
 );
@@ -165,9 +176,13 @@ router.patch('/:courseId',
     .notEmpty()
     .withMessage('Course fees can not be empty!'), 
   body('teachersIds')
-    .trim()
-    .notEmpty()
-    .withMessage('Teachers can not be empty!'),
+    .isArray({ min: 1 })
+    .withMessage('Teachers can not be empty!')
+    .customSanitizer(teachersIds => removeDuplicates<string>(teachersIds))
+    .bail()
+    .custom(isObjectIds)
+    .bail()
+    .custom(checkTeachersExist),
   handleValidation as Application,
   courseController.updateCourse as Application
 );

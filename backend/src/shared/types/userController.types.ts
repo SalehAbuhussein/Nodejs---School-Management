@@ -1,8 +1,9 @@
+import mongoose from "mongoose";
 import { IUser } from "src/models/user.model";
 
 export type GetUserParams = { userId: string };
 
-export type PostUserBody = { name: string, email: string, password: string };
+export type PostUserBody = { name: string, email: string, password: string, role: mongoose.Types.ObjectId };
 
 export type UpdateUserBody = PostUserBody & { _id: string };
 
