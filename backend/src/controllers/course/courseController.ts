@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
+import mongoose from "mongoose";
+
 import Course from "src/models/course.model";
+import Teacher from "src/models/teacher.model";
 
 import { CreateCourseResponse, DeleteCourseParams, DeleteCourseResponse, GetCourseParams, GetCourseResponse, GetCoursesResponse, PostCourseBody, UpdateCourseBody, UpdateCourseParams, UpdateCourseResponse } from "src/shared/types/courseController.types";
 
@@ -74,23 +77,46 @@ export const getCourse = async (req: Request, res: Response<GetCourseResponse>, 
  * @param { NextFunction } next 
  */
 export const createCourse = async (req: Request, res: Response<CreateCourseResponse>, next: NextFunction) => {
-  const { courseName, courseFees, teacherId }: PostCourseBody = req.body;
-
-  const newCourse = new Course({
-    courseName,
-    courseFees,
-    teachers: [teacherId],
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
+    const { courseName, courseFees, teacherId }: PostCourseBody = req.body;
+
+    const newCourse = new Course({
+      courseName,
+      courseFees,
+      teachers: [teacherId],
+    });
+
     const course = await newCourse.save();
+
+    const teacher = await Teacher.findById(teacherId).session(session);
+    if (!teacher) {
+      await session.abortTransaction();
+
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: 'Teacher Not Found',
+      });
+    }
+
+    if (!teacher.courses.includes(course._id)) {
+      teacher.courses.push(course._id);
+      await teacher.save({ session });
+    }
+
+    await session.commitTransaction();
 
     return res.status(201).json({
       status: 201,
       data: course,
       message: 'Course created successfully!'
-    })
+    });
   } catch (error) {
+    await session.abortTransaction();
+
     return res.status(500).json({
       status: 500,
       data: null,
@@ -121,11 +147,11 @@ export const updateCourse = async (req: Request, res: Response<UpdateCourseRespo
       })
     }
 
-    if (course.courseName && courseName) {
+    if (courseName) {
       course.courseName = courseName;
     }
 
-    if (course.courseFees && courseFees) {
+    if (courseFees) {
       course.courseFees = courseFees;
     }
 
@@ -138,19 +164,18 @@ export const updateCourse = async (req: Request, res: Response<UpdateCourseRespo
         courseId,
         { $addToSet: { teachers: { $each: teachersIds } } }, // $each allows adding multiple teachers at once
         { new: true } // Return the updated course document
-      );
+      );  
     }
 
     if (course) {
       course = await course.save();
     }
 
-
     return res.json({
       status: 200,
       data: course,
       message: 'Course Updated Successfully!',
-    })
+    });
   } catch (error) {
     return res.status(500).json({
       status: 500,

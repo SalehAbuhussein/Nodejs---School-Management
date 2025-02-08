@@ -92,7 +92,7 @@ router.patch('/:roleId',
   body('permissions')
     .isArray({ min: 1 })
     .withMessage('Permissions can not be empty!')
-    .customSanitizer((value) => removeDuplicates<string>(value))
+    .customSanitizer((permissions) => removeDuplicates<string>(permissions))
     .custom(isObjectIds)
     .bail()
     .custom(checkPermissionsExist),

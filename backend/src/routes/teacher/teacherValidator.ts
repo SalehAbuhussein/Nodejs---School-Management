@@ -14,3 +14,18 @@ export const checkTeacherExist = async (teacherId: string) => {
 
   return true;
 };
+
+/**
+ * Check if teachers list exist in database
+ * 
+ * @param teachersIds 
+ */
+export const checkTeachersExist = async (teachersIds: string[]) => {
+  const teachersList = await Teacher.find({ $in: teachersIds });
+
+  if (teachersList.length !== teachersIds.length) {
+    throw new Error('Some Teachers does not exist')
+  }
+
+  return true;
+};
