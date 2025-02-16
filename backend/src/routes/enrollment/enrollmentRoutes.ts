@@ -32,6 +32,27 @@ router.post('/create',
     .custom(checkCourseIsAvailable)
     .bail()
     .custom((_, { req }) => checkDuplicateEnrollment(req.body.studentId, req.body.courseId)),
+  body('enrollmentFees')
+    .trim()
+    .notEmpty()
+    .withMessage('Course fees can not be empty!')
+    .bail()
+    .isFloat({ min: 0 })
+    .withMessage('Course fees must be a valid number')
+    .bail()
+    .customSanitizer(fees => parseFloat(fees).toFixed(2)),
+  body('isActive')
+    .optional()
+    .isBoolean()
+    .withMessage('it should be boolean'),
+  body('enrollmentDate')
+    .optional()
+    .isDate()
+    .withMessage('it should be valid date'),
+  body('semester')
+    .optional()
+    .isIn(['First', 'Second'])
+    .withMessage('semester should be valid'),
   handleValidation as Application,
   enrollmentController.enrollStudent as Application,
 );
