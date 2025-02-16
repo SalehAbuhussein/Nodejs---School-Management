@@ -24,7 +24,7 @@ export const checkPermissionsExist = async (permissionsList: string[]) => {
   const foundPermissions = await Permission.find({ _id: { $in: permissionsList }});
 
   if (foundPermissions.length !== permissionsList.length) {
-    throw new Error('Some Permission does not exist in database');
+    throw new Error('Some Permissions does not exist');
   }
 
   return true;

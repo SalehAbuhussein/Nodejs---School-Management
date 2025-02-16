@@ -124,6 +124,7 @@ export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<Cre
     name: body.name,
     profileImg: req.file?.filename,
     email: body.email,
+    role: body.role,
     password: hashedPassword,
   });
 
@@ -156,7 +157,7 @@ export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<Cre
  * @param { NextFunction } next
  */
 export const updateUser = async (req: Request, res: Response<UpdateUserResponse>, next: NextFunction) => {
-  const { name, email, password }: UpdateUserBody = req.body;
+  const { name, email, password, role }: UpdateUserBody = req.body;
   const { userId }: UpdateUserParams = req.params as UpdateUserParams;
   const profileImg = req.file?.filename;
 
@@ -191,6 +192,10 @@ export const updateUser = async (req: Request, res: Response<UpdateUserResponse>
       await fs.unlink(`${uploadDirectory}/${user?.profileImg}`);
 
       user.profileImg = profileImg;
+    }
+
+    if (user.role && role) {
+      user.role = role;
     }
 
     await user?.save();

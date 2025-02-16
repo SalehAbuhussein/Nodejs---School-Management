@@ -6,8 +6,8 @@ export type ITeacher = {
   thirdName: string | null,
   lastName: string,
   isActive: boolean,
-  userId: { type: mongoose.Types.ObjectId },
-  courses: { type: mongoose.Types.ObjectId[] },
+  userId: mongoose.Types.ObjectId,
+  courses: mongoose.Types.ObjectId[],
 };
 
 const TeacherSchema = new mongoose.Schema<ITeacher>({
@@ -27,14 +27,15 @@ const TeacherSchema = new mongoose.Schema<ITeacher>({
     required: true,
   },
   userId: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
+    unique: true,
     ref: 'User',
   },
-  courses: {
-    type: mongoose.Types.ObjectId,
+  courses: [{
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
-  },
+  }],
   isActive: {
     type: Boolean,
     default: true,
