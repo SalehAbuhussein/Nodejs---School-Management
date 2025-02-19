@@ -114,6 +114,13 @@ router.post('/create',
     .custom(isObjectId)
     .bail()
     .custom(checkTeacherExist),
+  body('totalSlots')
+    .trim()
+    .notEmpty()
+    .withMessage('slots should not be empty')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('slots should be valid number'),
   handleValidation as Application,
   courseController.createCourse as Application
 );

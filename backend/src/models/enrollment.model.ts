@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
+import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 
-export type IEnrollment = {
+export interface IEnrollment extends mongoose.Document {
   studentId: { type: mongoose.Types.ObjectId },
   courseId: { type: mongoose.Types.ObjectId },
   enrollmentDate: Date,
   enrollmentFees: number,
-  isActive: boolean,
-  createdBy: { type: mongoose.Types.ObjectId },
+  semester: 'First' | 'Second',
+  year: number,
 };
 
 const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
@@ -20,9 +21,14 @@ const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
     ref: 'Course',
     required: true,
   },
-  createdBy: {
-    type: mongoose.Types.ObjectId,
-    ref: 'User'
+  semester: {
+    type: String,
+    enum: ['First', 'Second'],
+    default: 'First',
+  },
+  year: {
+    type: Number,
+    default: new Date().getFullYear(),
   },
   enrollmentDate: {
     type: Date,
@@ -32,10 +38,8 @@ const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
     type: Number,
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  }
 }, { timestamps: true });
 
-export default mongoose.model('Enrollment', EnrollmentSchema);
+EnrollmentSchema.plugin(softDeletePlugin);
+
+export default mongoose.model<IEnrollment, SoftDeleteModel<IEnrollment>>('Enrollment', EnrollmentSchema);
