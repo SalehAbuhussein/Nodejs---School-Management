@@ -81,15 +81,17 @@ export const createCourse = async (req: Request, res: Response<CreateCourseRespo
   session.startTransaction();
 
   try {
-    const { courseName, courseFees, teacherId }: PostCourseBody = req.body;
+    const { courseName, courseFees, teacherId, totalSlots }: PostCourseBody = req.body;
+    const totalSlotsNumber = parseInt(totalSlots);
 
     const newCourse = new Course({
       courseName,
       courseFees,
       teachers: [teacherId],
-    });
+      totalSlots: totalSlotsNumber,
+    }, null, { session });
 
-    const course = await newCourse.save();
+    const course = await newCourse.save({ session });
 
     const teacher = await Teacher.findById(teacherId).session(session);
     if (!teacher) {

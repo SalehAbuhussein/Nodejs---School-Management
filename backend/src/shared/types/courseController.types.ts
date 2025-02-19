@@ -2,7 +2,12 @@ import { ICourse } from "src/models/course.model";
 
 export type GetCourseParams = { courseId: string };
 
-export type PostCourseBody = { courseName: string, courseFees: number, teacherId: string };
+export type PostCourseBody = { 
+  courseName: string, 
+  courseFees: number, 
+  teacherId: string,
+  totalSlots: string,
+};
 
 export type UpdateCourseBody = Omit<PostCourseBody, 'teacherId'> & { isActive: boolean, teachersIds: string[] };
 

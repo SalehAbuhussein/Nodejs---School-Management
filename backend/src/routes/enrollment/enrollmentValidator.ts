@@ -6,7 +6,10 @@ import Enrollment from "src/models/enrollment.model"
  * @param { string } enrollmentId 
  */
 export const checkEnrollmentExist = async (enrollmentId: string) => {
-  const enrollment = await Enrollment.findById(enrollmentId);
+  const enrollment = await Enrollment
+    .where('isDeleted')
+    .equals(false)
+    .findOne({ _id: enrollmentId });
 
   if (!enrollment) {
     throw new Error('Enrollment does not exist');
@@ -22,9 +25,12 @@ export const checkEnrollmentExist = async (enrollmentId: string) => {
  * @param { string } courseId 
  */
 export const checkDuplicateEnrollment = async (studentId: string, courseId: string) => {
-  const enrollment = await Enrollment.findOne({ studentId, courseId, isActive: true });
+  const enrollment = await Enrollment
+    .where('isDeleted')
+    .equals(false)
+    .findOne({ studentId, courseId });
 
-  if (!enrollment) {
+  if (enrollment) {
     throw new Error('Existing Enrollment exist');
   }
 

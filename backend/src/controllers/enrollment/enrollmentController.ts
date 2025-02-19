@@ -1,10 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
+
 import mongoose from 'mongoose';
 
 import Course from 'src/models/course.model';
 import Enrollment from 'src/models/enrollment.model';
 
-import { CreateEnrollmentResponse, DeleteEnrollmentParams, DeleteIEnrollmentResponse, PostEnrollmentBody } from 'src/shared/types/enrollmentController.types';
+import { 
+  CreateEnrollmentResponse,
+  DeleteIEnrollmentResponse,
+  DeleteEnrollmentParams,
+  PostEnrollmentBody
+} from 'src/shared/types/enrollmentController.types';
 
 /**
  * Enroll Student in Course
@@ -18,21 +24,23 @@ export const enrollStudent = async (req: Request, res: Response<CreateEnrollment
   session.startTransaction();
 
   try {
-    const { studentId, courseId, enrollmentFees, isActive, enrollmentDate = new Date(), semester = 'First' }: PostEnrollmentBody = req.body;
+    const { studentId, courseId, enrollmentFees, enrollmentDate = new Date(), semester = 'First' }: PostEnrollmentBody = req.body;
 
-    const enrollment = await Enrollment.create({
+    const enrollment = await Enrollment.create([{
       studentId,
       courseId,
       enrollmentFees,
       enrollmentDate,
-      isActive,
       semester,
       year: enrollmentDate.getFullYear(),
-    }, { session });
+    }], { session });
 
     await Course.findByIdAndUpdate(
       courseId, 
-      { $inc: { currentSlots: 1 } },
+      { 
+        $inc: { currentSlots: 1 },
+        $push: { enrollments: enrollment }
+      },
       { new: true, runValidators: true, session },
     );
 
@@ -67,10 +75,18 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
   session.startTransaction();
   
   try {
-    const { enrollmentId }: DeleteEnrollmentParams = req.body;
+    const { enrollmentId } = req.params as DeleteEnrollmentParams;
 
-    const enrollment = await Enrollment.findById(enrollmentId).session(session);
-    const course = await Course.findById(enrollment?.courseId).session(session);
+    const enrollment = await Enrollment
+      .where('isDeleted')
+      .equals(false)
+      .findOne({ _id: enrollmentId })
+      .session(session);
+    const course = await Course
+      .where('isActive')
+      .equals(true)
+      .findOne({ _id: enrollment?.courseId })
+      .session(session);
 
     if (enrollment) {
       await Enrollment.softDelete({ _id: enrollmentId }, { session });
@@ -88,8 +104,9 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
     }
 
     if (course && course.currentSlots > 0) {
+      course.enrollments = course.enrollments.filter(id => !id.equals(enrollment?.id));
       course.currentSlots -= 1;
-      course.isLocked = true;
+      course.isLocked = false;
 
       await course.save({ session });
     }
@@ -107,6 +124,6 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
       status: 500,
       message: 'Server Error',
       error: error,
-    })
+    });
   }
 };

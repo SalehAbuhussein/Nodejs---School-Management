@@ -4,6 +4,7 @@ export type ICourse = {
   courseName: string,
   courseFees: number,
   teachers: mongoose.Types.ObjectId[],
+  enrollments: mongoose.Types.ObjectId[],
   totalSlots: number,
   currentSlots: number,
   isActive: boolean,
@@ -23,11 +24,15 @@ const CourseSchema = new mongoose.Schema<ICourse>({
     type: mongoose.Types.ObjectId,
     ref: 'Teacher',
   }],
-  totalSlots: [{
+  enrollments: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Enrollment',
+  }],
+  totalSlots: {
     type: Number,
     required: true,
-  }],
-  currentSlots: [{
+  },
+  currentSlots: {
     type: Number,
     default: 0,
     validate: {
@@ -36,7 +41,7 @@ const CourseSchema = new mongoose.Schema<ICourse>({
       },
       message: 'Current slots cannot exceed total slots.',
     },
-  }],
+  },
   isLocked: {
     type: Boolean,
     default: false,
