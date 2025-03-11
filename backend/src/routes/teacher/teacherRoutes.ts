@@ -6,7 +6,7 @@ import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 
 import * as teacherController from 'src/controllers/teacher/teacherController';
 
-import { checkCoursesExist } from 'src/routes/course/courseValidator';
+import { checkSubjectsExist } from 'src/routes/subject/subjectValidator';
 import { checkTeacherExist } from 'src/routes/teacher/teacherValidator';
 import { checkUserExist } from 'src/routes/user/userValidator';
 import { isObjectId, isObjectIds, removeDuplicates } from 'src/validators';
@@ -208,15 +208,15 @@ router.patch('/:teacherId',
     .trim()
     .notEmpty()
     .withMessage('Last name can not be empty!'),
-  body('courses')
+  body('subjects')
     .optional()
     .isArray({ min: 1 })
-    .withMessage('courses must be array')
+    .withMessage('subjects must be array')
     .bail()
     .customSanitizer(value => removeDuplicates<string>(value))
     .custom(isObjectIds)
     .bail()
-    .custom(checkCoursesExist),
+    .custom(checkSubjectsExist),
   handleValidation as Application,
   teacherController.updateTeacher as Application
 );

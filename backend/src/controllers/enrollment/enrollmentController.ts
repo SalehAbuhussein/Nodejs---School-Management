@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import mongoose from 'mongoose';
 
-import Course from 'src/models/course.model';
+import Subject from 'src/models/subject.model';
 import Enrollment from 'src/models/enrollment.model';
 
 import { 
@@ -13,7 +13,7 @@ import {
 } from 'src/shared/types/enrollmentController.types';
 
 /**
- * Enroll Student in Course
+ * Enroll Student in Subject
  * 
  * @param { Request } req 
  * @param { Response } res 
@@ -24,19 +24,19 @@ export const enrollStudent = async (req: Request, res: Response<CreateEnrollment
   session.startTransaction();
 
   try {
-    const { studentId, courseId, enrollmentFees, enrollmentDate = new Date(), semester = 'First' }: PostEnrollmentBody = req.body;
+    const { studentId, subjectId, enrollmentFees, enrollmentDate = new Date(), semester = 'First' }: PostEnrollmentBody = req.body;
 
     const enrollment = await Enrollment.create([{
       studentId,
-      courseId,
+      subjectId,
       enrollmentFees,
       enrollmentDate,
       semester,
       year: enrollmentDate.getFullYear(),
     }], { session });
 
-    await Course.findByIdAndUpdate(
-      courseId, 
+    await Subject.findByIdAndUpdate(
+      subjectId, 
       { 
         $inc: { currentSlots: 1 },
         $push: { enrollments: enrollment }
@@ -64,7 +64,7 @@ export const enrollStudent = async (req: Request, res: Response<CreateEnrollment
 };
 
 /**
- * Unenroll student from a course
+ * Unenroll student from a Subject
  * 
  * @param { Request } req 
  * @param { Response<DeleteIEnrollmentResponse> } res 
@@ -82,10 +82,10 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
       .equals(false)
       .findOne({ _id: enrollmentId })
       .session(session);
-    const course = await Course
+    const subject = await Subject
       .where('isActive')
       .equals(true)
-      .findOne({ _id: enrollment?.courseId })
+      .findOne({ _id: enrollment?.subjectId })
       .session(session);
 
     if (enrollment) {
@@ -94,21 +94,21 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
 
     await enrollment?.save({ session });
 
-    if (course && course.isLocked) {
+    if (subject && subject.isLocked) {
       await session.abortTransaction();
 
       return res.status(403).json({
         status: 403,
-        message: 'Course is not available for enrollment',
+        message: 'Subject is not available for enrollment',
       });
     }
 
-    if (course && course.currentSlots > 0) {
-      course.enrollments = course.enrollments.filter(id => !id.equals(enrollment?.id));
-      course.currentSlots -= 1;
-      course.isLocked = false;
+    if (subject && subject.currentSlots > 0) {
+      subject.enrollments = subject.enrollments.filter(id => !id.equals(enrollment?.id));
+      subject.currentSlots -= 1;
+      subject.isLocked = false;
 
-      await course.save({ session });
+      await subject.save({ session });
     }
 
     await session.commitTransaction();

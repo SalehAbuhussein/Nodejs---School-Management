@@ -3,7 +3,7 @@ import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 
 export interface IEnrollment extends mongoose.Document {
   studentId: { type: mongoose.Types.ObjectId },
-  courseId: { type: mongoose.Types.ObjectId },
+  subjectId: { type: mongoose.Types.ObjectId },
   enrollmentDate: Date,
   enrollmentFees: number,
   semester: 'First' | 'Second',
@@ -16,9 +16,9 @@ const EnrollmentSchema = new mongoose.Schema<IEnrollment>({
     ref: 'Student',
     required: true,
   },
-  courseId: {
+  subjectId: {
     type: mongoose.Types.ObjectId,
-    ref: 'Course',
+    ref: 'Subject',
     required: true,
   },
   semester: {

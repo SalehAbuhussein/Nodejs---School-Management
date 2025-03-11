@@ -1,10 +1,10 @@
 import { IEnrollment } from "src/models/enrollment.model";
 
-export type GetEnrollemntParams = { studentId: string, courseId: string, examTypeId: string, isActive: boolean };
+export type GetEnrollemntParams = { studentId: string, subjectId: string, examTypeId: string, isActive: boolean };
 
 export type PostEnrollmentBody = { 
   studentId: string,
-  courseId: string,
+  subjectId: string,
   enrollmentDate?: Date,
   enrollmentFees: number,
   semester: 'First' | 'Second',
@@ -13,7 +13,7 @@ export type PostEnrollmentBody = {
 
 export type UpdateEnrollmentBody = PostEnrollmentBody;
 
-export type UpdateEnrollmentParams = { courseId: string, enrollmentDate: Date, enrollmentFees: number, isActive: boolean };
+export type UpdateEnrollmentParams = { subjectId: string, enrollmentDate: Date, enrollmentFees: number, isActive: boolean };
 
 export type DeleteEnrollmentParams = { enrollmentId: string };
 

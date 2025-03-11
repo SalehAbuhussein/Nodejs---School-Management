@@ -124,7 +124,7 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
  * @param { NextFunction } next 
  */
 export const updateTeacher = async (req: Request, res: Response<UpdateTeacherResponse>, next: NextFunction) => {
-  const { firstName, lastName, secondName, thirdName, isActive, courses }: UpdateTeacherBody = req.body;
+  const { firstName, lastName, secondName, thirdName, isActive, subjects }: UpdateTeacherBody = req.body;
   const { teacherId }: UpdateTeacherParams = req.params as UpdateTeacherParams;
 
   try {
@@ -152,8 +152,8 @@ export const updateTeacher = async (req: Request, res: Response<UpdateTeacherRes
     if (lastName) {
       teacher.lastName = lastName;
     }
-    if (courses) {
-      teacher.courses = courses;
+    if (subjects) {
+      teacher.subjects = subjects;
     }
 
     teacher = await teacher.save();

@@ -19,16 +19,16 @@ export const checkEnrollmentExist = async (enrollmentId: string) => {
 };
 
 /**
- * Check Duplicate Enrollment by student id and course id
+ * Check Duplicate Enrollment by student id and subject id
  * 
  * @param { string } studentId 
- * @param { string } courseId 
+ * @param { string } subjectId 
  */
-export const checkDuplicateEnrollment = async (studentId: string, courseId: string) => {
+export const checkDuplicateEnrollment = async (studentId: string, subjectId: string) => {
   const enrollment = await Enrollment
     .where('isDeleted')
     .equals(false)
-    .findOne({ studentId, courseId });
+    .findOne({ studentId, subjectId });
 
   if (enrollment) {
     throw new Error('Existing Enrollment exist');
