@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { HydratedDocument, Types } from "mongoose";
-
-import Student, { IStudent } from "src/models/student.model";
+import { StudentService } from "src/services/studentService";
 
 import {
   DeleteStudentParams,
@@ -14,34 +12,7 @@ import {
   DeleteStudentResponse,
   UpdateStudentResponse,
   GetStudentResponse, 
-  GetStudentsResponse,
 } from "src/shared/types/studentController.types";
-
-/**
- * Get All Teachers
- * 
- * @param { Request } req 
- * @param { Response<GetStudentsResponse> } res 
- * @param { NextFunction } next
- */
-export const getStudents = async (req: Request, res: Response<GetStudentsResponse>, next: NextFunction) => {
-  try {
-    const students = await Student.find();
-
-    return res.json({ 
-      status: 200, 
-      data: students,
-      message: 'Students Fetched Successfully!', 
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null,
-      message: 'Server Error',
-      error: error,
-    });
-  }
-};
 
 /**
  * Get Single Student
@@ -51,26 +22,18 @@ export const getStudents = async (req: Request, res: Response<GetStudentsRespons
  * @param { NextFunction } next
  */
 export const getStudent = async (req: Request, res: Response<GetStudentResponse>, next: NextFunction) => {
-  const { studentId }: GetStudentParams = req.params as GetStudentParams;
-
   try {
-    const student = await Student.findById(studentId);
+    const { studentId }: GetStudentParams = req.params as GetStudentParams;
 
-    if (!student) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
+    const student = await StudentService.getStudentById(studentId);
 
     return res.json({ status: 200, data: student, message: 'Student Fetched Successfully!' });
-  } catch(error) {
-    return res.status(500).json({ 
-      status: 200,
+  } catch(error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error, 
+      error: error.originalError,
     });
   }
 };
@@ -83,29 +46,21 @@ export const getStudent = async (req: Request, res: Response<GetStudentResponse>
  * @param { NextFunction } next 
  */
 export const createStudent = async (req: Request, res: Response<CreateStudentResponse>, next: NextFunction) => {
-  const { firstName, secondName, thirdName, lastName, userId }: PostStudentBody = req.body;
-  
-  const student: HydratedDocument<IStudent> = new Student({
-    firstName,
-    secondName,
-    thirdName,
-    lastName,
-    userId,
-  });
-
   try {
-    const newStudent = await student.save();
+    const { firstName, secondName, thirdName, lastName, userId }: PostStudentBody = req.body;
+    const student = await StudentService.createStudent({ firstName, secondName, thirdName, lastName, userId });
 
     return res.status(201).json({ 
       status: 201,
-      data: newStudent,
+      data: student,
       message: "Student Created Successfully"
     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      data: null, 
-      message: "Server error" 
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
     });
   }
 };
@@ -117,56 +72,24 @@ export const createStudent = async (req: Request, res: Response<CreateStudentRes
  * @param { Response<UpdateStudentResponse> } res 
  * @param { NextFunction } next 
  */
-export const updateStudent = async (req: Request, res: Response<UpdateStudentResponse>, next: NextFunction) => {
-  const { firstName, lastName, secondName, thirdName, isActive, studentTierId }: UpdateStudentBody = req.body;
-  const { studentId }: UpdateStudentParams = req.params as UpdateStudentParams;
-
+export const updateStudent = async (req: Request, res: Response<UpdateStudentResponse>, next: NextFunction) => { 
   try {
-    let student = await Student.findById(studentId);
+    const { firstName, lastName, secondName, thirdName, studentTierId }: UpdateStudentBody = req.body;
+    const { studentId }: UpdateStudentParams = req.params as UpdateStudentParams;
 
-    if (!student) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!', 
-      });
-    }
-
-    student.isActive = !!isActive;
-
-    if (student.firstName && firstName) {
-      student.firstName = firstName;
-    }
-
-    if (student.secondName && secondName) {
-      student.secondName = secondName;
-    }
-
-    if (student.thirdName && thirdName) {
-      student.thirdName = thirdName;
-    }
-
-    if (student.lastName && lastName) {
-      student.lastName = lastName;
-    }
-
-    if (studentTierId) {
-      student.studentTierId = { type: new Types.ObjectId(studentTierId) };
-    }
-
-    student = await student.save();
+    const student = await StudentService.updateStudent(studentId, { firstName, lastName, secondName, thirdName, studentTierId });
 
     return res.json({
       status: 200,
       data: student,
       message: 'Student Updated Successfully!',
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null, 
-      message: 'Server Error', 
-      error: error, 
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
     });
   }
 };
@@ -179,29 +102,20 @@ export const updateStudent = async (req: Request, res: Response<UpdateStudentRes
  * @param { NextFunction } next 
  */
 export const deleteStudent = async (req: Request, res: Response<DeleteStudentResponse>, next: NextFunction) => {
-  const { studentId }: DeleteStudentParams = req.params as DeleteStudentParams;
-
   try {
-    const student = await Student.findById(studentId);
+    const { studentId }: DeleteStudentParams = req.params as DeleteStudentParams;
 
-    if (!student) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Not Found!',
-      });
-    }
-
-    await student?.deleteOne();
+    await StudentService.deleteStudent(studentId);
 
     return res.json({ 
       status: 200, 
       message: 'Student Deleted Successfully!',
      });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      message: 'Server Error', 
-      error: error
-     });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      error: error.originalError,
+    });
   }
 };

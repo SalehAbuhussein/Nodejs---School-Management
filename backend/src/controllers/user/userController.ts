@@ -1,22 +1,18 @@
-import fs from 'fs/promises';
-import path from 'path';
 import { Request, Response, NextFunction } from 'express';
 
-import bcrypt from 'bcrypt';
-import { HydratedDocument } from 'mongoose';
+import { IUser } from 'src/models/user.model';
 
-import User, { IUser } from 'src/models/user.model';
+import { UserService } from 'src/services/userService';
 
 import { IGetUserAuthInfoRequest } from 'src/middlewares/verifyTokenMiddleware';
 
-import { 
-  DeleteUserParams, 
+import {
+  DeleteUserParams,
   GetUserParams,
   PostUserBody,
   UpdateUserBody,
   UpdateUserParams,
-  GetUserResponse, 
-  GetUsersResponse,
+  GetUserResponse,
   CreateUserResponse,
   UpdateUserResponse,
   DeleteUserResponse,
@@ -27,47 +23,6 @@ export interface UserRequest extends Request {
 };
 
 /**
- * Get All Users
- * 
- * @param { Request } req 
- * @param { Response<GetUsersResponse> } res 
- * @param { NextFunction } next
- */
-export const getUsers = async (req: UserRequest, res: Response<GetUsersResponse>, next: NextFunction) => {
-  const currentUser: IUser = User.hydrate(req.user);
-  currentUser.password = '';
-
-  console.log(currentUser);
-
-  try {
-    const uploadsUrl = `${req.protocol}://${req.get('host')}/uploads/`;
-    const users = await User.find({}).select('-password');
-
-    const usersWithProfileImg = users.map(user => {
-      if (user.profileImg) {
-        user.profileImg = `${uploadsUrl}${user.profileImg}`;
-      }
-
-      return user;
-    });
-
-    return res.json({ 
-      status: 200, 
-      data: usersWithProfileImg,
-      message: 'Users Fetched Successfully!',
-     });
-    
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      data: null, 
-      error: error, 
-      message: "Server Error"
-     });
-  };
-};
-
-/**
  * Get Single User
  * 
  * @param { Request } req 
@@ -75,11 +30,10 @@ export const getUsers = async (req: UserRequest, res: Response<GetUsersResponse>
  * @param { NextFunction } next
  */
 export const getUser = async (req: Request, res: Response<GetUserResponse>, next: NextFunction) => {
-  const params: GetUserParams = req.params as GetUserParams;
-  const baseUrl = `${req.protocol}://${req.get('host')}/uploads/`;
-
   try {
-    const user = await User.findById(params.userId);
+    const params: GetUserParams = req.params as GetUserParams;
+
+    const user = await UserService.findUserById(params.userId);
 
     if (!user) {
       return res.status(404).json({
@@ -89,22 +43,18 @@ export const getUser = async (req: Request, res: Response<GetUserResponse>, next
       })
     }
 
-    if (user?.profileImg) {
-      user.profileImg = `${baseUrl}/${user.profileImg}`;
-    }
-
     return res.json({ 
       status: 200, 
       data: user,
       message: 'User Fetched Successfully!',
-     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      data: null, 
-      error: error, 
-      message: 'Server Error',
-     });
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
+    });
   }
 };
 
@@ -116,36 +66,29 @@ export const getUser = async (req: Request, res: Response<GetUserResponse>, next
  * @param { NextFunction } next 
  */
 export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<CreateUserResponse>, next: NextFunction) => {
-  const body: PostUserBody = req.body;
-
-  const hashedPassword = await bcrypt.hash(body.password, 10);
-
-  const newUser: HydratedDocument<IUser> = new User({ 
-    name: body.name,
-    profileImg: req.file?.filename,
-    email: body.email,
-    role: body.role,
-    password: hashedPassword,
-  });
-
   try {
-    const user = await newUser.save();
-    const userObject: Partial<IUser> = user.toObject();
+    const { name, email, role, password }: PostUserBody = req.body;
 
-    delete userObject.password;
+    const userObject = await UserService.createUser({
+      name: name,
+      email: email,
+      role: role,
+      password: password,
+      profileImg: req.file?.filename,
+    } as IUser);
 
     return res.status(201).json({
       status: 201,
       data: userObject,
       message: 'User created successfully',
     });
-  } catch (error) {
-    return res.status(500).send({ 
-      status: 500, 
-      data: null, 
-      message: "Server Error",
-      error: error, 
-     });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
+    });
   }
 }; 
 
@@ -157,60 +100,24 @@ export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<Cre
  * @param { NextFunction } next
  */
 export const updateUser = async (req: Request, res: Response<UpdateUserResponse>, next: NextFunction) => {
-  const { name, email, password, role }: UpdateUserBody = req.body;
-  const { userId }: UpdateUserParams = req.params as UpdateUserParams;
-  const profileImg = req.file?.filename;
-
   try {
-    let user = await User.findById({ _id:  userId });
+    const { name, email, password, role }: UpdateUserBody = req.body;
+    const { userId }: UpdateUserParams = req.params as UpdateUserParams;
+    const profileImg = req.file?.filename;
 
-    if (!user) {
-      return res.status(404).json({ 
-        status: 404, 
-        data: null, 
-        message: 'User Not Found!' 
-      });
-    }
-
-    if (user?.email && email) {
-      user.email = email;
-    }
-
-    if (user?.name && name) {
-      user.name = name;
-    }
-
-    if (user?.password && password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      user.password = hashedPassword;
-    }
-
-    if (user?.profileImg && profileImg) {
-      const uploadDirectory = `${path.dirname(path.dirname(require?.main?.filename ?? ''))}/uploads/`;
-      
-      await fs.unlink(`${uploadDirectory}/${user?.profileImg}`);
-
-      user.profileImg = profileImg;
-    }
-
-    if (user.role && role) {
-      user.role = role;
-    }
-
-    await user?.save();
+    const updatedUser = await UserService.updateUser(userId, { name, email, role, password, profileImg });
 
     return res.json({ 
       status: 200, 
-      data: user,
+      data: updatedUser,
       message: 'User Updated Successfully!', 
      });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      data: null, 
-      message: 'Server Error',
-      error: error, 
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
     });
   }
 };
@@ -223,35 +130,27 @@ export const updateUser = async (req: Request, res: Response<UpdateUserResponse>
  * @param { NextFunction } next
  */
 export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>, next: NextFunction) => {
-  const { userId }: DeleteUserParams = req.params as DeleteUserParams;
-
   try {
-    const user = await User.findById({ _id:  userId });
+    const { userId }: DeleteUserParams = req.params as DeleteUserParams;
 
-    if (!user) {
+    const isDeleted = await UserService.deleteUser(userId);
+
+    if (!isDeleted) {
       return res.status(404).json({
         status: 404,
         message: 'Not Found!',
       });
     }
 
-    if (user?.profileImg) {
-      const uploadDirectory = `${path.dirname(path.dirname(require?.main?.filename ?? ''))}/uploads/`;
-      
-      await fs.unlink(`${uploadDirectory}/${user?.profileImg}`);
-    }
-
-    await user?.deleteOne();
-
     return res.json({ 
       status: 200, 
       message: 'User Deleted Successfully!',
-     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      message: 'Server Error', 
-      error: error
-     });
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      error: error.originalError,
+    });
   }
 };

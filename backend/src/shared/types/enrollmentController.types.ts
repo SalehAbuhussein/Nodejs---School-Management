@@ -8,7 +8,6 @@ export type PostEnrollmentBody = {
   enrollmentDate?: Date,
   enrollmentFees: number,
   semester: 'First' | 'Second',
-  isActive?: boolean,
 };
 
 export type UpdateEnrollmentBody = PostEnrollmentBody;

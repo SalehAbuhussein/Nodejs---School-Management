@@ -1,4 +1,4 @@
-import StudentTier from "src/models/studentTier.model";
+import { StudentTierService } from "src/services/studentTierService";
 
 /**
  * Check if StudentTier exist in database
@@ -6,7 +6,7 @@ import StudentTier from "src/models/studentTier.model";
  * @param { string } studentTierId 
  */
 export const checkStudentTierExist = async (studentTierId: string) => {
-  const studentTier = StudentTier.findById(studentTierId);
+  const studentTier = StudentTierService.studentTierExist(studentTierId);
 
   if (!studentTier) {
     throw new Error('Student tier does not exist');

@@ -1,4 +1,5 @@
 import Permission from 'src/models/permission.model';
+import { PermissionService } from 'src/services/permissionService';
 
 /**
  * Check if Permission exist in database
@@ -6,13 +7,11 @@ import Permission from 'src/models/permission.model';
  * @param { string } permissionId 
  */
 export const checkPermissionExist = async (permissionId: string) => {
-  const foundPermission = await Permission.findOne({ _id: permissionId });
-
-  if (!foundPermission) {
+  try {
+    return await PermissionService.permissionExists(permissionId);
+  } catch (error) {
     throw new Error('Permission does not exist');
   }
-
-  return true;
 };
 
 /**
@@ -21,11 +20,9 @@ export const checkPermissionExist = async (permissionId: string) => {
  * @param { string[] } permissionsList
  */
 export const checkPermissionsExist = async (permissionsList: string[]) => {
-  const foundPermissions = await Permission.find({ _id: { $in: permissionsList }});
-
-  if (foundPermissions.length !== permissionsList.length) {
-    throw new Error('Some Permissions does not exist');
+  try {
+    return await PermissionService.checkPermissionsExist(permissionsList);
+  } catch (error) {
+    throw new Error('Some Permissions do not exist');
   }
-
-  return true;
 };

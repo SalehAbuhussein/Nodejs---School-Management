@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 
 export interface IEnrollment extends mongoose.Document {
-  studentId: { type: mongoose.Types.ObjectId },
-  subjectId: { type: mongoose.Types.ObjectId },
+  studentId: mongoose.Schema.Types.ObjectId,
+  subjectId: mongoose.Schema.Types.ObjectId,
   enrollmentDate: Date,
   enrollmentFees: number,
   semester: 'First' | 'Second',

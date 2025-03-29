@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 export type ISubject = {
   name: string,
-  fees: number,
   teachers: mongoose.Types.ObjectId[],
   enrollments: mongoose.Types.ObjectId[],
   totalSlots: number,
@@ -15,10 +14,7 @@ const SubjectSchema = new mongoose.Schema<ISubject>({
   name: {
     type: String,
     required: true,
-  },
-  fees: {
-    type: Number,
-    required: true,
+    unique: true,
   },
   teachers: [{
     type: mongoose.Types.ObjectId,

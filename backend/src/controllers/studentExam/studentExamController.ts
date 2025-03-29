@@ -1,46 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 
-import { Types } from "mongoose";
-
 import StudentExam from "src/models/studentExam.model";
 
-import { CreateExamResponse, DeleteExamParams, DeleteExamResponse, GetExamParams, GetExamResponse, GetExamsResponse, PostExamBody, UpdateExamBody, UpdateExamParams, UpdateExamResponse } from "src/shared/types/examController.types";
+import { StudentExamService } from "src/services/studentExamService";
 
-/**
- * Get list of exams
- * 
- * @param { Request } req 
- * @param { Response<GetExamsResponse> } res
- * @param { NextFunction } next 
- */
-export const getExams = async (req: Request, res: Response<GetExamsResponse>, next: NextFunction) => {
-  try {
-    const exams = await StudentExam.find();
-
-    return res.json({
-      status: 200,
-      data: exams,
-      message: 'Exams Fetched Successfully!',
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null,
-      message: 'Server Error',
-      error: error,
-    });
-  };
-};
+import { CreateStudentExamResponse, DeleteStudentExamParams, DeleteStudentExamResponse, GetStudentExamParams, GetStudentExamResponse, PostStudentExamBody, UpdateStudentExamBody, UpdateStudentExamParams, UpdateStudentExamResponse, TakeTeacherExamResponse, TakeTeacherExamParams } from "src/shared/types/studentExamController.types";
 
 /**
  * Get single exam
  * 
  * @param { Request } req 
- * @param { Response<GetExamResponse> } res
+ * @param { Response<GetStudentExamResponse> } res
  * @param { NextFunction } next 
  */
-export const getExam = async (req: Request, res: Response<GetExamResponse>, next: NextFunction) => {
-  const { examId }: GetExamParams = req.params as GetExamParams;
+export const getExam = async (req: Request, res: Response<GetStudentExamResponse>, next: NextFunction) => {
+  const { examId }: GetStudentExamParams = req.params as GetStudentExamParams;
 
   try {
     const exam = await StudentExam.findById(examId);
@@ -64,7 +38,7 @@ export const getExam = async (req: Request, res: Response<GetExamResponse>, next
       data: null,
       message: 'Server Error',
       error: error,
-    })
+    });
   }
 };
 
@@ -72,32 +46,31 @@ export const getExam = async (req: Request, res: Response<GetExamResponse>, next
  * Create exam
  * 
  * @param { Request } req 
- * @param { Response<CreateExamResponse> } res
+ * @param { Response<CreateStudentExamResponse> } res
  * @param { NextFunction } next 
  */
-export const createExam = async (req: Request, res: Response<CreateExamResponse>, next: NextFunction) => {
-  const { title, studentGrade, subjectId, studentId }: PostExamBody = req.body;
-
-  const newExam = new StudentExam({
-    title,
-    studentGrade,
-    subjectId,
-    studentId,
-  });
-
+export const createExam = async (req: Request, res: Response<CreateStudentExamResponse>, next: NextFunction) => {
   try {
-    const exam = await newExam.save();
+    const { title, studentGrade, subjectId, studentId }: PostStudentExamBody = req.body;
+
+    const exam = await StudentExamService.createExam({
+      title,
+      studentGrade,
+      subjectId,
+      studentId,
+    });
 
     return res.status(201).json({
       status: 201,
       data: exam,
       message: 'Exam created successfully!'
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
+      error: error.originalError,
     });
   }
 };
@@ -106,49 +79,27 @@ export const createExam = async (req: Request, res: Response<CreateExamResponse>
  * Update exam
  * 
  * @param { Request } req 
- * @param { Response<UpdateExamResponse> } res
+ * @param { Response<UpdateStudentExamResponse> } res
  * @param { NextFunction } next 
  */
-export const updateExam = async (req: Request, res: Response<UpdateExamResponse>, next: NextFunction) => {
-  const { title, studentGrade, subjectId }: UpdateExamBody = req.body;
-  const { examId }: UpdateExamParams = req.params as UpdateExamParams;
-
+export const updateExam = async (req: Request, res: Response<UpdateStudentExamResponse>, next: NextFunction) => {
   try {
-    let exam = await StudentExam.findById(examId);
+    const { title, studentGrade }: UpdateStudentExamBody = req.body;
+    const { examId }: UpdateStudentExamParams = req.params as UpdateStudentExamParams;
 
-    if (!exam) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
-
-    if (exam.title && title) {
-      exam.title = title;
-    }
-
-    if (exam.studentGrade && studentGrade) {
-      exam.studentGrade = studentGrade;
-    }
-
-    if (subjectId) {
-      exam.subjectId = { type: new Types.ObjectId(subjectId) };
-    }
-
-    exam = await exam.save();
+    const exam = await StudentExamService.updateExam(examId, { title, studentGrade });
 
     return res.json({
       status: 200,
       data: exam,
       message: 'Exam Updated Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   }
 };
@@ -157,33 +108,43 @@ export const updateExam = async (req: Request, res: Response<UpdateExamResponse>
  * Delete exam
  * 
  * @param { Request } req 
- * @param { Response<DeleteExamResponse> } res
+ * @param { Response<DeleteStudentExamResponse> } res
  * @param { NextFunction } next 
  */
-export const deleteExam = async (req: Request, res: Response<DeleteExamResponse>, next: NextFunction) => {
-  const { examId }: DeleteExamParams = req.params as DeleteExamParams;
-
+export const deleteExam = async (req: Request, res: Response<DeleteStudentExamResponse>, next: NextFunction) => {
   try {
-    const exam = await StudentExam.findById(examId);
+    const { examId }: DeleteStudentExamParams = req.params as DeleteStudentExamParams;
+    
+    await StudentExamService.deleteExam(examId);
 
-    if (!exam) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Exam not found!',
-      });
-    }
-
-    await exam?.deleteOne();
-
-    return res.json({ 
+    return res.json({
       status: 200, 
       message: 'Exam Deleted Successfully!',
-     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      message: 'Server Error', 
-      error: error
-     });
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      error: error.originalError,
+    });
+  }
+};
+
+export const takeExam = async (req: Request, res: Response<TakeTeacherExamResponse>, next: NextFunction) => {
+  const { examId } = req.params as TakeTeacherExamParams;
+
+  try {
+
+    // 1- Check if Student is enrolled in the course.
+    // 2- Check if Student is active.
+
+
+
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      error: error.originalError,
+    });
   }
 };

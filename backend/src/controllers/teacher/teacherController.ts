@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { HydratedDocument } from 'mongoose';
 
 import Teacher, { ITeacher } from 'src/models/teacher.model';
+import { TeacherService } from 'src/services/teacherService';
 
 import { 
   CreateTeacherResponse,
@@ -17,6 +18,7 @@ import {
   UpdateTeacherResponse,
 
 } from 'src/shared/types/teacherController.types';
+import { CustomError } from 'src/shared/utils/CustomError';
 
 /**
  * Get All Teachers
@@ -27,19 +29,19 @@ import {
  */
 export const getTeachers = async (req: Request, res: Response<GetTeachersResponse>, next: NextFunction) => {
   try {
-    const teachers = await Teacher.find();
+    const teachers = await TeacherService.getAllTeachers();
 
     return res.json({ 
       status: 200, 
       data: teachers,
       message: 'Teachers Fetched Successfully!', 
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   }
 };
@@ -51,31 +53,23 @@ export const getTeachers = async (req: Request, res: Response<GetTeachersRespons
  * @param { Response<GetTeacherResponse> } res 
  * @param { NextFunction } next
  */
-export const getTeacher = async (req: Request, res: Response<GetTeacherResponse>, next: NextFunction) => {
-  const params: GetTeacherParams = req.params as GetTeacherParams;
-
+export const getTeacher = async (req: Request, res: Response<GetTeacherResponse>, next: NextFunction) => {  
   try {
-    const teacher = await Teacher.findById(params.teacherId);
+    const params: GetTeacherParams = req.params as GetTeacherParams;
 
-    if (!teacher) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
+    const teacher = await TeacherService.getTeacherById(params.teacherId);
 
     return res.json({ 
       status: 200, 
       data: teacher, 
       message: 'Teacher Fetched Successfully!',
     });
-  } catch(error) {
-    return res.status(500).json({ 
-      status: 200,
+  } catch(error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error, 
+      error: error.originalError,
     });
   }
 };
@@ -88,30 +82,22 @@ export const getTeacher = async (req: Request, res: Response<GetTeacherResponse>
  * @param { NextFunction } next 
  */
 export const createTeacher = async (req: Request, res: Response<CreateTeacherResponse>, next: NextFunction) => {
-  const { firstName, secondName, lastName, thirdName, userId }: PostTeacherBody = req.body;
-  
-  const teacher: HydratedDocument<ITeacher> = new Teacher({
-    firstName,
-    secondName,
-    thirdName,
-    lastName,
-    userId
-  });
-
   try {
-    const newTeacher = await teacher.save();
+    const { firstName, secondName, lastName, thirdName, userId }: PostTeacherBody = req.body;
+    
+    const newTeacher = await TeacherService.createTeacher({ firstName, secondName, lastName, thirdName, userId });
 
     return res.status(201).json({
       status: 201,
       data: newTeacher,
       message: "Teacher Created Successfully"
     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      error: error,
-      message: "Server error" 
+      error: error.originalError,
     });
   }
 };
@@ -124,51 +110,23 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
  * @param { NextFunction } next 
  */
 export const updateTeacher = async (req: Request, res: Response<UpdateTeacherResponse>, next: NextFunction) => {
-  const { firstName, lastName, secondName, thirdName, isActive, subjects }: UpdateTeacherBody = req.body;
-  const { teacherId }: UpdateTeacherParams = req.params as UpdateTeacherParams;
-
   try {
-    let teacher = await Teacher.findById(teacherId);
+    const { firstName, lastName, secondName, thirdName, isActive, subjects }: UpdateTeacherBody = req.body;
+    const { teacherId }: UpdateTeacherParams = req.params as UpdateTeacherParams;
 
-    if (!teacher) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!', 
-      });
-    }
-
-    teacher.isActive = !!isActive;
-
-    if (firstName) {
-      teacher.firstName = firstName;
-    }
-    if (secondName) {
-      teacher.secondName = secondName;
-    }
-    if (thirdName) {
-      teacher.thirdName = thirdName;
-    }
-    if (lastName) {
-      teacher.lastName = lastName;
-    }
-    if (subjects) {
-      teacher.subjects = subjects;
-    }
-
-    teacher = await teacher.save();
+    const teacher = await TeacherService.updateTeacher(teacherId, { firstName, lastName, secondName, thirdName, isActive, subjects });
 
     return res.json({
       status: 200,
       data: teacher,
       message: 'Teacher Updated Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null, 
-      message: 'Server Error', 
-      error: error, 
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
     });
   }
 };
@@ -181,29 +139,19 @@ export const updateTeacher = async (req: Request, res: Response<UpdateTeacherRes
  * @param { NextFunction } next 
  */
 export const deleteTeacher = async (req: Request, res: Response<DeleteTeacherResponse>, next: NextFunction) => {
-  const { teacherId }: DeleteTeacherParams = req.params as DeleteTeacherParams;
-
   try {
-    const teacher = await Teacher.findById(teacherId);
-
-    if (!teacher) {
-      return res.json({
-        status: 404,
-        message: 'Not Found!',
-      });
-    }
-
-    await teacher?.deleteOne();
+    const { teacherId }: DeleteTeacherParams = req.params as DeleteTeacherParams;
+    await TeacherService.deleteTeacher(teacherId);
 
     return res.json({ 
       status: 200, 
       message: 'Teacher Deleted Successfully!',
-     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 500, 
-      message: 'Server Error', 
-      error: error
-     });
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      error: error.originalError,
+    });
   }
 };

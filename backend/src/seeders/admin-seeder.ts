@@ -34,6 +34,7 @@ const seedAdmin = async () => {
       name: 'admin',
       password: await bcrypt.hash('123', 10),
       role: existingRole.id,
+      isActive: true,
     };
 
     await new User(adminCredintals).save();

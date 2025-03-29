@@ -3,9 +3,9 @@ import mongoose from "mongoose"
 export type ITeacherExam = {
   title: string,
   fullExamGrade: number,
-  examId: { type: mongoose.Types.ObjectId },
-  examTypeId: { type: mongoose.Types.ObjectId },
-  createdBy: { type: mongoose.Types.ObjectId },
+  examId: mongoose.Schema.Types.ObjectId,
+  examTypeId: mongoose.Schema.Types.ObjectId,
+  createdBy: mongoose.Schema.Types.ObjectId,
 }
 
 const ExamSchema = new mongoose.Schema<ITeacherExam>({
@@ -18,7 +18,7 @@ const ExamSchema = new mongoose.Schema<ITeacherExam>({
   },
   examId: {
     type: mongoose.Types.ObjectId,
-    ref: 'Exam',
+    ref: 'StudentExam',
     required: true,
   },
   examTypeId: {

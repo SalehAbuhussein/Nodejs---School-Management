@@ -1,4 +1,5 @@
 import Subject from "src/models/subject.model";
+import { SubjectService } from "src/services/subjectService";
 
 /**
  * Check if Subject exist in database
@@ -6,7 +7,7 @@ import Subject from "src/models/subject.model";
  * @param { string } subjectId 
  */
 export const checkSubjectExist = async (subjectId: string) => {
-  const subject = await Subject.findById(subjectId);
+  const subject = await SubjectService.getSubjectById(subjectId);
 
   if (!subject) {
     throw new Error('Subject does not exist');
@@ -21,7 +22,7 @@ export const checkSubjectExist = async (subjectId: string) => {
  * @param { string } subjectId 
  */
 export const checkSubjectIsAvailable = async (subjectId: string) => {
-  const subject = await Subject.findById(subjectId);
+  const subject = await SubjectService.getSubjectById(subjectId);
 
   if (!subject) {
     throw new Error('Subject does not exist');

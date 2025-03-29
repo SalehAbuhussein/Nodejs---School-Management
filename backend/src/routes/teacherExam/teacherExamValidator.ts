@@ -1,4 +1,4 @@
-import TeacherExam from "src/models/teacherExam.model";
+import { TeacherExamService } from "src/services/teacherExamService";
 
 /**
  * Check if Exam exist in database
@@ -6,7 +6,7 @@ import TeacherExam from "src/models/teacherExam.model";
  * @param { string } examId 
  */
 export const checkTeacherExamExist = async (examId: string) => {
-  const exam = TeacherExam.findOne({ _id: examId });
+  const exam = TeacherExamService.getTeacherExamById(examId);
 
   if (!exam) {
     throw new Error('Exam does not exist');

@@ -1,11 +1,18 @@
-import mongoose from "mongoose"
+import mongoose, { Types } from "mongoose"
 
 export type IStudentExam = {
   title: string,
-  teacherExamId: { type: mongoose.Types.ObjectId },
-  subjectId: { type: mongoose.Types.ObjectId },
-  studentId: { type: mongoose.Types.ObjectId },
+  teacherExamId: mongoose.Types.ObjectId,
+  subjectId: mongoose.Types.ObjectId,
+  studentId: mongoose.Types.ObjectId,
   studentGrade: number,
+};
+
+export type ICreateStudentExam = {
+  title: string;
+  studentGrade: number;
+  subjectId: string;
+  studentId: string;
 };
 
 const ExamSchema = new mongoose.Schema<IStudentExam>({
@@ -14,17 +21,17 @@ const ExamSchema = new mongoose.Schema<IStudentExam>({
     required: true,
   },
   teacherExamId: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'TeacherExam',
     required: true,
   },
   subjectId: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Subject',
     required: true,
   },
   studentId: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Student',
     required: true,
   },
@@ -34,4 +41,4 @@ const ExamSchema = new mongoose.Schema<IStudentExam>({
   },
 }, { timestamps: true });
 
-export default mongoose.model<IStudentExam>('Exam', ExamSchema);
+export default mongoose.model<IStudentExam>('StudentExam', ExamSchema);

@@ -80,14 +80,6 @@ router.post('create',
 );
 
 router.patch('/:examId',
-  param('examId')
-    .trim()
-    .notEmpty()
-    .withMessage('exam id can not be empty!')
-    .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(checkStudentExamExist),
   body('title')
     .trim()
     .notEmpty()
@@ -102,3 +94,5 @@ router.patch('/:examId',
   handleValidation as Application,
   TeacherExamController.updateTeacherExam as Application,
 );
+
+export default router;

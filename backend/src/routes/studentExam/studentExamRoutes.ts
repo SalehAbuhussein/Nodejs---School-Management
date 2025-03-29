@@ -12,21 +12,6 @@ const router = Router();
 
 /**
  * @openapi
- * /studentExams:
- *   get:
- *     tags:
- *       - Exam Controller
- *     summary: Get a list of student exams
- *     responses:
- *       200:
- *         description: Exams Fetched Successfully!
- *       500:
- *         description: Server error
- */
-router.get('', examController.getExams as Application);
-
-/**
- * @openapi
  * /studentExams/{examId}:
  *   get:
  *     tags:

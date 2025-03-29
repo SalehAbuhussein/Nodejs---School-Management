@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 
 import ExamType from "src/models/examType.model";
 
+import { ExamTypeService } from "src/services/examTypeService";
+
 import { 
   DeleteExamTypeParams,
   GetExamTypeParams,
@@ -15,6 +17,8 @@ import {
   GetExamTypesResponse,
 } from "src/shared/types/examTypeController.types";
 
+import { CustomError } from "src/shared/utils/CustomError";
+
 /**
  * Get list of exam types
  * 
@@ -24,18 +28,27 @@ import {
  */
 export const getExamTypes = async (req: Request, res: Response<GetExamTypesResponse>, next: NextFunction) => {
   try {
-    const examTypes = await ExamType.find();
+    const examTypes = await ExamTypeService.getAllExamTypes();
 
     return res.json({
       status: 200,
       data: examTypes,
       message: 'Exam types Fetched Successfully!',
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+    });
+  } catch (error: any) {
+    if (error instanceof CustomError) {
+      return res.status(error.statusCode).json({
+        status: error.statusCode,
+        data: null,
+        message: error.message,
+        error: error.originalError,
+      });
+    }
+    
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
       data: null,
-      message: 'Server Error',
+      message: error.message,
       error: error,
     });
   };
@@ -49,31 +62,31 @@ export const getExamTypes = async (req: Request, res: Response<GetExamTypesRespo
  * @param { NextFunction } next 
  */
 export const getExamType = async (req: Request, res: Response<GetExamTypeResponse>, next: NextFunction) => {
-  const { examTypeId }: GetExamTypeParams = req.params as GetExamTypeParams;
-
   try {
-    const examType = await ExamType.findById(examTypeId);
-
-    if (!examType) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
-
+    const { examTypeId }: GetExamTypeParams = req.params as GetExamTypeParams;
+    const examType = await ExamTypeService.getExamType(examTypeId);
+    
     return res.json({
       status: 200,
       data: examType,
       message: 'Exam type fetched successfully!',
     });
-  } catch (error) {
-    res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    if (error instanceof CustomError) {
+      return res.status(error.statusCode).json({
+        status: error.statusCode,
+        message: error.message,
+        data: null,
+        error: error.originalError,
+      });
+    }
+
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
       data: null,
-      message: 'Server Error',
-      error: error,
-    })
+      message: error.message,
+      error: error.originalError,
+    });
   }
 };
 
@@ -85,24 +98,22 @@ export const getExamType = async (req: Request, res: Response<GetExamTypeRespons
  * @param { NextFunction } next 
  */
 export const createExamType = async (req: Request, res: Response<CreateExamTypeResponse>, next: NextFunction) => {
-  const { name }: PostExamTypeBody = req.body;
-
-  const newExamType = new ExamType({ name });
-
   try {
-    const examType = await newExamType.save();
+    const { name }: PostExamTypeBody = req.body;
+
+    const newExamType = await new ExamType({ name }).save();
 
     return res.status(201).json({
       status: 201,
-      data: examType,
+      data: newExamType,
       message: 'Exam Type created successfully!'
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
       data: null,
-      message: 'Server Error',
-      error: error,
+      message: error.message,
+      error: error.originalError,
     });
   }
 };
@@ -115,37 +126,23 @@ export const createExamType = async (req: Request, res: Response<CreateExamTypeR
  * @param { NextFunction } next 
  */
 export const updateExamType = async (req: Request, res: Response<UpdateExamTypeResponse>, next: NextFunction) => {
-  const { name }: UpdateExamTypeBody = req.body;
-  const { examTypeId }: UpdateExamTypeParams = req.params as UpdateExamTypeParams;
-
   try {
-    let examType = await ExamType.findById(examTypeId);
+    const { name }: UpdateExamTypeBody = req.body;
+    const { examTypeId }: UpdateExamTypeParams = req.params as UpdateExamTypeParams;
 
-    if (!examType) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      })
-    }
-
-    if (examType.name && name) {
-      examType.name = name;
-    }
-
-    examType = await examType.save();
+    const examType = await ExamTypeService.updateExamType(examTypeId, { name });
 
     return res.json({
       status: 200,
-      data: examType,
+      data: examType ?? null,
       message: 'Exam type Updated Successfully!',
     })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   }
 };
@@ -158,29 +155,19 @@ export const updateExamType = async (req: Request, res: Response<UpdateExamTypeR
  * @param { NextFunction } next 
  */
 export const deleteExamType = async (req: Request, res: Response<DeleteExamTypeResponse>, next: NextFunction) => {
-  const { examTypeId }: DeleteExamTypeParams = req.params as DeleteExamTypeParams;
-
   try {
-    const examType = ExamType.findById(examTypeId);
-
-    if (!examType) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Not Found!',
-      });
-    }
-
-    await examType.deleteOne();
+    const { examTypeId }: DeleteExamTypeParams = req.params as DeleteExamTypeParams;
+    await ExamTypeService.deleteExamType(examTypeId);
 
     return res.json({
       status: 200,
       message: 'Exam type Deleted Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      message: 'Server Error',
-      error: error,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      error: error.originalError,
     });
   }
 };

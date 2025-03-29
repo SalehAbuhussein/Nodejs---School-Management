@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 
-import mongoose from "mongoose";
-
 import Subject from "src/models/subject.model";
-import Teacher from "src/models/teacher.model";
+import { SubjectService } from "src/services/subjectService";
 
 import { CreateSubjectResponse, DeleteSubjectParams, DeleteSubjectResponse, GetSubjectParams, GetSubjectResponse, GetSubjectsResponse, PostSubjectBody, UpdateSubjectBody, UpdateSubjectParams, UpdateSubjectResponse } from "src/shared/types/subjectController.types";
+
 
 /**
  * Get list of Subjects
@@ -23,12 +22,12 @@ export const getSubjects = async (req: Request, res: Response<GetSubjectsRespons
       data: subjects,
       message: 'Subjects Fetched Successfully!',
     })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   };
 };
@@ -41,31 +40,23 @@ export const getSubjects = async (req: Request, res: Response<GetSubjectsRespons
  * @param { NextFunction } next 
  */
 export const getSubject = async (req: Request, res: Response<GetSubjectResponse>, next: NextFunction) => {
-  const { subjectId }: GetSubjectParams = req.params as GetSubjectParams;
-
   try {
-    const subject = await Subject.findById(subjectId);
+    const { subjectId }: GetSubjectParams = req.params as GetSubjectParams;
 
-    if (!subject) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Subject not found!',
-      });
-    }
+    const subject = await SubjectService.getSubjectById(subjectId);
 
     return res.json({
       status: 200,
       data: subject,
       message: 'Subject fetched successfully!',
     });
-  } catch (error) {
-    res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
-    })
+      error: error.originalError,
+    });
   }
 };
 
@@ -77,49 +68,21 @@ export const getSubject = async (req: Request, res: Response<GetSubjectResponse>
  * @param { NextFunction } next 
  */
 export const createSubject = async (req: Request, res: Response<CreateSubjectResponse>, next: NextFunction) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { name, teacherId, totalSlots }: PostSubjectBody = req.body;
-    const totalSlotsNumber = parseInt(totalSlots);
-
-    const newSubject = await new Subject({
-      name,
-      teachers: [teacherId],
-      totalSlots: totalSlotsNumber,
-    }, null, { session }).save({ session });
-
-    const teacher = await Teacher.findById(teacherId).session(session);
-    if (!teacher) {
-      await session.abortTransaction();
-
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Teacher Not Found',
-      });
-    }
-
-    if (!teacher.subjects.includes(newSubject._id)) {
-      teacher.subjects.push(newSubject._id);
-      await teacher.save({ session });
-    }
-
-    await session.commitTransaction();
+    const newSubject = await SubjectService.createSubject({ name, teacherId, totalSlots });
 
     return res.status(201).json({
       status: 201,
       data: newSubject,
       message: 'Subject created successfully!'
     });
-  } catch (error) {
-    await session.abortTransaction();
-
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
+      error: error.originalError,
     });
   }
 };
@@ -131,52 +94,24 @@ export const createSubject = async (req: Request, res: Response<CreateSubjectRes
  * @param { Response<UpdateSubjectResponse> } res 
  * @param { NextFunction } next 
  */
-export const updateSubject = async (req: Request, res: Response<UpdateSubjectResponse>, next: NextFunction) => {
-  const { name, isActive, teachersIds }: UpdateSubjectBody = req.body;
-  const { subjectId }: UpdateSubjectParams = req.params as UpdateSubjectParams;
-
+export const updateSubject = async (req: Request, res: Response<UpdateSubjectResponse>, next: NextFunction) => {  
   try {
-    let subject = await Subject.findById(subjectId);
+    const { name, isActive, teachersIds }: UpdateSubjectBody = req.body;
+    const { subjectId }: UpdateSubjectParams = req.params as UpdateSubjectParams;
 
-    if (!subject) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
-
-    if (name) {
-      subject.name = name;
-    }
-
-    subject.isActive = !!isActive;
-
-    // Add new teachers to the subject (ensure no duplicates)
-    if (teachersIds && teachersIds.length > 0) {
-      // Use Mongoose's $addToSet to add teachers, ensuring no duplicates
-      subject = await Subject.findByIdAndUpdate(
-        subjectId,
-        { $addToSet: { teachers: { $each: teachersIds } } }, // $each allows adding multiple teachers at once
-        { new: true } // Return the updated subject document
-      );  
-    }
-
-    if (subject) {
-      subject = await subject.save();
-    }
+    const subject = await SubjectService.updateSubject(subjectId, { name, teachersIds, isActive });
 
     return res.json({
       status: 200,
       data: subject,
       message: 'Subject Updated Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   }
 };
@@ -189,29 +124,20 @@ export const updateSubject = async (req: Request, res: Response<UpdateSubjectRes
  * @param { NextFunction } next 
  */
 export const deleteSubject = async (req: Request, res: Response<DeleteSubjectResponse>, next: NextFunction) => {
-  const { subjectId }: DeleteSubjectParams = req.params as DeleteSubjectParams;
-
   try {
-    const subject = Subject.findById(subjectId);
-
-    if (!subject) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Subject not found!',
-      });
-    }
-
-    await subject.deleteOne();
+    const { subjectId }: DeleteSubjectParams = req.params as DeleteSubjectParams;
+    
+    await SubjectService.deleteSubject(subjectId);
 
     return res.json({
       status: 200,
       message: 'Subject Deleted Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      message: 'Server Error',
-      error: error,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      error: error.originalError,
     });
   }
 };

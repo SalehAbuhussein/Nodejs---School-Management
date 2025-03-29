@@ -14,16 +14,17 @@ import { mongoConnect, connectionString } from 'src/db/index';
 
 import swaggerDocs from 'src/swagger';
 import authRoutes from 'src/routes/auth/authRoutes';
-import subjectRoutes from 'src/routes/subject/subjectRoutes';
-import studentExamRoutes from 'src/routes/studentExam/studentExamRoutes';
+import enrollmentRoutes from 'src/routes/enrollment/enrollmentRoutes';
 import examTypeRoutes from 'src/routes/examType/examTypeRoutes';
 import permissionRoutes from 'src/routes/permission/permissionRoutes';
 import roleRoutes from 'src/routes/role/roleRoutes';
+import studentExamRoutes from 'src/routes/studentExam/studentExamRoutes';
+import teacherExamRoutes from 'src/routes/teacherExam/teacherExamRoutes';
 import studentRoutes from 'src/routes/student/studentRoutes';
 import studentTierRoutes from 'src/routes/studentTier/studentTierRoutes';
+import subjectRoutes from 'src/routes/subject/subjectRoutes';
 import teacherRoutes from 'src/routes/teacher/teacherRoutes';
 import userRoutes from 'src/routes/user/userRoutes';
-import enrollmentRoutes from 'src/routes/enrollment/enrollmentRoutes';
 
 const app = express();
 const PORT = 80;
@@ -85,6 +86,7 @@ app.use('/students', studentRoutes);
 app.use('/studentTiers', studentTierRoutes);
 app.use('/subjects', subjectRoutes);
 app.use('/studentExams', studentExamRoutes);
+app.use('/teacherExams', teacherExamRoutes);
 app.use('/examTypes', examTypeRoutes);
 app.use('/permissions', permissionRoutes);
 app.use('/enrollments', enrollmentRoutes);

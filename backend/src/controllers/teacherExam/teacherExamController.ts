@@ -1,8 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 
-import TeacherExam from "src/models/teacherExam.model";
+import mongoose from "mongoose";
 
-import { CreateTeacherExamResponse, GetTeacherExamParams, GetTeacherExamResponse, PostTeacherExamBody, UpdateTeacherExamBody, UpdateTeacherExamParams, UpdateTeacherExamResponse } from "src/shared/types/teacherExamController.types";
+import { TeacherExamService } from "src/services/teacherExamService";
+
+import { 
+  CreateTeacherExamResponse, 
+  GetTeacherExamParams, 
+  GetTeacherExamResponse, 
+  PostTeacherExamBody, 
+  UpdateTeacherExamBody, 
+  UpdateTeacherExamParams, 
+  UpdateTeacherExamResponse
+} from "src/shared/types/teacherExamController.types";
 
 /**
  * Get Single Teacher Exam
@@ -15,27 +25,19 @@ export const getTeacherExam = async (req: Request, res: Response<GetTeacherExamR
   try {
     const { teacherExamId } = req.params as GetTeacherExamParams;
     
-    const teacherExam = await TeacherExam.findById(teacherExamId);
-
-    if (!teacherExam) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
+    const teacherExam = await TeacherExamService.getTeacherExamById(teacherExamId);
 
     return res.json({
       status: 200,
       data: teacherExam,
       message: 'Teacher Exam fetched successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 200,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error, 
+      error: error.originalError,
     });
   }
 };
@@ -52,23 +54,24 @@ export const createTeacherExam = async (req: Request, res: Response<CreateTeache
     const { title, examTypeId, fullExamGrade, examId }: PostTeacherExamBody = req.body;
 
     // Add Created by user ID
-    const newTeacherExam = await new TeacherExam({
-      examId,
-      examTypeId,
+    const teacherExam = await TeacherExamService.createTeacherExam({
+      examId: new mongoose.Schema.Types.ObjectId(examId),
+      examTypeId: new mongoose.Schema.Types.ObjectId(examTypeId),
       title,
       fullExamGrade,
-    }).save();
+    });
 
     return res.status(201).json({
       status: 201,
-      data: newTeacherExam,
+      data: teacherExam,
       message: 'Teacher Exam created successfully!'
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
+      error: error.originalError,
     });
   }
 };
@@ -85,37 +88,19 @@ export const updateTeacherExam = async (req: Request, res: Response<UpdateTeache
     const { title, fullExamGrade } = req.body as UpdateTeacherExamBody;
     const { teacherExamId } = req.params as UpdateTeacherExamParams;
 
-    let teacherExam = await TeacherExam.findById(teacherExamId);
-
-    if (!teacherExam) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
-
-    if (title) {
-      teacherExam.title = title;
-    }
-
-    if (fullExamGrade) {
-      teacherExam.fullExamGrade = fullExamGrade;
-    }
-
-    teacherExam = await teacherExam.save();
+    const teacherExam = await TeacherExamService.updateTeacherExam(teacherExamId, { title, fullExamGrade });
 
     return res.json({
       status: 200,
       data: teacherExam,
       message: 'Exam Updated Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   }
 };
