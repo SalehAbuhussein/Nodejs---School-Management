@@ -3,7 +3,7 @@ import { body, param } from 'express-validator';
 
 import * as enrollmentController from 'src/controllers/enrollment/enrollmentController'
 
-import { checkCourseExist, checkCourseIsAvailable } from 'src/routes/course/courseValidator';
+import { checkSubjectExist, checkSubjectIsAvailable } from 'src/routes/subject/subjectValidator';
 import { checkDuplicateEnrollment, checkEnrollmentExist } from 'src/routes/enrollment/enrollmentValidator';
 import { checkStudentExist } from 'src/routes/student/studentValidator';
 import { handleValidation } from 'src/middlewares/validatorsMiddleware';
@@ -20,25 +20,25 @@ router.post('/create',
     .custom(isObjectId)
     .bail()
     .custom(checkStudentExist),
-  body('courseId')
+  body('subjectId')
     .trim()
     .notEmpty()
-    .withMessage('course id can not be empty')
+    .withMessage('subject id can not be empty')
     .bail()
     .custom(isObjectId)
     .bail()
-    .custom(checkCourseExist)
+    .custom(checkSubjectExist)
     .bail()
-    .custom(checkCourseIsAvailable)
+    .custom(checkSubjectIsAvailable)
     .bail()
-    .custom((_, { req }) => checkDuplicateEnrollment(req.body.studentId, req.body.courseId)),
+    .custom((_, { req }) => checkDuplicateEnrollment(req.body.studentId, req.body.subjectId)),
   body('enrollmentFees')
     .trim()
     .notEmpty()
-    .withMessage('Course fees can not be empty!')
+    .withMessage('Subject fees can not be empty!')
     .bail()
     .isFloat({ min: 0 })
-    .withMessage('Course fees must be a valid number')
+    .withMessage('Subject fees must be a valid number')
     .bail()
     .customSanitizer(fees => parseFloat(fees).toFixed(2)),
   body('isActive')

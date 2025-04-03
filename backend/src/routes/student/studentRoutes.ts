@@ -14,21 +14,6 @@ const router = Router();
 
 /**
  * @openapi
- * /students:
- *   get:
- *     tags:
- *       - Student Controller
- *     summary: Get a list of students
- *     responses:
- *       200:
- *         description: Students Fetched Successfully!
- *       500:
- *         description: Server Error
- */
-router.get('', studentController.getStudents as Application);
-
-/**
- * @openapi
  * /students/{studentId}:
  *   get:
  *     tags:

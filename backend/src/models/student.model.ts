@@ -5,10 +5,9 @@ export type IStudent = {
   secondName: string,
   thirdName: string | null,
   lastName: string | null,
-  studentTierId: { type: mongoose.Types.ObjectId },
-  enrollments: { type: mongoose.Types.ObjectId }[],
-  userId: { type: mongoose.Types.ObjectId },
-  isActive: boolean,
+  studentTierId: mongoose.Schema.Types.ObjectId,
+  enrollments: mongoose.Schema.Types.ObjectId[],
+  userId: mongoose.Schema.Types.ObjectId,
 };
 
 const StudentSchema = new mongoose.Schema<IStudent>({
@@ -39,11 +38,8 @@ const StudentSchema = new mongoose.Schema<IStudent>({
   userId: {
     type: mongoose.Types.ObjectId,
     required: true,
+    unique: true,
     ref: 'User',
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
   },
 }, { timestamps: true });
 

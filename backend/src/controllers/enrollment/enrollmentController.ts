@@ -1,59 +1,41 @@
 import { Request, Response, NextFunction } from 'express';
 
-import mongoose from 'mongoose';
+import { EnrollmentService } from 'src/services/enrollmentService';
 
-import Course from 'src/models/course.model';
-import Enrollment from 'src/models/enrollment.model';
-
-import { 
+import {
   CreateEnrollmentResponse,
   DeleteIEnrollmentResponse,
   DeleteEnrollmentParams,
   PostEnrollmentBody
 } from 'src/shared/types/enrollmentController.types';
 
+import { CustomError } from 'src/shared/utils/CustomError';
+
 /**
- * Enroll Student in Course
+ * Enroll Student in Subject
  * 
  * @param { Request } req 
  * @param { Response } res 
  * @param { NextFunction } next 
  */
 export const enrollStudent = async (req: Request, res: Response<CreateEnrollmentResponse>, next: NextFunction) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
-    const { studentId, courseId, enrollmentFees, enrollmentDate = new Date(), semester = 'First' }: PostEnrollmentBody = req.body;
+    const { studentId, subjectId, enrollmentFees, enrollmentDate = new Date(), semester = 'First' }: PostEnrollmentBody = req.body;
 
-    const enrollment = await Enrollment.create([{
+    const enrollment = await EnrollmentService.enrollStudent({
       studentId,
-      courseId,
+      subjectId,
       enrollmentFees,
       enrollmentDate,
       semester,
-      year: enrollmentDate.getFullYear(),
-    }], { session });
-
-    await Course.findByIdAndUpdate(
-      courseId, 
-      { 
-        $inc: { currentSlots: 1 },
-        $push: { enrollments: enrollment }
-      },
-      { new: true, runValidators: true, session },
-    );
-
-    await session.commitTransaction();
+    });
 
     return res.status(201).json({
       status: 201,
-      data: enrollment[0],
+      data: enrollment,
       message: 'Enrollment Created Successfully',
     });
   } catch (error) {
-    session.abortTransaction();
-
     return res.status(500).json({
       status: 500,
       data: null,
@@ -64,65 +46,45 @@ export const enrollStudent = async (req: Request, res: Response<CreateEnrollment
 };
 
 /**
- * Unenroll student from a course
+ * Unenroll student from a Subject
  * 
  * @param { Request } req 
  * @param { Response<DeleteIEnrollmentResponse> } res 
  * @param { NextFunction } next 
  */
 export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollmentResponse>, next: NextFunction) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
   try {
     const { enrollmentId } = req.params as DeleteEnrollmentParams;
 
-    const enrollment = await Enrollment
-      .where('isDeleted')
-      .equals(false)
-      .findOne({ _id: enrollmentId })
-      .session(session);
-    const course = await Course
-      .where('isActive')
-      .equals(true)
-      .findOne({ _id: enrollment?.courseId })
-      .session(session);
+    const enrollment = await EnrollmentService.unenrollStudent(enrollmentId);
 
-    if (enrollment) {
-      await Enrollment.softDelete({ _id: enrollmentId }, { session });
-    }
-
-    await enrollment?.save({ session });
-
-    if (course && course.isLocked) {
-      await session.abortTransaction();
-
-      return res.status(403).json({
-        status: 403,
-        message: 'Course is not available for enrollment',
+    if (!enrollment?.success) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: 'Enrollment not found',
       });
     }
 
-    if (course && course.currentSlots > 0) {
-      course.enrollments = course.enrollments.filter(id => !id.equals(enrollment?.id));
-      course.currentSlots -= 1;
-      course.isLocked = false;
-
-      await course.save({ session });
-    }
-
-    await session.commitTransaction();
-
     return res.json({
       status: 200,
+      data: null,
       message: 'You have unenrolled successfully',
     });
   } catch (error) {
-    await session.abortTransaction();
+    if (error instanceof CustomError) {
+      return res.status(error.statusCode).json({
+        status: error.statusCode,
+        message: error.message,
+        data: null,
+        error: error.originalError,
+      });
+    }
 
     return res.status(500).json({
       status: 500,
       message: 'Server Error',
+      data: null,
       error: error,
     });
   }

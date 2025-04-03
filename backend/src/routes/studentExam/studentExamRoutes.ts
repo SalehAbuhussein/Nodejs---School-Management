@@ -2,32 +2,18 @@ import { Application, Router } from 'express';
 
 import { body, param } from 'express-validator';
 
-import * as examController from 'src/controllers/exam/examController';
-import { checkExamExist } from 'src/routes/exam/examValidator';
+import * as examController from 'src/controllers/studentExam/studentExamController';
 
+import { checkStudentExamExist } from 'src/routes/studentExam/studentExamValidator';
 import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 import { isObjectId } from 'src/validators';
+import { checkTeacherExamExist } from '../teacherExam/teacherExamValidator';
 
 const router = Router();
 
 /**
  * @openapi
- * /exams:
- *   get:
- *     tags:
- *       - Exam Controller
- *     summary: Get a list of exams
- *     responses:
- *       200:
- *         description: Exams Fetched Successfully!
- *       500:
- *         description: Server error
- */
-router.get('', examController.getExams as Application);
-
-/**
- * @openapi
- * /exams/{examId}:
+ * /studentExams/{examId}:
  *   get:
  *     tags:
  *       - Exam Controller
@@ -51,14 +37,14 @@ router.get('/:examId',
   param('examId')
     .custom(isObjectId)
     .bail()
-    .custom(checkExamExist),
+    .custom(checkStudentExamExist),
   handleValidation as Application,
   examController.getExam as Application
 );
 
 /**
  * @openapi
- * /exams/create:
+ * /studentExams/create:
  *   post:
  *     tags:
  *       - Exam Controller
@@ -73,7 +59,7 @@ router.get('/:examId',
  *               - title
  *               - studentGrade
  *               - fullExamGrade
- *               - courseId
+ *               - subjectId
  *               - examTypeId
  *             properties:
  *               title:
@@ -82,7 +68,7 @@ router.get('/:examId',
  *                 type: number
  *               fullExamGrade:
  *                 type: number
- *               courseId:
+ *               subjectId:
  *                 type: string
  *               examTypeId:
  *                 type: string
@@ -105,10 +91,10 @@ router.post('/create',
     .trim()
     .notEmpty()
     .withMessage('Full exam grade can not be empty!'),
-  body('courseId')
+  body('subjectId')
     .trim()
     .notEmpty()
-    .withMessage('Course Id can not be empty!'),
+    .withMessage('Subject Id can not be empty!'),
   body('examTypeId')
     .trim()
     .notEmpty()
@@ -119,7 +105,7 @@ router.post('/create',
 
 /**
  * @openapi
- * /exams/{examId}:
+ * /studentExams/{examId}:
  *   patch:
  *     tags:
  *       - Exam Controller
@@ -141,7 +127,7 @@ router.post('/create',
  *               - title
  *               - studentGrade
  *               - fullExamGrade
- *               - courseId
+ *               - subjectId
  *               - examTypeId
  *             properties:
  *               title:
@@ -150,7 +136,7 @@ router.post('/create',
  *                 type: number
  *               fullExamGrade:
  *                 type: number
- *               courseId:
+ *               subjectId:
  *                 type: string
  *               examTypeId:
  *                 type: string
@@ -170,7 +156,7 @@ router.patch('/:examId',
     .bail()
     .custom(isObjectId)
     .bail()
-    .custom(checkExamExist),
+    .custom(checkStudentExamExist),
   body('title')
     .trim()
     .notEmpty()
@@ -183,10 +169,10 @@ router.patch('/:examId',
     .trim()
     .notEmpty()
     .withMessage('Full exam grade can not be empty!'),
-  body('courseId')
+  body('subjectId')
     .trim()
     .notEmpty()
-    .withMessage('Course Id can not be empty!'),
+    .withMessage('Subject Id can not be empty!'),
   body('examTypeId')
     .trim()
     .notEmpty()
@@ -208,9 +194,40 @@ router.delete('/:examId',
     .bail()
     .custom(isObjectId)
     .bail()
-    .custom(checkExamExist),
+    .custom(checkStudentExamExist),
   handleValidation as Application,
   examController.deleteExam as Application
 );
+
+router.post('/:teacherExamId/take',
+  param('teacherExamId')
+    .trim()
+    .notEmpty()
+    .withMessage('Exam ID cannot be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkTeacherExamExist),
+  body('studentId')
+    .trim()
+    .notEmpty()
+    .withMessage('Student ID cannot be empty')
+    .bail()
+    .custom(isObjectId),
+  body('grade')
+    .isNumeric()
+    .withMessage('Grade must be a number'),
+  body('semester')
+    .trim()
+    .notEmpty()
+    .withMessage('Semester cannot be empty')
+    .isIn(['First', 'Second'])
+    .withMessage('Semester must be either "First" or "Second"'),
+  body('year')
+    .isNumeric()
+    .withMessage('Year must be a number'),
+  handleValidation as Application,
+  examController.takeExam as Application
+)
 
 export default router;

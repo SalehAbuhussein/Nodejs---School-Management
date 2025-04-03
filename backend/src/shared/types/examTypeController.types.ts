@@ -41,5 +41,6 @@ export type UpdateExamTypeResponse = {
 export type DeleteExamTypeResponse = {
   status: number,
   message: string,
+  data: IExamType | null,
   error?: any,
 };

@@ -10,7 +10,7 @@ export type PostStudentBody = {
   userId: string,
 };
 
-export type UpdateStudentBody = PostStudentBody & { isActive: boolean, studentTierId: string };
+export type UpdateStudentBody = Omit<PostStudentBody, 'userId'> & { studentTierId: string };
 
 export type UpdateStudentParams = { studentId: string };
 
@@ -47,5 +47,6 @@ export type UpdateStudentResponse = {
 export type DeleteStudentResponse = {
   status: number,
   message: string,
+  data: IStudent | null,
   error?: any,
 };

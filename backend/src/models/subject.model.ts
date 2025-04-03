@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 
-export type ICourse = {
-  courseName: string,
-  courseFees: number,
+export type ISubject = {
+  name: string,
   teachers: mongoose.Types.ObjectId[],
   enrollments: mongoose.Types.ObjectId[],
   totalSlots: number,
@@ -11,14 +10,11 @@ export type ICourse = {
   isLocked: boolean,
 };
 
-const CourseSchema = new mongoose.Schema<ICourse>({
-  courseName: {
+const SubjectSchema = new mongoose.Schema<ISubject>({
+  name: {
     type: String,
     required: true,
-  },
-  courseFees: {
-    type: Number,
-    required: true,
+    unique: true,
   },
   teachers: [{
     type: mongoose.Types.ObjectId,
@@ -52,4 +48,4 @@ const CourseSchema = new mongoose.Schema<ICourse>({
   },
 }, { timestamps: true });
 
-export default mongoose.model<ICourse>('Course', CourseSchema);
+export default mongoose.model<ISubject>('Subject', SubjectSchema);

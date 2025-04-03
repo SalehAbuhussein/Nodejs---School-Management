@@ -44,5 +44,6 @@ export type UpdateStudentTierResponse = {
 export type DeleteStudentTierResponse = {
   status: number,
   message: string,
+  data: IStudentTier | null,
   error?: any,
 };

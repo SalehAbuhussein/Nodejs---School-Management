@@ -1,18 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { HydratedDocument } from "mongoose";
 
-import Permission, { IPermission } from "src/models/permission.model";
+import { PermissionService } from "src/services/permissionService";
 
-import { 
-  DeletePermissionParams, 
-  GetPermissionParams, 
-  PostPermissionBody, 
-  UpdatePermissionBody, 
-  UpdatePermissionParams, 
+import {
+  DeletePermissionParams,
+  GetPermissionParams,
+  PostPermissionBody,
+  UpdatePermissionBody,
+  UpdatePermissionParams,
   CreatePermissionResponse,
-  DeletePermissionResponse, 
-  GetPermissionResponse, 
-  GetPermissionsResponse, 
+  DeletePermissionResponse,
+  GetPermissionResponse,
+  GetPermissionsResponse,
   UpdatePermissionResponse,
 } from "src/shared/types/permissionController.types";
 
@@ -25,19 +24,19 @@ import {
  */
 export const getPermissions = async (req: Request, res: Response<GetPermissionsResponse>, next: NextFunction) => {
   try {
-    const permissions = await Permission.find();
+    const permissions = await PermissionService.getAllPermissions();
 
     return res.json({ 
       status: 200,
       data: permissions,
       message: 'Permissions Fetched Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   }
 };
@@ -53,27 +52,19 @@ export const getPermission = async (req: Request, res: Response<GetPermissionRes
   try {
     const { permissionId }: GetPermissionParams = req.params as GetPermissionParams;
 
-    const permission = await Permission.findById(permissionId);
-    
-    if (!permission) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
+    const permission = await PermissionService.getPermission(permissionId);
 
     return res.json({ 
       status: 200, 
       data: permission, 
       message: 'Permission Fetched Successfully!' 
     });
-  } catch (error) {
-    return res.status(500).json({ 
-      status: 200,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error, 
+      error: error.originalError,
     });
   }
 };
@@ -89,19 +80,19 @@ export const createPermission = async (req: Request, res: Response<CreatePermiss
   try {
     const { name }: PostPermissionBody = req.body;
 
-    const newPermission: HydratedDocument<IPermission> = await new Permission({ name }).save();
+    const permission = await PermissionService.createPermission({ name });
 
     return res.status(201).json({ 
       status: 201,
-      data: newPermission,
+      data: permission,
       message: "Permission Created Successfully"
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500, 
-      data: null, 
-      error: error,
-      message: "Server error" 
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
     });
   }
 };
@@ -118,33 +109,19 @@ export const updatePermission = async (req: Request, res: Response<UpdatePermiss
     const { name }: UpdatePermissionBody = req.body;
     const { permissionId }: UpdatePermissionParams = req.params as UpdatePermissionParams;
 
-    let permission = await Permission.findById(permissionId);
-    
-    if (!permission) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!', 
-      });
-    }
-
-    if (permission.name && name) {
-      permission.name = name;
-    }
-
-    permission = await permission.save();
+    const permission  = await PermissionService.updatePermission(permissionId, { name });
 
     return res.json({
       status: 200,
       data: permission,
       message: 'Permission Updated Successfully!',
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      data: null, 
-      message: 'Server Error', 
-      error: error, 
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
     });
   }
 };
@@ -157,29 +134,22 @@ export const updatePermission = async (req: Request, res: Response<UpdatePermiss
  * @param { NextFunction } next 
  */
 export const deletePermission = async (req: Request, res: Response<DeletePermissionResponse>, next: NextFunction) => {
-    try {
-      const { permissionId }: DeletePermissionParams = req.params as DeletePermissionParams;
-      
-      const permission = await Permission.findById(permissionId);
-  
-      if (!permission) {
-        return res.status(404).json({
-          status: 404,
-          message: 'Not Found!',
-        });
-      }
-  
-      await permission?.deleteOne();
-  
-      return res.json({ 
-        status: 200,
-        message: 'Permission Deleted Successfully!',
-       });
-    } catch (error) {
-      return res.status(500).json({ 
-        status: 500, 
-        message: 'Server Error', 
-        error: error
-       });
-    }
+  try {
+    const { permissionId }: DeletePermissionParams = req.params as DeletePermissionParams;
+    
+    await PermissionService.deletePermission(permissionId);
+
+    return res.json({ 
+      status: 200,
+      message: 'Permission Deleted Successfully!',
+      data: null,
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
+    });
+  }
 };

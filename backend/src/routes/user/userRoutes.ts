@@ -29,21 +29,6 @@ const upload = multer({ storage });
 
 /**
  * @openapi
- * /users:
- *   get:
- *     tags:
- *       - User Controller
- *     summary: Get a list of users
- *     responses:
- *       200:
- *         description: Users fetched successfully
- *       500:
- *         description: Server error
- */
-router.get('', verifyToken, userController.getUsers as Application);
-
-/**
- * @openapi
  * /users/{userId}:
  *   get:
  *     tags:

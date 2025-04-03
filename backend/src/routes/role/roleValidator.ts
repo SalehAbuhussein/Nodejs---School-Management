@@ -1,4 +1,4 @@
-import Role from 'src/models/role.model';
+import { RoleService } from 'src/services/roleService';
 
 /**
  * Check Role Existence in database
@@ -6,9 +6,9 @@ import Role from 'src/models/role.model';
  * @param { string } id
  */
 export const checkRoleExist = async (id: string) => {
-  const foundRole = await Role.findOne({ _id: id });
+  const roleExist = await RoleService.roleExists(id);
 
-  if (!foundRole) {
+  if (!roleExist) {
     throw new Error('Role does not exist');
   }
 

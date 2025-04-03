@@ -4,9 +4,9 @@ import { body, param } from 'express-validator';
 
 import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 
-import * as courseController from 'src/controllers/course/courseController';
+import * as subjectController from 'src/controllers/subject/subjectController';
 
-import { checkCourseExist } from './courseValidator';
+import { checkSubjectExist } from './subjectValidator';
 import { checkTeacherExist, checkTeachersExist } from 'src/routes/teacher/teacherValidator';
 import { isObjectId, isObjectIds, removeDuplicates } from 'src/validators';
 
@@ -14,61 +14,61 @@ const router = Router();
 
 /**
  * @openapi
- * /courses:
+ * /subjects:
  *   get:
  *     tags:
- *       - Course Controller
- *     summary: Get a list of courses
+ *       - Subject Controller
+ *     summary: Get a list of subjects
  *     responses:
  *       200:
- *         description: Courses Fetched Successfully!
+ *         description: Subjects Fetched Successfully!
  *       500:
  *         description: Server error
  */
-router.get('', courseController.getCourses as Application);
+router.get('', subjectController.getSubjects as Application);
 
 /**
  * @openapi
- * /courses/{courseId}:
+ * /subjects/{subjectId}:
  *   get:
  *     tags:
- *       - Course Controller
- *     summary: Get a course
+ *       - Subject Controller
+ *     summary: Get a Subject
  *     parameters:
- *       - name: courseId
+ *       - name: subjectId
  *         in: path
- *         description: course ID
+ *         description: subject ID
  *         required: true
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Courses Fetched Successfully!
+ *         description: Subject Fetched Successfully!
  *       404:
  *         description: Not Found!
  *       500:
  *         description: Server error
  */
-router.get('/:courseId',
-  param('courseId')
+router.get('/:subjectId',
+  param('subjectId')
     .trim()
     .notEmpty()
-    .withMessage('course id can not be empty')
+    .withMessage('subject id can not be empty')
     .bail()
     .custom(isObjectId)
     .bail()
-    .custom(checkCourseExist),
+    .custom(checkSubjectExist),
   handleValidation as Application,
-  courseController.getCourse as Application
+  subjectController.getSubject as Application
 );
 
 /**
  * @openapi
- * /courses/create:
+ * /subjects/create:
  *   post:
  *     tags:
- *       - Course Controller
- *     summary: Create a course
+ *       - Subject Controller
+ *     summary: Create a Subject
  *     requestBody:
  *       required: true
  *       content:
@@ -76,40 +76,28 @@ router.get('/:courseId',
  *           schema:
  *             type: object
  *             required:
- *               - courseName
- *               - courseFees
+ *               - name
  *               - teacherId
  *             properties:
- *               courseName:
+ *               name:
  *                 type: string
- *               courseFees:
- *                 type: number
  *               teacherId:
  *                 type: string
  *     responses:
  *       201:
- *         description: Course created successfully!
+ *         description: Subject created successfully!
  *       500:
  *         description: Server error
  */
 router.post('/create',
-  body('courseName')
+  body('name')
     .trim()
     .notEmpty()
-    .withMessage('Course name can not be empty!'),
-  body('courseFees')
-    .trim()
-    .notEmpty()
-    .withMessage('Course fees can not be empty!')
-    .bail()
-    .isFloat({ min: 0 })
-    .withMessage('Course fees must be a valid number')
-    .bail()
-    .customSanitizer(fees => parseFloat(fees).toFixed(2)),
+    .withMessage('name can not be empty!'),
   body('teacherId')
     .trim()
     .notEmpty()
-    .withMessage('Course can not be created without teacher!')
+    .withMessage('can not be created without teacher!')
     .bail()
     .custom(isObjectId)
     .bail()
@@ -122,21 +110,21 @@ router.post('/create',
     .isInt({ min: 1 })
     .withMessage('slots should be valid number'),
   handleValidation as Application,
-  courseController.createCourse as Application
+  subjectController.createSubject as Application
 );
 
 // TODO: This needs to be tested
 /**
  * @openapi
- * /courses/{courseId}:
+ * /subjects/{subjectId}:
  *   patch:
  *     tags:
- *       - Course Controller
- *     summary: Update course
+ *       - Subject Controller
+ *     summary: Update subject
  *     parameters:
- *       - name: courseId
+ *       - name: subjectId
  *         in: path
- *         description: course ID
+ *         description: Subject ID
  *         required: true
  *         schema:
  *           type: string
@@ -147,41 +135,34 @@ router.post('/create',
  *           schema:
  *             type: object
  *             required:
- *               - courseName
- *               - courseFees
+ *               - name
  *               - teacherId
  *             properties:
- *               courseName:
+ *               name:
  *                 type: string
- *               courseFees:
- *                 type: number
  *               teacherId:
  *                 type: string
  *     responses:
  *       200:
- *         description: Course Updated Successfully!
+ *         description: Subject Updated Successfully!
  *       404:
  *         description: Not Found!
  *       500:
  *         description: Server error
  */
-router.patch('/:courseId',
-  param('courseId')
+router.patch('/:subjectId',
+  param('subjectId')
     .trim()
     .notEmpty()
-    .withMessage('course id can not be empty')
+    .withMessage('Subject id can not be empty')
     .bail()
     .custom(isObjectId)
     .bail()
-    .custom(checkCourseExist),
-  body('courseName')
+    .custom(checkSubjectExist),
+  body('name')
     .trim()
     .notEmpty()
-    .withMessage('Course name can not be empty!'),
-  body('courseFees')
-    .trim()
-    .notEmpty()
-    .withMessage('Course fees can not be empty!'), 
+    .withMessage('Subject name can not be empty!'),
   body('teachersIds')
     .isArray({ min: 1 })
     .withMessage('Teachers can not be empty!')
@@ -191,24 +172,24 @@ router.patch('/:courseId',
     .bail()
     .custom(checkTeachersExist),
   handleValidation as Application,
-  courseController.updateCourse as Application
+  subjectController.updateSubject as Application
 );
 
 /**
- * Delete course
+ * Delete subject
  * 
- * @route DELETE /courseRoutes/:courseId
+ * @route DELETE /subjects/:subjectId
  */
-router.delete('/:courseId',
-  param('courseId')
+router.delete('/:subjectId',
+  param('subjectId')
     .trim()
     .notEmpty()
-    .withMessage('course id can not be empty')
+    .withMessage('subject id can not be empty')
     .bail()
     .custom(isObjectId)
     .bail()
-    .custom(checkCourseExist),
-  courseController.deleteCourse as Application
+    .custom(checkSubjectExist),
+  subjectController.deleteSubject as Application
 );
 
 export default router;

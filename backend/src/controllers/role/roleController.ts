@@ -1,20 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 
 import mongoose from "mongoose";
-import Role from "src/models/role.model";
 
-import { 
-  GetRoleParams, 
-  PostRoleBody, 
+import { RoleService } from "src/services/roleService";
+
+import {
+  GetRoleParams,
+  PostRoleBody,
   UpdateRoleResponse,
-  GetRoleResponse, 
+  GetRoleResponse,
   GetRolesResponse,
-  CreateRoleResponse, 
+  CreateRoleResponse,
   DeleteRoleResponse,
   UpdateRoleParams,
   UpdateRoleBody,
   DeleteRoleParams,
- } from "src/shared/types/roleController.types";
+} from "src/shared/types/roleController.types";
 
 /**
  * Get roles
@@ -25,19 +26,19 @@ import {
  */
 export const getRoles = async (req: Request, res: Response<GetRolesResponse>, next: NextFunction) => {
   try {
-    const roles = await Role.find();
+    const roles = await RoleService.getAllRoles();
 
     return res.json({
       status: 200,
       data: roles,
       message: 'Roles Fetched Successfully!',
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   };
 };
@@ -50,31 +51,22 @@ export const getRoles = async (req: Request, res: Response<GetRolesResponse>, ne
  * @param { NextFunction } next 
  */
 export const getRole = async (req: Request, res: Response<GetRoleResponse>, next: NextFunction) => {
-  const { roleId }: GetRoleParams = req.params as GetRoleParams;
-
   try {
-    const role = await Role.findById({ _id: roleId });
-
-    if (!role) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      });
-    }
+    const { roleId }: GetRoleParams = req.params as GetRoleParams;
+    const role = await RoleService.getRole(roleId);
 
     return res.json({
       status: 200,
       data: role,
       message: 'Role fetched successfully!',
     });
-  } catch (error) {
-    res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
-    })
+      error: error.originalError,
+    });
   }
 };
 
@@ -88,24 +80,21 @@ export const getRole = async (req: Request, res: Response<GetRoleResponse>, next
 export const createRole = async (req: Request, res: Response<CreateRoleResponse>, next: NextFunction) => {
   try {
     const { roleName, permissions }: PostRoleBody = req.body;
-    const permissionObjectIds = permissions.map((permissionId: string) => new mongoose.Types.ObjectId(permissionId)) ?? [];
+    const permissionObjectIds = permissions.map((permissionId: string) => new mongoose.Schema.Types.ObjectId(permissionId)) ?? [];
 
-    const newRole = await new Role({
-      roleName,
-      permissions: permissionObjectIds,
-    }).save();
+    const newRole = await RoleService.createRole({ roleName, permissions: permissionObjectIds });
 
     return res.status(201).json({
       status: 201,
       data: newRole,
       message: 'Role created successfully!'
-    })
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      error: error,
-      message: 'Server Error',
+      error: error.originalError,
     });
   }
 };
@@ -118,41 +107,23 @@ export const createRole = async (req: Request, res: Response<CreateRoleResponse>
  * @param { NextFunction } next 
  */
 export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>, next: NextFunction) => {
-  const { permissions, roleName }: UpdateRoleBody = req.body;
-  const { roleId }: UpdateRoleParams = req.params as UpdateRoleParams;
-
   try {
-    let role = await Role.findById(roleId);
+    const { permissions, roleName }: UpdateRoleBody = req.body;
+    const { roleId }: UpdateRoleParams = req.params as UpdateRoleParams;
 
-    if (!role) {
-      return res.status(404).json({
-        status: 404,
-        data: null,
-        message: 'Not Found!',
-      })
-    }
-
-    if (role.roleName && roleName) {
-      role.roleName = roleName;
-    }
-
-    if (role.permissions && permissions.length > 0) {
-      role.permissions = permissions.map(id => new mongoose.Types.ObjectId(id));
-    }
-
-    role = await role.save();
+    const role = await RoleService.updateRole(roleId, { roleName, permissions });
 
     return res.json({
       status: 200,
       data: role,
       message: 'Role Updated Successfully!',
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
       data: null,
-      message: 'Server Error',
-      error: error,
+      error: error.originalError,
     });
   }
 };
@@ -167,29 +138,22 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
  * @param { NextFunction } next 
  */
 export const deleteRole = async (req: Request, res: Response<DeleteRoleResponse>, next: NextFunction) => {
-  const { roleId }: DeleteRoleParams = req.params as DeleteRoleParams;
-
   try {
-    const role = Role.findById(roleId);
+    const { roleId }: DeleteRoleParams = req.params as DeleteRoleParams;
 
-    if (!role) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Not Found!',
-      });
-    }
-
-    await role.deleteOne();
+    await RoleService.deleteRole(roleId);
 
     return res.json({
       status: 200,
       message: 'Role Deleted Successfully!',
+      data: null,
     });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      message: 'Server Error',
-      error: error,
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
     });
   }
 };

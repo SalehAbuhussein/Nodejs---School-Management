@@ -6,6 +6,7 @@ export interface IUser {
   profileImg?: string,
   password: string,
   role: mongoose.Types.ObjectId,
+  isActive: boolean,
 };
 
 const UserSchema = new mongoose.Schema<IUser>({
@@ -29,7 +30,11 @@ const UserSchema = new mongoose.Schema<IUser>({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Role',
     required: true,
-  }
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 }, { timestamps: true });
 
 export default mongoose.model<IUser>('User', UserSchema);
