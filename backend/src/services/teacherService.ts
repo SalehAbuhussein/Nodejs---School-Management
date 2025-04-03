@@ -2,7 +2,6 @@ import Teacher, { ITeacher } from 'src/models/teacher.model';
 import { CustomError } from 'src/shared/utils/CustomError';
 
 export class TeacherService {
-
   /**
    * Retrieve all teachers from the database
    * 
@@ -14,6 +13,9 @@ export class TeacherService {
       const teachers = await Teacher.find();
       return teachers;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -36,6 +38,9 @@ export class TeacherService {
 
       return teacher;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -51,6 +56,9 @@ export class TeacherService {
     try {
       return await Teacher.create(teacherData);
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -63,7 +71,7 @@ export class TeacherService {
    * @returns {Promise<ITeacher>} A promise that resolves to the updated teacher
    * @throws {CustomError} If teacher not found or database operation fails
    */
-  static updateTeacher = async (teacherId: string, teacherData: Omit<ITeacher, 'userId'>) => {
+  static updateTeacher = async (teacherId: string, teacherData: Omit<ITeacher, 'userId'>): Promise<ITeacher> => {
     try {
       const teacher = await Teacher.findById(teacherId);
 
@@ -97,6 +105,9 @@ export class TeacherService {
 
       return await teacher.save();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -124,24 +135,31 @@ export class TeacherService {
 
   /**
    * Check if a teacher exists
-   * @param teacherId - The ID of the teacher to check
-   * @throws CustomError if database operation fails
+   * 
+   * @param {string} teacherId - The ID of the teacher to check
+   * @returns {Promise<boolean>} A promise that resolves to true if the teacher exists
+   * @throws {CustomError} If database operation fails
    */
   static teacherExists = async (teacherId: string ): Promise<boolean> => {
     try {
       const teacher = await Teacher.findById(teacherId);
       return !!teacher;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
 
   /**
-   * Check if a teachers exists
-   * @param teachersIds - The IDs of the teachers to check
-   * @throws CustomError if database operation fails
+   * Check if multiple teachers exist
+   * 
+   * @param {string[]} teachersIds - The IDs of the teachers to check
+   * @returns {Promise<boolean>} A promise that resolves to true if all teachers exist
+   * @throws {CustomError} If database operation fails
    */
-  static teachersExists = async (teachersIds: string[]) => {
+  static teachersExists = async (teachersIds: string[]): Promise<boolean> => {
     try {
       const teachersList = await Teacher.find({ $in: teachersIds });
       
@@ -151,6 +169,9 @@ export class TeacherService {
 
       return true;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };

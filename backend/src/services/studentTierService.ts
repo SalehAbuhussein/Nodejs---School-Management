@@ -13,6 +13,9 @@ export class StudentTierService {
     try {
       return await StudentTier.find();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500);
     }
   };
@@ -34,6 +37,9 @@ export class StudentTierService {
 
       return studentTier
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500);
     }
   };
@@ -45,12 +51,15 @@ export class StudentTierService {
    * @returns {Promise<IStudentTier>} A promise that resolves to the created student tier
    * @throws {CustomError} If validation fails or database operation fails
    */
-  static createStudentTier = async (studentTier: IStudentTier) => {
+  static createStudentTier = async (studentTier: IStudentTier): Promise<IStudentTier> => {
     try {
       const newStudentTier = await StudentTier.create(studentTier);
 
       return newStudentTier;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500);
     }
   };
@@ -63,7 +72,7 @@ export class StudentTierService {
    * @returns {Promise<IStudentTier>} A promise that resolves to the updated student tier
    * @throws {CustomError} If student tier not found or database operation fails
    */
-  static uppdateStudentTier = async (studentTierId: string, studentTierData: IStudentTier): Promise<IStudentTier> => {
+  static updateStudentTier = async (studentTierId: string, studentTierData: IStudentTier): Promise<IStudentTier> => {
     try {
       let studentTier = await StudentTier.findById(studentTierId);
 
@@ -72,15 +81,18 @@ export class StudentTierService {
       }
 
       if (studentTierData.tierName !== studentTier.tierName) {
-        studentTier.tierName = studentTier.tierName;
+        studentTier.tierName = studentTierData.tierName;
       }
 
       if (studentTierData.monthlySubscriptionFees !== studentTier.monthlySubscriptionFees) {
-        studentTier.monthlySubscriptionFees = studentTier.monthlySubscriptionFees;
+        studentTier.monthlySubscriptionFees = studentTierData.monthlySubscriptionFees;
       }
 
       return await studentTier.save();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500);
     }
   };
@@ -102,21 +114,28 @@ export class StudentTierService {
 
       return result.deletedCount > 0; 
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500);
     }
   };
 
   /**
-   * Check if multiple permissions exist
-   * @param permissionIds - Array of permission IDs to check
-   * @returns {Promise<boolean>} A promise that resolves to true if studentTier exists
-   * @throws CustomError if any permission doesn't exist or database operation fails
+   * Check if a student tier exists
+   * 
+   * @param {string} studentTierId - The ID of the student tier to check
+   * @returns {Promise<boolean>} A promise that resolves to true if student tier exists
+   * @throws {CustomError} If database operation fails
    */
   static studentTierExist = async (studentTierId: string): Promise<boolean> => {
     try {
       const count = await StudentTier.countDocuments({ _id: studentTierId });
       return count > 0;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to check if permission exists', 500, error);
     }
   };

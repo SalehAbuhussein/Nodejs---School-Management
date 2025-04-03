@@ -45,5 +45,6 @@ export type UpdateSubjectResponse = {
 export type DeleteSubjectResponse = {
   status: number,
   message: string,
+  data: ISubject | null,
   error?: any,
 };

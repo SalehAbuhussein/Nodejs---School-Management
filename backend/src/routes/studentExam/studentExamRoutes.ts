@@ -7,6 +7,7 @@ import * as examController from 'src/controllers/studentExam/studentExamControll
 import { checkStudentExamExist } from 'src/routes/studentExam/studentExamValidator';
 import { handleValidation } from 'src/middlewares/validatorsMiddleware';
 import { isObjectId } from 'src/validators';
+import { checkTeacherExamExist } from '../teacherExam/teacherExamValidator';
 
 const router = Router();
 
@@ -197,5 +198,36 @@ router.delete('/:examId',
   handleValidation as Application,
   examController.deleteExam as Application
 );
+
+router.post('/:teacherExamId/take',
+  param('teacherExamId')
+    .trim()
+    .notEmpty()
+    .withMessage('Exam ID cannot be empty')
+    .bail()
+    .custom(isObjectId)
+    .bail()
+    .custom(checkTeacherExamExist),
+  body('studentId')
+    .trim()
+    .notEmpty()
+    .withMessage('Student ID cannot be empty')
+    .bail()
+    .custom(isObjectId),
+  body('grade')
+    .isNumeric()
+    .withMessage('Grade must be a number'),
+  body('semester')
+    .trim()
+    .notEmpty()
+    .withMessage('Semester cannot be empty')
+    .isIn(['First', 'Second'])
+    .withMessage('Semester must be either "First" or "Second"'),
+  body('year')
+    .isNumeric()
+    .withMessage('Year must be a number'),
+  handleValidation as Application,
+  examController.takeExam as Application
+)
 
 export default router;

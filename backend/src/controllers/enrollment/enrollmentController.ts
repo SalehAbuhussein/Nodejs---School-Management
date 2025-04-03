@@ -61,12 +61,14 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
     if (!enrollment?.success) {
       return res.status(404).json({
         status: 404,
+        data: null,
         message: 'Enrollment not found',
       });
     }
 
     return res.json({
       status: 200,
+      data: null,
       message: 'You have unenrolled successfully',
     });
   } catch (error) {
@@ -74,6 +76,7 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
       return res.status(error.statusCode).json({
         status: error.statusCode,
         message: error.message,
+        data: null,
         error: error.originalError,
       });
     }
@@ -81,6 +84,7 @@ export const unenrollStudent = async (req: Request, res: Response<DeleteIEnrollm
     return res.status(500).json({
       status: 500,
       message: 'Server Error',
+      data: null,
       error: error,
     });
   }

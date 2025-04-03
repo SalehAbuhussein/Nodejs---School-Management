@@ -6,7 +6,9 @@ export type PostStudentExamBody = {
   title: string, 
   subjectId: string,
   studentId: string,
-  studentGrade: number 
+  studentGrade: number,
+  semester: 'First' | 'Second',
+  year: number,
 };
 
 export type UpdateStudentExamBody = Omit<PostStudentExamBody, 'studentId' | 'subjectId'>;
@@ -52,11 +54,18 @@ export type DeleteStudentExamResponse = {
 /**
  * Take Exam types
  */
+export type TakeTeacherExamParams = { teacherExamId: string };
 
-export type TakeTeacherExamParams = { examId: string };
+export type TakeTeacherExamBody = {
+  studentId: string,
+  grade: string,
+  semester: 'First' | 'Second',
+  year: number,
+};
 
 export type TakeTeacherExamResponse = {
   status: number,
   message: string,
+  data: IStudentExam | null,
   error?: any,
 };

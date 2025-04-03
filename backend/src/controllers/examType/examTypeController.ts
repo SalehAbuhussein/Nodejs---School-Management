@@ -162,11 +162,13 @@ export const deleteExamType = async (req: Request, res: Response<DeleteExamTypeR
     return res.json({
       status: 200,
       message: 'Exam type Deleted Successfully!',
+      data: null,
     });
   } catch (error: any) {
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
+      data: null,
       error: error.originalError,
     });
   }

@@ -51,12 +51,12 @@ export const getTeacherExam = async (req: Request, res: Response<GetTeacherExamR
  */
 export const createTeacherExam = async (req: Request, res: Response<CreateTeacherExamResponse>, next: NextFunction) => {
   try {
-    const { title, examTypeId, fullExamGrade, examId }: PostTeacherExamBody = req.body;
+    const { title, subjectId, examTypeId, fullExamGrade }: PostTeacherExamBody = req.body;
 
     // Add Created by user ID
     const teacherExam = await TeacherExamService.createTeacherExam({
-      examId: new mongoose.Schema.Types.ObjectId(examId),
       examTypeId: new mongoose.Schema.Types.ObjectId(examTypeId),
+      subjectId: new mongoose.Schema.Types.ObjectId(subjectId),
       title,
       fullExamGrade,
     });

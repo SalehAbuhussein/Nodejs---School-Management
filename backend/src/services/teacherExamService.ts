@@ -20,6 +20,9 @@ export class TeacherExamService {
     
       return teacherExam;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -35,6 +38,9 @@ export class TeacherExamService {
     try {
       return await TeacherExam.create(teacherExamData);
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -65,6 +71,9 @@ export class TeacherExamService {
 
       return await teacherExam.save();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };

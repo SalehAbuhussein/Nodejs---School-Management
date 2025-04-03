@@ -40,7 +40,7 @@ export const getUser = async (req: Request, res: Response<GetUserResponse>, next
         status: 404,
         data: null,
         message: 'Not Found!',
-      })
+      });
     }
 
     return res.json({ 
@@ -139,17 +139,20 @@ export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>
       return res.status(404).json({
         status: 404,
         message: 'Not Found!',
+        data: null,
       });
     }
 
     return res.json({ 
       status: 200, 
       message: 'User Deleted Successfully!',
+      data: null,
     });
   } catch (error: any) {
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
+      data: null,
       error: error.originalError,
     });
   }

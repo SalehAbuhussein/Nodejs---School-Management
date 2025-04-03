@@ -42,5 +42,6 @@ export type UpdateRoleResponse = {
 export type DeleteRoleResponse = {
   status: number,
   message: string,
+  data: IRole | null,
   error?: any,
 };

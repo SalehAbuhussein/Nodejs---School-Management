@@ -47,5 +47,6 @@ export type UpdateEnrollmentResponse = {
 export type DeleteIEnrollmentResponse = {
   status: number,
   message: string,
+  data: IEnrollment | null,
   error?: any,
 };

@@ -41,5 +41,6 @@ export type UpdatePermissionResponse = {
 export type DeletePermissionResponse = {
   status: number,
   message: string,
+  data: IPermission | null,
   error?: any,
 };

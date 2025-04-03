@@ -109,7 +109,7 @@ export const updateStudentTier = async (req: Request, res: Response<UpdateStuden
     const { tierName, monthlySubscriptionFees }: UpdateStudentTierBody = req.body;
     const { studentTierId }: UpdateStudentTierParams = req.params as UpdateStudentTierParams;
 
-    const studentTier = await StudentTierService.uppdateStudentTier(studentTierId, { tierName, monthlySubscriptionFees });
+    const studentTier = await StudentTierService.updateStudentTier(studentTierId, { tierName, monthlySubscriptionFees });
 
     return res.json({
       status: 200,
@@ -142,11 +142,13 @@ export const deleteStudentTier = async (req: Request, res: Response<DeleteStuden
     return res.json({ 
       status: 200, 
       message: 'Student Tier Deleted Successfully!',
+      data: null,
      });
   } catch (error: any) {
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
+      data: null,
       error: error.originalError,
     });
   }

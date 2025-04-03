@@ -3,10 +3,10 @@ import { ITeacherExam } from "src/models/teacherExam.model";
 export type GetTeacherExamParams = { teacherExamId: string };
 
 export type PostTeacherExamBody = { 
-  examId: string,
   examTypeId: string,
   title: string, 
   fullExamGrade: number,
+  subjectId: string,
 };
 
 export type UpdateTeacherExamBody = Omit<PostTeacherExamBody, 'examId' | 'examTypeId'>;
@@ -39,12 +39,6 @@ export type CreateTeacherExamResponse = {
 export type UpdateTeacherExamResponse = {
   status: number,
   data: ITeacherExam | null,
-  message: string,
-  error?: any,
-};
-
-export type DeleteTeacherExamResponse = {
-  status: number,
   message: string,
   error?: any,
 };

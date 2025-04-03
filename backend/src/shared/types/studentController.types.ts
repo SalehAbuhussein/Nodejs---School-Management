@@ -47,5 +47,6 @@ export type UpdateStudentResponse = {
 export type DeleteStudentResponse = {
   status: number,
   message: string,
+  data: IStudent | null,
   error?: any,
 };

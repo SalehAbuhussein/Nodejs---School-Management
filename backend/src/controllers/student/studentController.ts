@@ -110,11 +110,13 @@ export const deleteStudent = async (req: Request, res: Response<DeleteStudentRes
     return res.json({ 
       status: 200, 
       message: 'Student Deleted Successfully!',
+      data: null,
      });
   } catch (error: any) {
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
+      data: null,
       error: error.originalError,
     });
   }

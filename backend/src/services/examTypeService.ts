@@ -6,22 +6,29 @@ export class ExamTypeService {
 
   /**
    * Get all exam types
-   * @throws CustomError if database operation fails
+   * 
+   * @returns {Promise<IExamType[]>} A promise that resolves to an array of exam types
+   * @throws {CustomError} If database operation fails
    */
-  static getAllExamTypes = async () => {
+  static getAllExamTypes = async (): Promise<IExamType[]> => {
     try {
       return await ExamType.find();
     } catch (error) {
-      throw new CustomError('Failed to retrieve exam types', 500, error);
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError('Failed to get exam types', 500);
     }
   };
 
   /**
-   * Get exam type by ID
-   * @param examTypeId - The ID of the exam type to retrieve
-   * @throws CustomError if database operation fails
+   * Retrieve a specific exam type by ID
+   * 
+   * @param {string} examTypeId - The ID of the exam type to retrieve
+   * @returns {Promise<IExamType|null>} A promise that resolves to the exam type or null if not found
+   * @throws {Error} If database operation fails
    */
-  static getExamType = async (examTypeId: string) => {
+  static getExamType = async (examTypeId: string): Promise<IExamType | null> => {
     try {
       const examType = await ExamType.findById(examTypeId);
 
@@ -34,17 +41,18 @@ export class ExamTypeService {
       if (error instanceof CustomError) {
         throw error;
       }
-
       throw new CustomError('Failed to retrieve exam type', 500, error);
     }
   };
 
   /**
    * Create a new exam type
-   * @param name - The name of the exam type
-   * @throws CustomError if validation fails or database operation fails
+   * 
+   * @param {string} name - The name of the exam type to create
+   * @returns {Promise<IExamType>} A promise that resolves to the created exam type
+   * @throws {Error} If validation fails or database operation fails
    */
-  static createExamType = async (name: string) => {
+  static createExamType = async (name: string): Promise<IExamType> => {
     try {
       const existingExamType = await ExamType.findOne({ name });
 
@@ -55,23 +63,22 @@ export class ExamTypeService {
       const examType = await ExamType.create({ name });
       return examType;
     } catch (error) {
-      // If it's already a CustomError, rethrow it
       if (error instanceof CustomError) {
         throw error;
       }
-
-      // Otherwise, wrap it in a CustomError
       throw new CustomError('Failed to create exam type', 500, error);
     }
   };
 
   /**
    * Update an existing exam type
-   * @param examTypeId - The ID of the exam type to update
-   * @param examTypeData - The data to update
-   * @throws CustomError if exam type not found or database operation fails
+   * 
+   * @param {string} examTypeId - The ID of the exam type to update
+   * @param {IExamType} examTypeData - The updated exam type data
+   * @returns {Promise<IExamType|null>} A promise that resolves to the updated exam type or null if not found
+   * @throws {CustomError} If validation fails or database operation fails
    */
-  static updateExamType = async (examTypeId: string, examTypeData: IExamType) => {
+  static updateExamType = async (examTypeId: string, examTypeData: IExamType): Promise<IExamType | null> => {
     try {
       const examType = await ExamType.findById(examTypeId);
       
@@ -88,24 +95,25 @@ export class ExamTypeService {
         }
 
         examType.name = examTypeData.name;
-
-        return await examType.save();
       }
+
+      return await examType.save();
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
       }
-
       throw new CustomError('Failed to update exam type', 500, error);
     }
   };
 
   /**
    * Delete an exam type
-   * @param examTypeId - The ID of the exam type to delete
-   * @throws CustomError if exam type not found or database operation fails
+   * 
+   * @param {string} examTypeId - The ID of the exam type to delete
+   * @returns {Promise<boolean>} A promise that resolves to true if deletion was successful
+   * @throws {CustomError} If exam type not found or database operation fails
    */
-  static deleteExamType = async (examTypeId: string) => {
+  static deleteExamType = async (examTypeId: string): Promise<boolean> => {
     try {
       const result = await ExamType.deleteOne({ _id: examTypeId });
 
@@ -118,20 +126,25 @@ export class ExamTypeService {
       if (error instanceof CustomError) {
         throw error;
       }
-
       throw new CustomError('Failed to delete exam type', 500, error);
     }
   };
+
   /**
    * Check if an exam type exists
-   * @param examTypeId - The ID of the exam type to check
-   * @throws CustomError if database operation fails
+   * 
+   * @param {string} examTypeId - The ID of the exam type to check
+   * @returns {Promise<boolean>} A promise that resolves to true if the exam type exists
+   * @throws {CustomError} If database operation fails
    */
-  static examTypeExists = async (examTypeId: string) => {
+  static examTypeExists = async (examTypeId: string): Promise<boolean> => {
     try {
       const count = await ExamType.countDocuments({ _id: examTypeId });
       return count > 0;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to check if exam type exists', 500, error);
     }
   };

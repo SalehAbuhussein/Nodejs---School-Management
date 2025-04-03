@@ -1,10 +1,27 @@
 import { NextFunction, Request, Response } from "express";
 
 import StudentExam from "src/models/studentExam.model";
+import TeacherExam from "src/models/teacherExam.model";
+import Student from 'src/models/student.model';
+import Enrollment from 'src/models/enrollment.model';
 
 import { StudentExamService } from "src/services/studentExamService";
 
-import { CreateStudentExamResponse, DeleteStudentExamParams, DeleteStudentExamResponse, GetStudentExamParams, GetStudentExamResponse, PostStudentExamBody, UpdateStudentExamBody, UpdateStudentExamParams, UpdateStudentExamResponse, TakeTeacherExamResponse, TakeTeacherExamParams } from "src/shared/types/studentExamController.types";
+import { 
+  CreateStudentExamResponse,
+  DeleteStudentExamParams,
+  DeleteStudentExamResponse,
+  GetStudentExamParams,
+  GetStudentExamResponse,
+  PostStudentExamBody,
+  UpdateStudentExamBody,
+  UpdateStudentExamParams,
+  UpdateStudentExamResponse,
+  TakeTeacherExamResponse,
+  TakeTeacherExamBody,
+  TakeTeacherExamParams,
+} from "src/shared/types/studentExamController.types";
+import mongoose from "mongoose";
 
 /**
  * Get single exam
@@ -51,13 +68,15 @@ export const getExam = async (req: Request, res: Response<GetStudentExamResponse
  */
 export const createExam = async (req: Request, res: Response<CreateStudentExamResponse>, next: NextFunction) => {
   try {
-    const { title, studentGrade, subjectId, studentId }: PostStudentExamBody = req.body;
+    const { title, studentGrade, subjectId, studentId, semester = 'First', year = new Date().getFullYear() }: PostStudentExamBody = req.body;
 
     const exam = await StudentExamService.createExam({
       title,
       studentGrade,
       subjectId,
       studentId,
+      semester,
+      year,
     });
 
     return res.status(201).json({
@@ -130,21 +149,37 @@ export const deleteExam = async (req: Request, res: Response<DeleteStudentExamRe
   }
 };
 
+/**
+ * Take exam
+ * 
+ * @param { Request } req 
+ * @param { Response<TakeTeacherExamResponse> } res
+ * @param { NextFunction } next 
+ */
 export const takeExam = async (req: Request, res: Response<TakeTeacherExamResponse>, next: NextFunction) => {
-  const { examId } = req.params as TakeTeacherExamParams;
-
   try {
+    const { teacherExamId } = req.params as TakeTeacherExamParams;
+    const { studentId, grade, semester, year } = req.body as TakeTeacherExamBody;
 
-    // 1- Check if Student is enrolled in the course.
-    // 2- Check if Student is active.
+    const newStudentExam = await StudentExamService.takeExam(
+      teacherExamId,
+      studentId,
+      grade,
+      semester,
+      year
+    );
 
-
-
+    return res.json({
+      status: 200,
+      data: newStudentExam,
+      message: 'Exam grade recorded successfully',
+    });
   } catch (error: any) {
     return res.status(error.statusCode).json({
       status: error.statusCode,
-      message: error.message,
-      error: error.originalError,
+      message: error.message || 'Server Error',
+      data: null,
+      error: error.originalError || error,
     });
   }
 };

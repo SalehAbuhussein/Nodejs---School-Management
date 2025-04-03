@@ -24,6 +24,9 @@ export class StudentService {
 
       return student;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to get student', 500);
     }
   };
@@ -40,6 +43,9 @@ export class StudentService {
       const student = Student.create(studentData);
       return student;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to create student', 500);
     }
   };
@@ -82,6 +88,9 @@ export class StudentService {
 
       return await student.save();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to update student', 500);
     }
   };
@@ -103,7 +112,10 @@ export class StudentService {
 
       return result.deletedCount > 0;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to delete student', 500);
     }
-  }
+  };
 }

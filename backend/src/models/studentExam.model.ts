@@ -1,11 +1,13 @@
-import mongoose, { Types } from "mongoose"
+import mongoose from "mongoose";
 
-export type IStudentExam = {
+export interface IStudentExam extends mongoose.Document {
   title: string,
   teacherExamId: mongoose.Types.ObjectId,
   subjectId: mongoose.Types.ObjectId,
   studentId: mongoose.Types.ObjectId,
   studentGrade: number,
+  semester: 'First' | 'Second',
+  year: number,
 };
 
 export type ICreateStudentExam = {
@@ -13,6 +15,8 @@ export type ICreateStudentExam = {
   studentGrade: number;
   subjectId: string;
   studentId: string;
+  semester: 'First' | 'Second';
+  year: number;
 };
 
 const ExamSchema = new mongoose.Schema<IStudentExam>({
@@ -38,6 +42,15 @@ const ExamSchema = new mongoose.Schema<IStudentExam>({
   studentGrade: {
     type: Number,
     required: true,
+  },
+  semester: {
+    type: String,
+    enum: ['First', 'Second'],
+    default: 'First',
+  },
+  year: {
+    type: Number,
+    default: new Date().getFullYear(),
   },
 }, { timestamps: true });
 

@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import bcrypto from 'bcrypt';
-
-import { generateToken } from 'src/shared/utils/jwtUtils';
-
-import User from 'src/models/user.model';
+import { UserService } from 'src/services/userService';
 
 type PostLoginBody = { email: string, password: string };
 
@@ -16,35 +12,23 @@ type PostLoginBody = { email: string, password: string };
  * @param { NextFunction } next 
  */
 export const postLogin = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-  const { email, password }: PostLoginBody = req.body;
-
   try {
-    const user = await User.findOne({ email: email });
+    const { email, password }: PostLoginBody = req.body;
 
-    if (!user) {
-      return res.status(401).json({
-        status: 401,
-        message: 'Invalid username or password',
-      });
-    }
+    const userData = await UserService.authenticateUser(email, password);
 
-    const isPasswordMatch = await bcrypto.compare(password, user.password);
-
-    if (isPasswordMatch) {
-      const token = generateToken(user.id);
-
-      return res.json({
-        status: 200,
-        message: 'Authentication successfull!',
-        token: token,
-      });
-    } else {
-      return res.status(401).json({
-        status: 401,
-        message: 'Invalid username or password',
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({ status: 500, message: "Server Error", error: error });
+    return res.json({
+      status: 200,
+      message: 'Authentication successfull!',
+      token: userData.token,
+      user: userData.user,
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode).json({
+      status: error.statusCode,
+      message: error.message,
+      data: null,
+      error: error.originalError,
+    });
   }
 };

@@ -111,7 +111,7 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
     const { permissions, roleName }: UpdateRoleBody = req.body;
     const { roleId }: UpdateRoleParams = req.params as UpdateRoleParams;
 
-    const role = await RoleService.updateRole(roleId, { roleName, permissions: permissions.map(id => new mongoose.Schema.Types.ObjectId(id)) });
+    const role = await RoleService.updateRole(roleId, { roleName, permissions });
 
     return res.json({
       status: 200,
@@ -146,11 +146,13 @@ export const deleteRole = async (req: Request, res: Response<DeleteRoleResponse>
     return res.json({
       status: 200,
       message: 'Role Deleted Successfully!',
+      data: null,
     });
   } catch (error: any) {
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
+      data: null,
       error: error.originalError,
     });
   }

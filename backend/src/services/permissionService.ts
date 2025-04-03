@@ -1,26 +1,34 @@
 import Permission, { IPermission } from 'src/models/permission.model';
+
 import { CustomError } from 'src/shared/utils/CustomError';
 
 export class PermissionService {
 
   /**
-   * Get all permissions
-   * @throws CustomError if database operation fails
+   * Retrieve all permissions from the database
+   * 
+   * @returns {Promise<IPermission[]>} A promise that resolves to an array of permissions
+   * @throws {CustomError} If database operation fails
    */
-  static getAllPermissions = async () => {
+  static getAllPermissions = async (): Promise<IPermission[]> => {
     try {
       return await Permission.find();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to retrieve permissions', 500);
     }
   };
 
   /**
-   * Get permission by ID
-   * @param permissionId - The ID of the permission to retrieve
-   * @throws CustomError if permission not found or database operation fails
+   * Retrieve a specific permission by ID
+   * 
+   * @param {string} permissionId - The ID of the permission to retrieve
+   * @returns {Promise<IPermission>} A promise that resolves to the permission
+   * @throws {CustomError} If permission not found or database operation fails
    */
-  static getPermission = async (permissionId: string) => {
+  static getPermission = async (permissionId: string): Promise<IPermission> => {
     try {
       const permission = await Permission.findById(permissionId);
 
@@ -30,16 +38,21 @@ export class PermissionService {
 
       return permission;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to retrieve permission', 500);
     }
   };
 
   /**
    * Create a new permission
-   * @param name - The name of the permission
-   * @throws CustomError if validation fails or database operation fails
+   * 
+   * @param {IPermission} permissionData - The name of the permission to create
+   * @returns {Promise<IPermission>} A promise that resolves to the created permission
+   * @throws {CustomError} If validation fails or database operation fails
    */
-  static createPermission = async (permissionData: IPermission) => {
+  static createPermission = async (permissionData: IPermission): Promise<IPermission> => {
     try {
       const existingPermission = await Permission.findOne({ name: permissionData.name });
 
@@ -50,17 +63,22 @@ export class PermissionService {
       const newPermission = await Permission.create(permissionData);
       return newPermission;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to create permission', 500);
     }
   };
 
   /**
    * Update an existing permission
-   * @param permissionId - The ID of the permission to update
-   * @param permissionData - The data to update
-   * @throws CustomError if permission not found or database operation fails
+   * 
+   * @param {string} permissionId - The ID of the permission to update
+   * @param {IPermission} permissionData - The updated permission data
+   * @returns {Promise<IPermission>} A promise that resolves to the updated permission
+   * @throws {CustomError} If permission not found or database operation fails
    */
-  static updatePermission = async (permissionId: string, permissionData: IPermission) => {
+  static updatePermission = async (permissionId: string, permissionData: IPermission): Promise<IPermission> => {
     try {
       const permission = await Permission.findById(permissionId);
 
@@ -78,16 +96,21 @@ export class PermissionService {
 
       return await permission.save();
     } catch(error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to update permission', 500);
     }
   };
 
   /**
    * Delete a permission
-   * @param permissionId - The ID of the permission to delete
-   * @throws CustomError if permission not found or database operation fails
+   * 
+   * @param {string} permissionId - The ID of the permission to delete
+   * @returns {Promise<boolean>} A promise that resolves to true if deletion was successful
+   * @throws {CustomError} If permission not found or database operation fails
    */
-  static deletePermission = async (permissionId: string) => {
+  static deletePermission = async (permissionId: string): Promise<boolean> => {
     try {
       const result = await Permission.deleteOne({ _id: permissionId });
 
@@ -97,30 +120,40 @@ export class PermissionService {
 
       return result.deletedCount > 0;
     } catch(error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to delete permission', 500);
     }
   };
   
   /**
    * Check if a permission exists
-   * @param permissionId - The ID of the permission to check
-   * @throws CustomError if database operation fails
+   * 
+   * @param {string} permissionId - The ID of the permission to check
+   * @returns {Promise<boolean>} A promise that resolves to true if the permission exists
+   * @throws {CustomError} If database operation fails
    */
-  static permissionExists = async (permissionId: string) => {
+  static permissionExists = async (permissionId: string): Promise<boolean> => {
     try {
       const count = await Permission.countDocuments({ _id: permissionId });
       return count > 0;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Failed to check if permission exists', 500, error);
     }
   };
 
   /**
    * Check if multiple permissions exist
-   * @param permissionIds - Array of permission IDs to check
-   * @throws CustomError if any permission doesn't exist or database operation fails
+   * 
+   * @param {string[]} permissionIds - Array of permission IDs to check
+   * @returns {Promise<boolean>} A promise that resolves to true if all permissions exist
+   * @throws {CustomError} If any permission doesn't exist or database operation fails
    */
-  static checkPermissionsExist = async (permissionIds: string[]) => {
+  static checkPermissionsExist = async (permissionIds: string[]): Promise<boolean> => {
     try {
       const permissions = await Permission.find({ _id: { $in: permissionIds } });
       

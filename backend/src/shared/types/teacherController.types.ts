@@ -34,13 +34,14 @@ export type CreateTeacherResponse = {
 
 export type UpdateTeacherResponse = {
   status: number,
-  data: ITeacher | null,
   message: string,
+  data: ITeacher | null,
   error?: any,
 };
 
 export type DeleteTeacherResponse = {
   status: number,
   message: string,
+  data: ITeacher | null,
   error?: any,
 };

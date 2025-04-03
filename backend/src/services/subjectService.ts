@@ -18,6 +18,9 @@ export class SubjectService {
     try {
       return await Subject.find();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -39,6 +42,9 @@ export class SubjectService {
 
       return subject;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -57,7 +63,7 @@ export class SubjectService {
     try {
       const totalSlotsNumber = parseInt(subjectData.totalSlots);
       const newSubject = await new Subject({
-        name,
+        name: subjectData.name,
         teachers: [subjectData.teacherId],
         totalSlots: totalSlotsNumber,
       }, null, { session }).save({ session });
@@ -78,6 +84,9 @@ export class SubjectService {
 
       return newSubject;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -117,6 +126,9 @@ export class SubjectService {
 
       return await subject!.save();
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
   };
@@ -138,7 +150,10 @@ export class SubjectService {
 
       return subject.deletedCount > 0;
     } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
       throw new CustomError('Server Error', 500, error);
     }
-  }
+  };
 }
