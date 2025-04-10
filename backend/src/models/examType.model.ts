@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export type IExamType = {
+export interface IExamType {
   name: string,
 };
 

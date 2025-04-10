@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-export type ITeacher = {
+export interface ITeacher extends mongoose.Document {
   firstName: string,
   secondName: string,
   thirdName: string | null,
