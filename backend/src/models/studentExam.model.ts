@@ -10,7 +10,7 @@ export interface IStudentExam extends mongoose.Document {
   year: number,
 };
 
-export type ICreateStudentExam = {
+export interface ICreateStudentExam {
   title: string;
   studentGrade: number;
   subjectId: string;

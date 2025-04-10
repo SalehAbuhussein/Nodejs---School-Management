@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export type ISubject = {
+export interface ISubject extends mongoose.Document {
   name: string,
   teachers: mongoose.Types.ObjectId[],
   enrollments: mongoose.Types.ObjectId[],
