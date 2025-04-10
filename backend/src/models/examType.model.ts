@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface IExamType {
+export interface IExamType extends mongoose.Document {
   name: string,
 };
 
