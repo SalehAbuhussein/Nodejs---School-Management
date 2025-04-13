@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface IStudentTier extends mongoose.Document {
+export interface IStudentTier {
   tierName: string,
   monthlySubscriptionFees: number,
 };

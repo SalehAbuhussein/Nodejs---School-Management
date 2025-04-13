@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface IStudentExam extends mongoose.Document {
+export interface IStudentExam {
   title: string,
   teacherExamId: mongoose.Types.ObjectId,
   subjectId: mongoose.Types.ObjectId,
