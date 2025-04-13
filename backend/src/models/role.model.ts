@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-export interface IRole extends mongoose.Document {
+export interface IRole {
   roleName: string,
   permissions: mongoose.Schema.Types.ObjectId[],
 };
