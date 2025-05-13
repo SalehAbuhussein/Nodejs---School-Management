@@ -28,6 +28,7 @@ const options = {
 };
 const swaggerSpec = swaggerJsdoc(options);
 
+// Access by localhost/docs
 function swaggerDocs(app: Application, port: number) {
   // Swagger Page
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
