@@ -1,22 +1,24 @@
-import { JwtPayload, SignOptions, sign } from 'jsonwebtoken';
-
-import { randomBytes } from 'crypto';
+import jwt, { JwtPayload, SignOptions, sign } from 'jsonwebtoken';
 
 /**
  * Generate JWT token
- * 
- * @param { JwtPayload } payload 
+ *
+ * @param { JwtPayload } payload
  * @returns { string }
  */
-export const generateToken = (payload: JwtPayload): string => {
-  const secretKey = 'yourSecretKey';
-  const options: SignOptions = {
-    expiresIn: '1h',
-    algorithm: 'HS256',
-    jwtid: randomBytes(16).toString('hex'),
-  };
+export const generateAuthToken = (payload: JwtPayload): string => {
+  const jwtSecret = process.env.JWT_AUTH_TOKEN as string;
+  const options: SignOptions = { expiresIn: '15m', algorithm: 'HS256' };
 
-  const token = sign(payload, secretKey, options);
+  return sign(payload, jwtSecret, options);
+};
 
-  return token;
+/**
+ * Generate refresh token
+ */
+export const generateRefreshToken = (payload: JwtPayload) => {
+  const secretKey = process.env.JWT_REFRESH_TOKEN as string;
+  const options: SignOptions = { expiresIn: '7d', algorithm: 'HS256' };
+
+  return jwt.sign(payload, secretKey, options);
 };

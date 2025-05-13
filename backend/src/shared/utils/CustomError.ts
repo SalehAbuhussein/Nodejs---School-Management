@@ -10,5 +10,5 @@ export class CustomError extends Error {
 
     // Capture stack trace
     Error.captureStackTrace(this, this.constructor);
-  };
-};
+  }
+}

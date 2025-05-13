@@ -111,6 +111,5 @@
   },
   "exclude": [
     "node_modules",
-    "views"  // Exclude the views directory
   ],
 }
