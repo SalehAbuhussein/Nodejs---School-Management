@@ -9,7 +9,7 @@ import * as userController from 'src/v1/controllers/user/userController';
 import * as RoleService from 'src/v1/services/roleService';
 import * as UserService from 'src/v1/services/userService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import { isObjectId } from 'src/shared/validators';
 

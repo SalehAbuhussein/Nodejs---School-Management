@@ -7,7 +7,7 @@ import * as TeacherExamController from 'src/v1/controllers/teacherExam/teacherEx
 import * as ExamTypeService from 'src/v1/services/examTypeService';
 import * as StudentExamService from 'src/v1/services/studentExamService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 import { isObjectId } from 'src/shared/validators';
 
 const router = Router();

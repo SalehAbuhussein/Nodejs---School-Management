@@ -6,7 +6,7 @@ import * as roleController from 'src/v1/controllers/role/roleController';
 import * as PermissionService from 'src/v1/services/permissionService';
 import * as RoleService from 'src/v1/services/roleService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import { isObjectId, isObjectIds } from 'src/shared/validators';
 

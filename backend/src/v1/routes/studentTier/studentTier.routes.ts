@@ -6,7 +6,7 @@ import * as studentTierController from 'src/v1/controllers/studentTier/studentTi
 
 import * as StudentTierService from 'src/v1/services/studentTierService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import { isObjectId } from 'src/shared/validators';
 

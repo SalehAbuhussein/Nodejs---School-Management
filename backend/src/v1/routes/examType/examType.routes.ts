@@ -6,7 +6,7 @@ import * as examTypeController from 'src/v1/controllers/examType/examTypeControl
 
 import * as ExamTypeService from 'src/v1/services/examTypeService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import { isObjectId } from 'src/shared/validators';
 

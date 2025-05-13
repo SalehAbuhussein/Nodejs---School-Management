@@ -7,7 +7,7 @@ import * as studentController from 'src/v1/controllers/student/studentController
 import * as StudentService from 'src/v1/services/studentService';
 import * as UserService from 'src/v1/services/userService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import { isObjectId } from 'src/shared/validators';
 

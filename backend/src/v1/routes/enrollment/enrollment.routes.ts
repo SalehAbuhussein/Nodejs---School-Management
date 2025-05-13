@@ -7,7 +7,7 @@ import * as EnrollmentService from 'src/v1/services/enrollmentService';
 import * as StudentService from 'src/v1/services/studentService';
 import * as SubjectService from 'src/v1/services/subjectService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 import { isObjectId } from 'src/shared/validators';
 
 const router = Router();

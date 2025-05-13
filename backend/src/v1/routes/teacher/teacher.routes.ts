@@ -2,7 +2,7 @@ import { Application, Router } from 'express';
 
 import { body, param } from 'express-validator';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import * as teacherController from 'src/v1/controllers/teacher/teacherController';
 

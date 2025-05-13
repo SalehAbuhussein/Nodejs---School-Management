@@ -6,7 +6,7 @@ import * as permissionController from 'src/v1/controllers/permission/permissionC
 
 import * as PermissionService from 'src/v1/services/permissionService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import { isObjectId } from 'src/shared/validators';
 

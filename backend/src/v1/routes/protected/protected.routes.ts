@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
-import { validateJwtToken } from 'src/middlewares/validateJwtToken.middleware';
+import { validateJwtToken } from 'src/shared/middlewares/validateJwtToken.middleware';
 
 const router = Router();
 

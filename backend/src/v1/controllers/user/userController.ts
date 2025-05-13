@@ -4,7 +4,7 @@ import { IUser } from 'src/db/models/user.model';
 
 import * as UserService from 'src/v1/services/userService';
 
-import { IGetUserAuthInfoRequest } from 'src/middlewares/validateJwtToken.middleware';
+import { IGetUserAuthInfoRequest } from 'src/shared/middlewares/validateJwtToken.middleware';
 
 import { DeleteUserParams, GetUserParams, PostUserBody, UpdateUserBody, UpdateUserParams, GetUserResponse, CreateUserResponse, UpdateUserResponse, DeleteUserResponse } from 'src/v1/controllers/types/userController.types';
 

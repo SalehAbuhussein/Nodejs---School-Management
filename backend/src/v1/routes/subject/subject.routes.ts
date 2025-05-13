@@ -7,7 +7,7 @@ import * as subjectController from 'src/v1/controllers/subject/subjectController
 import * as SubjectService from 'src/v1/services/subjectService';
 import * as TeacherService from 'src/v1/services/teacherService';
 
-import { handleValidation } from 'src/middlewares/validators.middleware';
+import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import { isObjectId, isObjectIds } from 'src/shared/validators';
 
