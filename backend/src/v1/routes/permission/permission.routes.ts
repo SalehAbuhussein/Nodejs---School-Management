@@ -4,11 +4,7 @@ import { body, param } from 'express-validator';
 
 import * as permissionController from 'src/v1/controllers/permission/permissionController';
 
-import * as PermissionService from 'src/v1/services/permissionService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-
-import { isObjectId } from 'src/shared/validators';
 
 const router = Router();
 
@@ -40,10 +36,8 @@ router.get('/:permissionId',
     .trim()
     .notEmpty()
     .withMessage('permission id can not be empty')
-    .custom(isObjectId)
-    .bail()
-    .custom(PermissionService.checkPermissionExists)
-    .withMessage('Permission does not exist'),
+    .isMongoId()
+    .withMessage('Invalid permission id'),
   permissionController.getPermission as Application
 );
 
@@ -120,10 +114,8 @@ router.patch('/:permissionId',
     .trim()
     .notEmpty()
     .withMessage('permission id can not be empty')
-    .custom(isObjectId)
-    .bail()
-    .custom(PermissionService.checkPermissionExists)
-    .withMessage('Permission does not exist'),
+    .isMongoId()
+    .withMessage('Invalid permission id'),
   body('name')
     .trim()
     .notEmpty()
@@ -160,10 +152,8 @@ router.delete('/:permissionId',
     .trim()
     .notEmpty()
     .withMessage('permission id can not be empty')
-    .custom(isObjectId)
-    .bail()
-    .custom(PermissionService.checkPermissionExists)
-    .withMessage('Permission does not exist'),
+    .isMongoId()
+    .withMessage('Invalid permission id'),
   permissionController.deletePermission as Application
 );
 

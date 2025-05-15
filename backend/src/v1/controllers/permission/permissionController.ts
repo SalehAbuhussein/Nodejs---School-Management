@@ -15,7 +15,14 @@ export const getPermission = async (req: Request, res: Response<GetPermissionRes
   try {
     const { permissionId }: GetPermissionParams = req.params as GetPermissionParams;
 
-    const permission = await PermissionService.getPermission(permissionId);
+    const permission = await PermissionService.getPermissionById(permissionId);
+    if (!permission) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Permission Not Found!',
+        data: null,
+      });
+    }
 
     return res.json({
       status: 200,
