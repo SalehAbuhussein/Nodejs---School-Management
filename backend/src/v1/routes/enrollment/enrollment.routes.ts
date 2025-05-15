@@ -3,12 +3,7 @@ import { body, param } from 'express-validator';
 
 import * as enrollmentController from 'src/v1/controllers/enrollment/enrollmentController';
 
-import * as EnrollmentService from 'src/v1/services/enrollmentService';
-import * as StudentService from 'src/v1/services/studentService';
-import * as SubjectService from 'src/v1/services/subjectService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-import { isObjectId } from 'src/shared/validators';
 
 const router = Router();
 
@@ -19,22 +14,15 @@ router.post('/',
     .notEmpty()
     .withMessage('student id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentService.checkStudentExists),
+    .isMongoId()
+    .withMessage('student id must valid id'),
   body('subjectId')
     .trim()
     .notEmpty()
     .withMessage('subject id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(SubjectService.checkSubjectExists)
-    .bail()
-    .custom(SubjectService.checkSubjectIsAvailable)
-    .bail()
-    .custom((_, { req }) => EnrollmentService.checkDuplicateEnrollment(req.body.studentId, req.body.subjectId))
-    .withMessage('enrollement already exist'),
+    .isMongoId()
+    .withMessage('subject id must valid id'),
   body('enrollmentFees')
     .trim()
     .notEmpty()
@@ -68,10 +56,7 @@ router.delete(
     .notEmpty()
     .withMessage('enrollment id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(enrollmentId => EnrollmentService.checkEnrollmentExist(enrollmentId))
-    .withMessage('enrollment not found'),
+    .isMongoId(),
   handleValidation as Application,
   enrollmentController.unenrollStudent as Application,
 );
