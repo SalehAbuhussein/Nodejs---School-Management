@@ -14,8 +14,14 @@ import { DeleteStudentParams, GetStudentParams, PostStudentBody, UpdateStudentBo
 export const getStudent = async (req: Request, res: Response<GetStudentResponse>, next: NextFunction) => {
   try {
     const { studentId }: GetStudentParams = req.params as GetStudentParams;
-
-    const student = await StudentService.getStudentById(studentId);
+    const student = await StudentService.findStudentById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Student Not Found!',
+        data: null,
+      });
+    }
 
     return res.json({ status: 200, data: student, message: 'Student Fetched Successfully!' });
   } catch (error: any) {
@@ -66,7 +72,6 @@ export const updateStudent = async (req: Request, res: Response<UpdateStudentRes
   try {
     const { firstName, lastName, secondName, thirdName, studentTierId }: UpdateStudentBody = req.body;
     const { studentId }: UpdateStudentParams = req.params as UpdateStudentParams;
-
     const student = await StudentService.updateStudent(studentId, { firstName, lastName, secondName, thirdName, studentTierId });
 
     return res.json({
@@ -94,7 +99,6 @@ export const updateStudent = async (req: Request, res: Response<UpdateStudentRes
 export const deleteStudent = async (req: Request, res: Response<DeleteStudentResponse>, next: NextFunction) => {
   try {
     const { studentId }: DeleteStudentParams = req.params as DeleteStudentParams;
-
     await StudentService.deleteStudent(studentId);
 
     return res.json({
