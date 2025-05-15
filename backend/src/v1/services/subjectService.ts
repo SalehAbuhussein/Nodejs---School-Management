@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import Subject, { ISubject } from 'src/db/models/subject.model';
 import Teacher from 'src/db/models/teacher.model';
+import TeacherSubject from 'src/db/models/teacherSubject.model';
 
 import { PostSubjectBody, UpdateSubjectBody } from 'src/v1/controllers/types/subjectController.types';
 
@@ -48,6 +49,41 @@ export const getSubjectById = async (subjectId: string): Promise<ISubject> => {
   }
 };
 
+// TODO: Check if it works
+/**
+ * Get teachers for a specific subject
+ * 
+ * @param {string} subjectId - The ID of the subject
+ * @param {string} semester - The semester ('First' or 'Second')
+ * @returns {Promise<any[]>} A promise that resolves to an array of teachers
+ * @throws {CustomError} If operation fails
+ */
+export const getSubjectTeachers = async (subjectId: string, semester: 'First' | 'Second') => {
+  try {
+    const assignments = await TeacherSubject.where('isDeleted')
+      .equals(false)
+      .find({
+        subjectId,
+        semester,
+        isActive: true,
+      })
+      .populate({
+        path: 'teacherId',
+        populate: {
+          path: 'userId',
+          select: 'name email profileImg'
+        }
+      });
+
+      return assignments.map(assignment => assignment.teacherId);
+  } catch (error) {
+    if (error instanceof CustomError) {
+      throw error;
+    }
+    throw new CustomError('Failed to get subject teachers', 500, error);
+  }
+};
+
 /**
  * Create a new subject and associate it with a teacher
  *
@@ -64,7 +100,6 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
     const newSubject = await new Subject(
       {
         name: subjectData.name,
-        teachers: [subjectData.teacherId],
         totalSlots: totalSlotsNumber,
       },
       null,
@@ -78,10 +113,16 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
       throw new CustomError('Teacher Not Found', 404);
     }
 
-    if (!teacher.subjects.includes(newSubject._id)) {
-      teacher.subjects.push(newSubject._id);
-      await teacher.save({ session });
-    }
+    const currentMonth = new Date().getMonth();
+    const semester = currentMonth < 6 ? 'First' : 'Second';
+
+    await TeacherSubject.create([
+      {
+        teacherId: subjectData.teacherId,
+        subjectId: newSubject._id,
+        semester,
+      }
+    ], { session })
 
     await session.commitTransaction();
 
@@ -91,6 +132,9 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
+  } finally {
+    await session.abortTransaction();
+    await session.endSession();
   }
 };
 
@@ -103,8 +147,11 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
  * @throws {CustomError} If subject not found or database operation fails
  */
 export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateSubjectBody, 'totalSlots'>): Promise<ISubject> => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    let subject = await Subject.findById(subjectId);
+    let subject = await Subject.findById(subjectId).session(session);
 
     if (!subject) {
       throw new CustomError('Subject Not Found', 404);
@@ -118,21 +165,15 @@ export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateS
       subject.isActive = subjectData.isActive;
     }
 
-    if (subjectData.teachersIds && subjectData.teachersIds.length > 0) {
-      // Use Mongoose's $addToSet to add teachers, ensuring no duplicates
-      subject = await Subject.findByIdAndUpdate(
-        subjectId,
-        { $addToSet: { teachers: { $each: subjectData.teachersIds } } }, // $each allows adding multiple teachers at once
-        { new: true }, // Return the updated subject document
-      );
-    }
-
-    return await subject!.save();
+    return await subject.save({ session });;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
+  } finally {
+    await session.abortTransaction();
+    await session.endSession();
   }
 };
 
@@ -144,6 +185,9 @@ export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateS
  * @throws {CustomError} If subject not found or database operation fails
  */
 export const deleteSubject = async (subjectId: string): Promise<boolean> => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const subject = await Subject.deleteOne({ _id: subjectId });
     return subject.deletedCount > 0;

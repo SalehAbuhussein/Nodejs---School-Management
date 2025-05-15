@@ -8,7 +8,7 @@ export interface ITeacherExam {
   createdBy: mongoose.Schema.Types.ObjectId;
 }
 
-const ExamSchema = new mongoose.Schema<ITeacherExam>(
+const TeacherExamSchema = new mongoose.Schema<ITeacherExam>(
   {
     title: {
       type: String,
@@ -35,4 +35,4 @@ const ExamSchema = new mongoose.Schema<ITeacherExam>(
   { timestamps: true },
 );
 
-export default mongoose.model<ITeacherExam>('TeacherExam', ExamSchema);
+export default mongoose.model<ITeacherExam>('TeacherExam', TeacherExamSchema);

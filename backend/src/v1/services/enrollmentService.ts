@@ -16,7 +16,7 @@ import { CustomError } from 'src/shared/utils/CustomError';
  */
 export const getEnrollmentById = async (enrollmentId: string): Promise<IEnrollment | null> => {
   try {
-    return await Enrollment.where('isDeleted').equals(false).findById(enrollmentId).populate('subjectId');
+    return await Enrollment.where('isDeleted').equals(false).findById(enrollmentId).populate('subjectId').populate('studentId');
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -57,7 +57,6 @@ export const enrollStudent = async (enrollmentData: PostEnrollmentBody): Promise
       subjectId,
       {
         $inc: { currentSlots: 1 },
-        $push: { enrollments: enrollment[0]._id },
       },
       { new: true, runValidators: true, session },
     );
@@ -111,11 +110,14 @@ export const unenrollStudent = async (enrollmentId: string): Promise<{ success: 
 
     // Update the subject
     if (subject.currentSlots > 0) {
-      subject.enrollments = subject.enrollments.filter(id => !id.equals(enrollment.id));
-      subject.currentSlots -= 1;
-      subject.isLocked = false;
-
-      await subject.save({ session });
+      await Subject.findByIdAndUpdate(
+        subject._id,
+        {
+          $inc:  { currentSlots: -1 },
+          $set: { isLocked: false },
+        },
+        { session }
+      );
     }
 
     await session.commitTransaction();
