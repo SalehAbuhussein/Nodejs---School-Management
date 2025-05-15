@@ -51,9 +51,8 @@ const upload = multer({ storage });
  */
 router.get('/:userId',
   param('userId')
-    .custom(isObjectId)
-    .bail()
-    .custom(UserService.checkUserExists),
+    .isMongoId()
+    .withMessage('user id should be valid id'),
   handleValidation as Application,
   userController.getUser as Application
 );
@@ -107,9 +106,8 @@ router.post('/',
     .notEmpty()
     .withMessage('Password cannot be empty!'),
   body('role')
-    .custom(isObjectId)
-    .bail()
-    .custom(RoleService.checkRoleExists),
+    .isMongoId()
+    .withMessage('Role id must be valid id'),
   handleValidation as Application,
   upload.single('profileImg'),
   userController.createUser as Application
@@ -160,9 +158,8 @@ router.post('/',
  */
 router.patch('/:userId',
   param('userId')
-    .custom(isObjectId)
-    .bail()
-    .custom(UserService.checkUserExists),
+    .isMongoId()
+    .withMessage('user id should be valid id'),
   body('name')
     .trim()
     .notEmpty()
@@ -178,9 +175,8 @@ router.patch('/:userId',
     .notEmpty()
     .withMessage('Password cannot be empty!'),
   body('role')
-    .custom(isObjectId)
-    .bail()
-    .custom(RoleService.checkRoleExists),
+    .isMongoId()
+    .withMessage('Role id must be valid id'),
   handleValidation as Application,
   upload.single('profileImg'),
   userController.updateUser as Application
@@ -211,9 +207,8 @@ router.patch('/:userId',
  */
 router.delete('/:userId',
   param('userId')
-    .custom(isObjectId)
-    .bail()
-    .custom(UserService.checkUserExists),
+    .isMongoId()
+    .withMessage('user id should be valid id'),
   handleValidation as Application,
   userController.deleteUser as Application
 );

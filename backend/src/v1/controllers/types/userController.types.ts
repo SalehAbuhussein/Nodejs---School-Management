@@ -2,9 +2,9 @@ import { IUser } from 'src/db/models/user.model';
 
 export type GetUserParams = { userId: string };
 
-export type PostUserBody = { name: string; email: string; password: string };
+export type PostUserBody = { name: string; email: string; password: string, role: string, profileImg?: string };
 
-export type UpdateUserBody = PostUserBody & { _id: string };
+export type UpdateUserBody = Omit<PostUserBody, 'role'>;
 
 export type UpdateUserParams = { userId: string };
 

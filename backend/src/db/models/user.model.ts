@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import { SoftDeleteModel, softDeletePlugin } from 'soft-delete-plugin-mongoose';
 
-export interface IUser {
+export interface IUser extends mongoose.Document {
   name: string;
   email: string;
   profileImg?: string;
@@ -44,4 +45,6 @@ const UserSchema = new mongoose.Schema<IUser>(
   { timestamps: true },
 );
 
-export default mongoose.model<IUser>('User', UserSchema);
+UserSchema.plugin(softDeletePlugin);
+
+export default mongoose.model<IUser, SoftDeleteModel<IUser>>('User', UserSchema);

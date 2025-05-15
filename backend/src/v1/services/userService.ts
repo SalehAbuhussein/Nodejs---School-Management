@@ -1,3 +1,5 @@
+import { ClientSession } from 'mongoose';
+
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -7,7 +9,11 @@ import bcrypt from 'bcrypt';
 import User, { IUser } from 'src/db/models/user.model';
 import RefreshToken from 'src/db/models/refreshToken.model';
 
+import * as RoleService from './roleService';
+
 import { generateAuthToken, generateRefreshToken } from 'src/shared/utils/jwtUtils';
+
+import { PostUserBody, UpdateUserBody } from '../controllers/types/userController.types';
 
 import { CustomError } from 'src/shared/utils/CustomError';
 
@@ -18,8 +24,12 @@ import { CustomError } from 'src/shared/utils/CustomError';
  * @returns {Promise<IUser | null>} Promise with user or null if not found
  * @throws {Error} If database operation fails
  */
-export const findUserById = async (userId: string): Promise<IUser | null> => {
+export const findUserById = async (userId: string, session?: ClientSession): Promise<IUser | null> => {
   try {
+    if (session) {
+      return await User.findById(userId).session(session);
+    }
+
     return await User.findById(userId);
   } catch (error) {
     if (error instanceof CustomError) {
@@ -36,8 +46,12 @@ export const findUserById = async (userId: string): Promise<IUser | null> => {
  * @returns {Promise<IUser | null>} Promise with user or null if not found
  * @throws {Error} If database operation fails
  */
-export const findUserByEmail = async (email: string): Promise<IUser | null> => {
+export const findUserByEmail = async (email: string, session?: ClientSession): Promise<IUser | null> => {
   try {
+    if (session) {
+      return await User.findOne({ email }).session(session);
+    }
+
     return User.findOne({ email });
   } catch (error) {
     if (error instanceof CustomError) {
@@ -54,10 +68,11 @@ export const findUserByEmail = async (email: string): Promise<IUser | null> => {
  * @returns {Promise<Partial<IUser>>} Promise with created user (without password)
  * @throws {Error} If database operation fails
  */
-export const createUser = async ({ name, email, profileImg, password }: IUser): Promise<Partial<IUser>> => {
+export const createUser = async ({ name, email, profileImg, password, role }: PostUserBody): Promise<Partial<IUser>> => {
   try {
+    await validateCreateUser({ name, email, profileImg, password, role });
+    
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = new User({
       name: name,
       email: email,
@@ -79,30 +94,73 @@ export const createUser = async ({ name, email, profileImg, password }: IUser): 
 };
 
 /**
+ * Validates user data before creation
+ * 
+ * This method performs validation checks to ensure the user data is valid
+ * before creating a new user account. It specifically verifies:
+ * 1. Role validity - Confirms the specified role exists in the system
+ * 2. Email uniqueness - Ensures the email isn't already registered (handled elsewhere)
+ * 3. Data integrity - Validates required fields and data formats
+ *
+ * @param {PostUserBody} userData - The user data to validate
+ *   @param {string} userData.name - User's full name
+ *   @param {string} userData.email - User's email address
+ *   @param {string} userData.password - User's password (will be hashed)
+ *   @param {string} [userData.profileImg] - Path to user's profile image (optional)
+ *   @param {string} userData.role - Role ID to assign to the user
+ * 
+ * @returns {Promise<void>} A promise that resolves if validation passes
+ * 
+ * @throws {CustomError} With appropriate status codes and messages:
+ *   - 400: If the specified role doesn't exist
+ *   - 400: If required fields are missing or invalid
+ *   - 500: For unexpected server errors during validation
+ * 
+ * @example
+ * try {
+ *   await validateCreateUser({
+ *     name: "John Smith",
+ *     email: "john.smith@example.com",
+ *     password: "securePassword123",
+ *     role: "60d5ec9af682fbd12a0b4d8b"
+ *   });
+ *   // Validation passed, proceed with user creation
+ * } catch (error) {
+ *   console.error(`Validation failed: ${error.message}`);
+ * }
+ */
+export const validateCreateUser = async (userData: PostUserBody) => {
+  try {
+    const isValidRole = await RoleService.checkRoleExists(userData.role);
+    if (!isValidRole) {
+      throw new CustomError('Invalid role', 400);
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
  * Update an existing user
  *
  * @param {string} userId - The user ID to update
- * @param {Partial<IUser>} userData - The data to update
+ * @param {UpdateUserBody} userData - The data to update
  * @returns {Promise<IUser|null>} Promise with updated user or null if not found
  * @throws {Error} If database operation fails
  */
-export const updateUser = async (userId: string, userData: Partial<IUser>): Promise<IUser | null> => {
+export const updateUser = async (userId: string, userData: UpdateUserBody): Promise<IUser | null> => {
   try {
-    const user = await User.findById(userId);
+    const { user } = await validateUpdateUser(userId, userData);
 
-    if (!user) {
-      return null;
-    }
-
-    if (userData.name !== undefined) {
+    if (!userData.name) {
       user.name = userData.name;
     }
 
-    if (userData.email !== undefined) {
+    if (!userData.email) {
       user.email = userData.email;
     }
 
-    if (userData.password !== undefined) {
+    if (!userData.password) {
       user.password = await bcrypt.hash(userData.password, 10);
     }
 
@@ -131,6 +189,57 @@ export const updateUser = async (userId: string, userData: Partial<IUser>): Prom
 };
 
 /**
+ * Validates user data before update
+ * 
+ * This method performs validation checks to ensure the user update data is valid
+ * before modifying an existing user account. It specifically verifies:
+ * 1. User existence - Confirms the user ID refers to an existing account
+ * 2. Data integrity - Validates update fields have proper formats and values
+ *
+ * @param {string} userId - The MongoDB ObjectId of the user to update
+ * @param {UpdateUserBody} userData - The updated user data
+ *   @param {string} [userData.name] - User's updated full name
+ *   @param {string} [userData.email] - User's updated email address
+ *   @param {string} [userData.password] - User's updated password (will be hashed)
+ *   @param {string} [userData.profileImg] - Updated path to user's profile image
+ *   @param {string} [userData.role] - Updated role ID to assign to the user
+ * 
+ * @returns {Promise<void>} A promise that resolves if validation passes
+ * 
+ * @throws {CustomError} With appropriate status codes and messages:
+ *   - 404: If the user doesn't exist
+ *   - 404: If the specified role doesn't exist
+ *   - 400: If update data is invalid or violates business rules
+ *   - 500: For unexpected server errors during validation
+ * 
+ * @example
+ * try {
+ *   await validateUpdateUser('60d5ec9af682fbd12a0b4d8b', {
+ *     name: "John Smith Jr.",
+ *   });
+ *   // Validation passed, proceed with user update
+ * } catch (error) {
+ *   if (error.statusCode === 404) {
+ *     console.error(error.message); // "User not found" or "role not found"
+ *   } else {
+ *     console.error(`Validation failed: ${error.message}`);
+ *   }
+ * }
+ */
+export const validateUpdateUser = async (userId: string, userData: UpdateUserBody) => {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+
+    return { user };
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
  * Delete a user
  *
  * @param {string} userId - The user ID to delete
@@ -139,8 +248,7 @@ export const updateUser = async (userId: string, userData: Partial<IUser>): Prom
  */
 export const deleteUser = async (userId: string): Promise<boolean> => {
   try {
-    const user = await User.findById(userId);
-
+    const user = await findUserById(userId);
     if (!user) {
       return false;
     }
@@ -156,9 +264,8 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
       }
     }
 
-    await user?.deleteOne();
-
-    return true;
+    const result = await User.softDelete({ id: userId });
+    return result.deleted > 0;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -174,8 +281,7 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
  */
 export const loginUser = async (email: string, password: string) => {
   try {
-    const user = await User.findOne({ email });
-
+    const user = await findUserByEmail(email);
     if (!user) {
       throw new CustomError('Invalid email or password', 401);
     }
@@ -186,8 +292,8 @@ export const loginUser = async (email: string, password: string) => {
       throw new CustomError('Invalid email or password', 401);
     }
 
-    const jwtToken = generateAuthToken({ email, userId: user._id.toString() });
-    const refreshToken = generateRefreshToken({ email, userId: user._id.toString() });
+    const jwtToken = generateAuthToken({ email, userId: user.id });
+    const refreshToken = generateRefreshToken({ email, userId: user.id });
 
     const refreshTokenSchema = new RefreshToken({ token: refreshToken, userId: user._id, tokenVersion: user.tokenVersion });
     await refreshTokenSchema.save();
@@ -242,8 +348,8 @@ export const generateNewJwtToken = async (refreshToken: string) => {
       throw new CustomError('Unable to generate access token', 403);
     }
 
-    const jwtToken = generateAuthToken({ email: user.email, userId: user._id.toString() });
-    const newRefreshToken = generateRefreshToken({ email: user.email, userId: user._id.toString() });
+    const jwtToken = generateAuthToken({ email: user.email, userId: user.id });
+    const newRefreshToken = generateRefreshToken({ email: user.email, userId: user.id });
     await RefreshToken.findOneAndUpdate({ userId: payload.userId }, { token: newRefreshToken }, { new: true });
 
     return { jwtToken, newRefreshToken };
