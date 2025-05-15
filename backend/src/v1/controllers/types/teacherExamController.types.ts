@@ -3,10 +3,11 @@ import { ITeacherExam } from 'src/db/models/teacherExam.model';
 export type GetTeacherExamParams = { teacherExamId: string };
 
 export type PostTeacherExamBody = {
+  examId: string,
   examTypeId: string;
+  subjectId: string;
   title: string;
   fullExamGrade: number;
-  subjectId: string;
 };
 
 export type UpdateTeacherExamBody = Omit<PostTeacherExamBody, 'examId' | 'examTypeId'>;

@@ -4,11 +4,7 @@ import { body, param } from 'express-validator';
 
 import * as TeacherExamController from 'src/v1/controllers/teacherExam/teacherExamController';
 
-import * as ExamTypeService from 'src/v1/services/examTypeService';
-import * as StudentExamService from 'src/v1/services/studentExamService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-import { isObjectId } from 'src/shared/validators';
 
 const router = Router();
 
@@ -40,10 +36,8 @@ router.get('/:examId',
     .trim()
     .notEmpty()
     .withMessage('exam id can not be empty!')
-    .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentExamService.checkExamExists),
+    .isMongoId()
+    .withMessage('exam id must be a valid mongo id'),
   handleValidation as Application,
   TeacherExamController.getTeacherExam as Application,
 );
@@ -59,17 +53,15 @@ router.post('/',
     .notEmpty()
     .withMessage('exam type id can not be empty!')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(ExamTypeService.checkExamTypeExists),
+    .isMongoId()
+    .withMessage('exam type id must be a mongo id'),
   body('examId')
     .trim()
     .notEmpty()
     .withMessage('exam id can not be empty!')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentExamService.checkExamExists),
+    .isMongoId()
+    .withMessage('exam id must be a valid id'),
   body('fullExamGrade')
     .trim()
     .notEmpty()

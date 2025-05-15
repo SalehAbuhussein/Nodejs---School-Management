@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-import mongoose from 'mongoose';
-
 import * as TeacherExamService from 'src/v1/services/teacherExamService';
 
 import { CreateTeacherExamResponse, GetTeacherExamParams, GetTeacherExamResponse, PostTeacherExamBody, UpdateTeacherExamBody, UpdateTeacherExamParams, UpdateTeacherExamResponse } from 'src/v1/controllers/types/teacherExamController.types';
@@ -16,8 +14,15 @@ import { CreateTeacherExamResponse, GetTeacherExamParams, GetTeacherExamResponse
 export const getTeacherExam = async (req: Request, res: Response<GetTeacherExamResponse>, next: NextFunction) => {
   try {
     const { teacherExamId } = req.params as GetTeacherExamParams;
-
     const teacherExam = await TeacherExamService.getTeacherExamById(teacherExamId);
+
+    if (!teacherExam) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Teacher Exam not found!',
+        data: null,
+      });
+    }
 
     return res.json({
       status: 200,
@@ -43,12 +48,13 @@ export const getTeacherExam = async (req: Request, res: Response<GetTeacherExamR
  */
 export const createTeacherExam = async (req: Request, res: Response<CreateTeacherExamResponse>, next: NextFunction) => {
   try {
-    const { title, subjectId, examTypeId, fullExamGrade }: PostTeacherExamBody = req.body;
+    const { title, subjectId, examTypeId, fullExamGrade, examId }: PostTeacherExamBody = req.body;
 
     // Add Created by user ID
     const teacherExam = await TeacherExamService.createTeacherExam({
-      examTypeId: new mongoose.Schema.Types.ObjectId(examTypeId),
-      subjectId: new mongoose.Schema.Types.ObjectId(subjectId),
+      examId,
+      examTypeId,
+      subjectId,
       title,
       fullExamGrade,
     });
