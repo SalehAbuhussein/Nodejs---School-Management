@@ -1,8 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose, { ClientSession } from 'mongoose';
 
 import Subject, { ISubject } from 'src/db/models/subject.model';
-import Teacher from 'src/db/models/teacher.model';
 import TeacherSubject from 'src/db/models/teacherSubject.model';
+
+import TeacherService from './teacherService';
 
 import { PostSubjectBody, UpdateSubjectBody } from 'src/v1/controllers/types/subjectController.types';
 
@@ -32,55 +33,18 @@ export const getAllSubjects = async (): Promise<ISubject[]> => {
  * @returns {Promise<ISubject>} A promise that resolves to the subject
  * @throws {CustomError} If subject not found or database operation fails
  */
-export const getSubjectById = async (subjectId: string): Promise<ISubject> => {
+export const getSubjectById = async (subjectId: string, session?: ClientSession): Promise<ISubject | null> => {
   try {
-    const subject = await Subject.findById(subjectId);
-
-    if (!subject) {
-      throw new CustomError('Subject Not Found', 404);
+    if (session) {
+      return await Subject.findById(subjectId).session(session);
     }
 
-    return subject;
+    return await Subject.findById(subjectId);
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
-  }
-};
-
-// TODO: Check if it works
-/**
- * Get teachers for a specific subject
- * 
- * @param {string} subjectId - The ID of the subject
- * @param {string} semester - The semester ('First' or 'Second')
- * @returns {Promise<any[]>} A promise that resolves to an array of teachers
- * @throws {CustomError} If operation fails
- */
-export const getSubjectTeachers = async (subjectId: string, semester: 'First' | 'Second') => {
-  try {
-    const assignments = await TeacherSubject.where('isDeleted')
-      .equals(false)
-      .find({
-        subjectId,
-        semester,
-        isActive: true,
-      })
-      .populate({
-        path: 'teacherId',
-        populate: {
-          path: 'userId',
-          select: 'name email profileImg'
-        }
-      });
-
-      return assignments.map(assignment => assignment.teacherId);
-  } catch (error) {
-    if (error instanceof CustomError) {
-      throw error;
-    }
-    throw new CustomError('Failed to get subject teachers', 500, error);
   }
 };
 
@@ -106,10 +70,8 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
       { session },
     ).save({ session });
 
-    const teacher = await Teacher.findById(subjectData.teacherId).session(session);
-
+    const teacher = await TeacherService.getTeacherById(subjectData.teacherId, session);;
     if (!teacher) {
-      await session.abortTransaction();
       throw new CustomError('Teacher Not Found', 404);
     }
 
@@ -124,8 +86,8 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
       }
     ], { session })
 
+    
     await session.commitTransaction();
-
     return newSubject;
   } catch (error) {
     if (error instanceof CustomError) {
@@ -151,8 +113,7 @@ export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateS
   session.startTransaction();
 
   try {
-    let subject = await Subject.findById(subjectId).session(session);
-
+    let subject = await getSubjectById(subjectId, session);
     if (!subject) {
       throw new CustomError('Subject Not Found', 404);
     }
@@ -185,12 +146,9 @@ export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateS
  * @throws {CustomError} If subject not found or database operation fails
  */
 export const deleteSubject = async (subjectId: string): Promise<boolean> => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
-    const subject = await Subject.deleteOne({ _id: subjectId });
-    return subject.deletedCount > 0;
+    const subject = await Subject.softDelete({ _id: subjectId });
+    return subject.deleted === 1;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -241,7 +199,7 @@ export const checkSubjectsExists = async (subjectesIds: string[]) => {
 export const checkSubjectIsAvailable = async (subjectId: string) => {
   try {
     const subject = await getSubjectById(subjectId);
-    return subject.isLocked;
+    return subject && subject.isLocked;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;

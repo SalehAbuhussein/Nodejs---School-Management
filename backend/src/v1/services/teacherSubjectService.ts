@@ -6,6 +6,41 @@ import TeacherSubject, { AssignTeacherParams, ITeacherSubject } from 'src/db/mod
 
 import { CustomError } from 'src/shared/utils/CustomError';
 
+// TODO: Check if it works
+/**
+ * Get teachers for a specific subject
+ * 
+ * @param {string} subjectId - The ID of the subject
+ * @param {string} semester - The semester ('First' or 'Second')
+ * @returns {Promise<any[]>} A promise that resolves to an array of teachers
+ * @throws {CustomError} If operation fails
+ */
+export const getSubjectTeachers = async (subjectId: string, semester: 'First' | 'Second') => {
+  try {
+    const assignments = await TeacherSubject.where('isDeleted')
+      .equals(false)
+      .find({
+        subjectId,
+        semester,
+        isActive: true,
+      })
+      .populate({
+        path: 'teacherId',
+        populate: {
+          path: 'userId',
+          select: 'name email profileImg'
+        }
+      });
+
+      return assignments.map(assignment => assignment.teacherId);
+  } catch (error) {
+    if (error instanceof CustomError) {
+      throw error;
+    }
+    throw new CustomError('Failed to get subject teachers', 500, error);
+  }
+};
+
 /**
  * Assign a teacher to a subject
  *
@@ -57,13 +92,13 @@ export const assignTeacherToSubject = async (params: AssignTeacherParams): Promi
     await session.commitTransaction();
     return assignment[0];
   } catch (error) {
-    await session.abortTransaction();
     if (error instanceof CustomError) {
       throw error;
     }
     throw new CustomError('Failed to assign teacher to subject', 500);   
   } finally {
-    session.endSession();
+    await session.abortTransaction();
+    await session.endSession();
   }
 };
 

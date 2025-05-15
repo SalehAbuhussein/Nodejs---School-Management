@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 
-export interface ITeacherExam {
+import { SoftDeleteModel, softDeletePlugin } from 'soft-delete-plugin-mongoose';
+
+export interface ITeacherExam extends mongoose.Document {
   title: string;
   fullExamGrade: number;
   examTypeId: mongoose.Schema.Types.ObjectId;
@@ -35,4 +37,6 @@ const TeacherExamSchema = new mongoose.Schema<ITeacherExam>(
   { timestamps: true },
 );
 
-export default mongoose.model<ITeacherExam>('TeacherExam', TeacherExamSchema);
+TeacherExamSchema.plugin(softDeletePlugin);
+
+export default mongoose.model<ITeacherExam, SoftDeleteModel<ITeacherExam>>('TeacherExam', TeacherExamSchema);

@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongoose';
 import Teacher, { ITeacher } from 'src/db/models/teacher.model';
 import { CustomError } from 'src/shared/utils/CustomError';
 
@@ -26,15 +27,13 @@ export const getAllTeachers = async (): Promise<ITeacher[]> => {
  * @returns {Promise<ITeacher>} A promise that resolves to the teacher
  * @throws {CustomError} If teacher not found or database operation fails
  */
-export const getTeacherById = async (teacherId: string): Promise<ITeacher> => {
+export const getTeacherById = async (teacherId: string, session?: ClientSession): Promise<ITeacher | null> => {
   try {
-    const teacher = await Teacher.findById(teacherId);
-
-    if (!teacher) {
-      throw new CustomError('Not Found', 404);
+    if (session) {
+      return await Teacher.findById(teacherId).session(session);
     }
 
-    return teacher;
+    return await Teacher.findById(teacherId);
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;

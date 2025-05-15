@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import { SoftDeleteModel, softDeletePlugin } from 'soft-delete-plugin-mongoose';
 
-export interface ISubject {
+export interface ISubject extends mongoose.Document {
   name: string;
   totalSlots: number;
   currentSlots: number;
@@ -41,4 +42,6 @@ const SubjectSchema = new mongoose.Schema<ISubject>(
   { timestamps: true },
 );
 
-export default mongoose.model<ISubject>('Subject', SubjectSchema);
+SubjectSchema.plugin(softDeletePlugin);
+
+export default mongoose.model<ISubject, SoftDeleteModel<ISubject>>('Subject', SubjectSchema);

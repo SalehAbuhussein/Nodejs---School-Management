@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 
-export interface IStudent {
+import { SoftDeleteModel, softDeletePlugin } from 'soft-delete-plugin-mongoose';
+
+export interface IStudent extends mongoose.Document {
   firstName: string;
   secondName: string;
   thirdName: string | null;
@@ -39,4 +41,6 @@ const StudentSchema = new mongoose.Schema<IStudent>(
   { timestamps: true },
 );
 
-export default mongoose.model<IStudent>('Student', StudentSchema);
+StudentSchema.plugin(softDeletePlugin);
+
+export default mongoose.model<IStudent, SoftDeleteModel<IStudent>>('Student', StudentSchema);

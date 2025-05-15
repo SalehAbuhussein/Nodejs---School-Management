@@ -103,13 +103,9 @@ export const updateStudent = async (studentId: string, studentData: UpdateStuden
  */
 export const deleteStudent = async (studentId: string): Promise<boolean> => {
   try {
-    const result = await Student.deleteOne({ _id: studentId });
+    const result = await Student.softDelete({ _id: studentId });
 
-    if (result.deletedCount === 0) {
-      throw new Error('Student not found');
-    }
-
-    return result.deletedCount > 0;
+    return result.deleted === 0;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
