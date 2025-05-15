@@ -1,14 +1,11 @@
-import { Application, Router } from 'express';
+  import { Application, Router } from 'express';
 import { body, param } from 'express-validator';
 
 import * as roleController from 'src/v1/controllers/role/roleController';
 
-import * as PermissionService from 'src/v1/services/permissionService';
-import * as RoleService from 'src/v1/services/roleService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
-import { isObjectId, isObjectIds } from 'src/shared/validators';
+import mongoose from 'mongoose';
 
 const router = Router();
 
@@ -50,10 +47,9 @@ router.post('/',
   body('permissions')
     .isArray({ min: 1 })
     .withMessage('Permissions can not be empty!')
-    .customSanitizer((value: string[]) => [ ...new Set(value)])
-    .custom(isObjectIds)
-    .bail()
-    .custom(PermissionService.checkPermissionsExist),
+    .customSanitizer((permissions: string[]) => [ ...new Set(permissions)])
+    .custom((permissions: string[]) => permissions.every(id => mongoose.Types.ObjectId.isValid(id)))
+    .withMessage('Invalid permissions!'),
   handleValidation as Application,
   roleController.createRole as Application,
 );
@@ -70,9 +66,8 @@ router.patch('/:roleId',
     .notEmpty()
     .withMessage('role id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(RoleService.checkRoleExists),
+    .isMongoId()
+    .withMessage('invalid role id'),
   body('roleName')
     .trim()
     .notEmpty()
@@ -81,9 +76,8 @@ router.patch('/:roleId',
     .isArray({ min: 1 })
     .withMessage('Permissions can not be empty!')
     .customSanitizer((permissions) => [...(new Set(permissions))])
-    .custom(isObjectIds)
-    .bail()
-    .custom(PermissionService.checkPermissionsExist),
+    .custom((permissions: string[]) => permissions.every(id => mongoose.Types.ObjectId.isValid(id)))
+    .withMessage('Invalid permissions!'),
   handleValidation as Application,
   roleController.updateRole as Application
 );
@@ -117,9 +111,8 @@ router.delete('/:roleId',
     .notEmpty()
     .withMessage('role id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(RoleService.checkRoleExists),
+    .isMongoId()
+    .withMessage('Invalid role id!'),
   handleValidation as Application,
   roleController.deleteRole as Application
 );

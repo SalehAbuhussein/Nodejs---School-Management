@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-import mongoose from 'mongoose';
-
 import * as RoleService from 'src/v1/services/roleService';
 
 import { GetRoleParams, PostRoleBody, UpdateRoleResponse, GetRoleResponse, CreateRoleResponse, DeleteRoleResponse, UpdateRoleParams, UpdateRoleBody, DeleteRoleParams } from 'src/v1/controllers/types/roleController.types';
@@ -43,7 +41,6 @@ export const getRole = async (req: Request, res: Response<GetRoleResponse>, next
 export const createRole = async (req: Request, res: Response<CreateRoleResponse>, next: NextFunction) => {
   try {
     const { roleName, permissions, users }: PostRoleBody = req.body;
-
     const newRole = await RoleService.createRole({ roleName, permissions, users });
 
     return res.status(201).json({
@@ -72,7 +69,6 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
   try {
     const { permissions, roleName, users }: UpdateRoleBody = req.body;
     const { roleId }: UpdateRoleParams = req.params as UpdateRoleParams;
-
     const role = await RoleService.updateRole(roleId, { roleName, permissions, users });
 
     return res.json({
@@ -102,7 +98,6 @@ export const updateRole = async (req: Request, res: Response<UpdateRoleResponse>
 export const deleteRole = async (req: Request, res: Response<DeleteRoleResponse>, next: NextFunction) => {
   try {
     const { roleId }: DeleteRoleParams = req.params as DeleteRoleParams;
-
     await RoleService.deleteRole(roleId);
 
     return res.json({
