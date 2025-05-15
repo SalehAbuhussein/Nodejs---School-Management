@@ -41,9 +41,8 @@ router.get('/:examTypeId',
     .notEmpty()
     .withMessage('exam type id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(ExamTypeService.checkExamTypeExists),
+    .isMongoId()
+    .withMessage('exam type id is invalid'),
   handleValidation as Application,
   examTypeController.getExamType as Application
 );
@@ -122,51 +121,14 @@ router.patch('/:examTypeId',
     .notEmpty()
     .withMessage('exam type id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(ExamTypeService.checkExamTypeExists),
+    .isMongoId()
+    .withMessage('exam type id is invalid'),
   body('name')
     .trim()
     .notEmpty()
     .withMessage('name can not be empty!'),
   handleValidation as Application,
   examTypeController.updateExamType as Application
-);
-
-// prettier-ignore
-/**
- * @openapi
- * /examTypes/{examTypeId}:
- *   delete:
- *     tags:
- *       - ExamType Controller
- *     summary: Delete exam type
- *     parameters:
- *       - name: examTypeId
- *         in: path
- *         description: exam type ID
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Exam type Deleted Successfully!
- *       404:
- *         description: Not Found!
- *       500:
- *         description: Server error
- */
-router.delete('/:examTypeId', 
-  param('examTypeId')
-    .trim()
-    .notEmpty()
-    .withMessage('exam type id can not be empty')
-    .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(ExamTypeService.checkExamTypeExists),
-  handleValidation as Application,
-  examTypeController.deleteExamType as Application
 );
 
 export default router;

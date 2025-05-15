@@ -121,7 +121,6 @@ export const updateUser = async (req: Request, res: Response<UpdateUserResponse>
 export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>, next: NextFunction) => {
   try {
     const { userId }: DeleteUserParams = req.params as DeleteUserParams;
-
     const isDeleted = await UserService.deleteUser(userId);
 
     if (!isDeleted) {
