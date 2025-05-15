@@ -1,6 +1,7 @@
 import Permission, { IPermission } from 'src/db/models/permission.model';
 
 import { CustomError } from 'src/shared/utils/CustomError';
+import { PostPermissionBody, UpdatePermissionBody } from '../controllers/types/permissionController.types';
 
 /**
  * Retrieve all permissions from the database
@@ -29,7 +30,6 @@ export const getAllPermissions = async (): Promise<IPermission[]> => {
 export const getPermission = async (permissionId: string): Promise<IPermission> => {
   try {
     const permission = await Permission.findById(permissionId);
-
     if (!permission) {
       throw new CustomError('Permission not found', 404);
     }
@@ -46,14 +46,13 @@ export const getPermission = async (permissionId: string): Promise<IPermission> 
 /**
  * Create a new permission
  *
- * @param {IPermission} permissionData - The name of the permission to create
+ * @param {PostPermissionBody} permissionData - The name of the permission to create
  * @returns {Promise<IPermission>} A promise that resolves to the created permission
  * @throws {CustomError} If validation fails or database operation fails
  */
-export const createPermission = async (permissionData: IPermission): Promise<IPermission> => {
+export const createPermission = async (permissionData: PostPermissionBody): Promise<IPermission> => {
   try {
     const existingPermission = await Permission.findOne({ name: permissionData.name });
-
     if (existingPermission) {
       throw new CustomError('Permission already exists', 400);
     }
@@ -72,14 +71,13 @@ export const createPermission = async (permissionData: IPermission): Promise<IPe
  * Update an existing permission
  *
  * @param {string} permissionId - The ID of the permission to update
- * @param {IPermission} permissionData - The updated permission data
+ * @param {UpdatePermissionBody} permissionData - The updated permission data
  * @returns {Promise<IPermission>} A promise that resolves to the updated permission
  * @throws {CustomError} If permission not found or database operation fails
  */
-export const updatePermission = async (permissionId: string, permissionData: IPermission): Promise<IPermission> => {
+export const updatePermission = async (permissionId: string, permissionData: UpdatePermissionBody): Promise<IPermission> => {
   try {
     const permission = await Permission.findById(permissionId);
-
     if (!permission) {
       throw new CustomError('Permission not found', 404);
     }
@@ -111,7 +109,6 @@ export const updatePermission = async (permissionId: string, permissionData: IPe
 export const deletePermission = async (permissionId: string): Promise<boolean> => {
   try {
     const result = await Permission.deleteOne({ _id: permissionId });
-
     if (result.deletedCount === 0) {
       throw new CustomError('Permission not found', 404);
     }

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export interface IPermission {
+export interface IPermission extends mongoose.Document {
   name: string;
   description: string;
 }

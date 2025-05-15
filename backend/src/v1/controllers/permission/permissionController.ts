@@ -42,7 +42,6 @@ export const getPermission = async (req: Request, res: Response<GetPermissionRes
 export const createPermission = async (req: Request, res: Response<CreatePermissionResponse>, next: NextFunction) => {
   try {
     const { name, description }: PostPermissionBody = req.body;
-
     const permission = await PermissionService.createPermission({ name, description });
 
     return res.status(201).json({
@@ -71,7 +70,6 @@ export const updatePermission = async (req: Request, res: Response<UpdatePermiss
   try {
     const { name, description }: UpdatePermissionBody = req.body;
     const { permissionId }: UpdatePermissionParams = req.params as UpdatePermissionParams;
-
     const permission = await PermissionService.updatePermission(permissionId, { name, description });
 
     return res.json({
@@ -99,7 +97,6 @@ export const updatePermission = async (req: Request, res: Response<UpdatePermiss
 export const deletePermission = async (req: Request, res: Response<DeletePermissionResponse>, next: NextFunction) => {
   try {
     const { permissionId }: DeletePermissionParams = req.params as DeletePermissionParams;
-
     await PermissionService.deletePermission(permissionId);
 
     return res.json({
