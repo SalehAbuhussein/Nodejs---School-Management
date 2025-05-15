@@ -16,6 +16,13 @@ export const getTeacher = async (req: Request, res: Response<GetTeacherResponse>
     const params: GetTeacherParams = req.params as GetTeacherParams;
 
     const teacher = await TeacherService.getTeacherById(params.teacherId);
+    if (!teacher) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Teacher Not Found!',
+        data: null,
+      });
+    }
 
     return res.json({
       status: 200,
@@ -42,7 +49,6 @@ export const getTeacher = async (req: Request, res: Response<GetTeacherResponse>
 export const createTeacher = async (req: Request, res: Response<CreateTeacherResponse>, next: NextFunction) => {
   try {
     const { firstName, secondName, lastName, thirdName, userId }: PostTeacherBody = req.body;
-
     const newTeacher = await TeacherService.createTeacher({ firstName, secondName, lastName, thirdName, userId });
 
     return res.status(201).json({
@@ -69,10 +75,9 @@ export const createTeacher = async (req: Request, res: Response<CreateTeacherRes
  */
 export const updateTeacher = async (req: Request, res: Response<UpdateTeacherResponse>, next: NextFunction) => {
   try {
-    const { firstName, lastName, secondName, thirdName, isActive, subjects }: UpdateTeacherBody = req.body;
+    const { firstName, lastName, secondName, thirdName, isActive }: UpdateTeacherBody = req.body;
     const { teacherId }: UpdateTeacherParams = req.params as UpdateTeacherParams;
-
-    const teacher = await TeacherService.updateTeacher(teacherId, { firstName, lastName, secondName, thirdName, isActive, subjects });
+    const teacher = await TeacherService.updateTeacher(teacherId, { firstName, lastName, secondName, thirdName, isActive });
 
     return res.json({
       status: 200,

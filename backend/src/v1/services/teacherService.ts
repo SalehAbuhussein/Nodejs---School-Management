@@ -1,5 +1,11 @@
 import { ClientSession } from 'mongoose';
+
 import Teacher, { ITeacher } from 'src/db/models/teacher.model';
+
+import * as UserService from 'src/v1/services/userService';
+
+import { PostTeacherBody, UpdateTeacherBody } from '../controllers/types/teacherController.types';
+
 import { CustomError } from 'src/shared/utils/CustomError';
 
 /**
@@ -45,18 +51,78 @@ export const getTeacherById = async (teacherId: string, session?: ClientSession)
 /**
  * Create a new teacher
  *
- * @param {Omit<ITeacher, 'subjects' | 'isActive'>} teacherData - The teacher data to create
+ * @param {PostTeacherBody} teacherData - The teacher data to create
  * @returns {Promise<ITeacher>} A promise that resolves to the created teacher
  * @throws {CustomError} If validation fails or database operation fails
  */
-export const createTeacher = async (teacherData: Omit<ITeacher, 'subjects' | 'isActive'>): Promise<ITeacher> => {
+export const createTeacher = async (teacherData: PostTeacherBody): Promise<ITeacher> => {
   try {
-    return await Teacher.create(teacherData);
+    await validateCreateTeacher(teacherData);
+    return await new Teacher(teacherData).save();
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
+  }
+};
+
+/**
+ * Validates teacher data before creation
+ * 
+ * This method performs validation checks to ensure the teacher data is valid
+ * before creating a new teacher record. It specifically checks:
+ * 1. User existence - Verifies the referenced user ID exists
+ * 2. Duplicate prevention - Ensures the user isn't already associated with a teacher
+ * 3. Data integrity - Validates required fields and data formats
+ *
+ * @param {PostTeacherBody} teacherData - The teacher data to validate
+ *   @param {string} teacherData.firstName - Teacher's first name
+ *   @param {string} teacherData.secondName - Teacher's second name
+ *   @param {string} [teacherData.thirdName] - Teacher's third name (optional)
+ *   @param {string} teacherData.lastName - Teacher's last name
+ *   @param {string} teacherData.userId - Reference to the user account
+ *   @param {string[]} [teacherData.subjects] - Array of subject IDs (optional)
+ *   @param {boolean} [teacherData.isActive=true] - Teacher's active status
+ * 
+ * @returns {Promise<void>} A promise that resolves if validation passes
+ * 
+ * @throws {CustomError} With appropriate status codes and messages:
+ *   - 409: If a teacher record already exists for the user
+ *   - 404: If the referenced user doesn't exist
+ *   - 400: If required fields are missing or invalid
+ *   - 500: For unexpected server errors during validation
+ * 
+ * @example
+ * try {
+ *   await validateCreateTeacher({
+ *     firstName: "John",
+ *     secondName: "David",
+ *     lastName: "Smith",
+ *     userId: "60d5ec9af682fbd12a0b4d8b"
+ *   });
+ *   // Validation passed, proceed with teacher creation
+ * } catch (error) {
+ *   if (error.statusCode === 409) {
+ *     console.error("Teacher already exists for this user");
+ *   } else {
+ *     console.error(`Validation failed: ${error.message}`);
+ *   }
+ * }
+ */
+export const validateCreateTeacher = async (teacherData: PostTeacherBody) => {
+  try {
+    const isUserExist = await UserService.checkUserExists(teacherData.userId);
+    if (!isUserExist) {
+      throw new CustomError('User not found', 404);
+    }
+
+    const isTeacherExist = await checkTeacherExistsByUserId(teacherData.userId);
+    if (!isTeacherExist) {
+      throw new CustomError('Teacher already exists', 409);
+    }
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -68,13 +134,9 @@ export const createTeacher = async (teacherData: Omit<ITeacher, 'subjects' | 'is
  * @returns {Promise<ITeacher>} A promise that resolves to the updated teacher
  * @throws {CustomError} If teacher not found or database operation fails
  */
-export const updateTeacher = async (teacherId: string, teacherData: Omit<ITeacher, 'userId'>): Promise<ITeacher> => {
+export const updateTeacher = async (teacherId: string, teacherData: UpdateTeacherBody): Promise<ITeacher> => {
   try {
-    const teacher = await Teacher.findById(teacherId);
-
-    if (!teacher) {
-      throw new CustomError('Not Found', 404);
-    }
+    const { teacher } = await validateUpdateTeacher(teacherId, teacherData);
 
     if (teacher.firstName !== teacherData.firstName) {
       teacher.firstName = teacherData.firstName;
@@ -96,16 +158,68 @@ export const updateTeacher = async (teacherId: string, teacherData: Omit<ITeache
       teacher.isActive = teacherData.isActive;
     }
 
-    if (teacherData.subjects) {
-      teacher.subjects = teacherData.subjects;
-    }
-
     return await teacher.save();
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
+  }
+};
+
+/**
+ * Validates teacher data before updating
+ * 
+ * This method performs validation checks to ensure the teacher update data is valid
+ * before modifying an existing teacher record. It verifies:
+ * 1. Teacher existence - Confirms the teacher ID refers to an existing record
+ * 2. Data integrity - Validates the update fields have proper formats and values
+ * 3. Business rules - Ensures the update doesn't violate any business constraints
+ *
+ * @param {string} teacherId - The MongoDB ObjectId of the teacher to update
+ * @param {Omit<ITeacher, 'userId'>} teacherData - The updated teacher data
+ *   @param {string} teacherData.firstName - Teacher's first name
+ *   @param {string} teacherData.secondName - Teacher's second name
+ *   @param {string} [teacherData.thirdName] - Teacher's third name (optional)
+ *   @param {string} teacherData.lastName - Teacher's last name
+ *   @param {boolean} [teacherData.isActive] - Teacher's active status
+ *   @param {string[]} [teacherData.subjects] - Array of subject IDs
+ * 
+ * @returns {Promise<void>} A promise that resolves if validation passes
+ * 
+ * @throws {CustomError} With appropriate status codes and messages:
+ *   - 404: If the teacher record doesn't exist
+ *   - 400: If update data is invalid or violates business rules
+ *   - 500: For unexpected server errors during validation
+ * 
+ * @example
+ * try {
+ *   await validateUpdateTeacher('60d5ec9af682fbd12a0b4d8b', {
+ *     firstName: "John",
+ *     secondName: "David",
+ *     lastName: "Smith",
+ *     isActive: true,
+ *     subjects: ["60d5ecb2f682fbd12a0b4d8c"]
+ *   });
+ *   // Validation passed, proceed with teacher update
+ * } catch (error) {
+ *   if (error.statusCode === 404) {
+ *     console.error("Teacher not found");
+ *   } else {
+ *     console.error(`Validation failed: ${error.message}`);
+ *   }
+ * }
+ */
+export const validateUpdateTeacher = async (teacherId: string, teacherData: UpdateTeacherBody) => {
+  try {
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      throw new CustomError('Teacher Not Found', 404);
+    }
+
+    return { teacher };
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -118,13 +232,8 @@ export const updateTeacher = async (teacherId: string, teacherData: Omit<ITeache
  */
 export const deleteTeacher = async (teacherId: string): Promise<boolean> => {
   try {
-    const result = await Teacher.deleteOne({ _id: teacherId });
-
-    if (result.deletedCount === 0) {
-      throw new CustomError('Not Found', 404);
-    }
-
-    return result.deletedCount > 0;
+    const result = await Teacher.softDelete({ _id: teacherId });;
+    return result.deleted === 1;
   } catch (error) {
     throw new CustomError('Server Error', 500, error);
   }
@@ -140,6 +249,18 @@ export const deleteTeacher = async (teacherId: string): Promise<boolean> => {
 export const checkTeacherExists = async (teacherId: string): Promise<boolean> => {
   try {
     const teacher = await Teacher.findById(teacherId);
+    return !!teacher;
+  } catch (error) {
+    if (error instanceof CustomError) {
+      throw error;
+    }
+    throw new CustomError('Server Error', 500, error);
+  }
+};
+
+export const checkTeacherExistsByUserId = async (userId: string): Promise<boolean> => {
+  try {
+    const teacher = await Teacher.findOne({ userId });
     return !!teacher;
   } catch (error) {
     if (error instanceof CustomError) {
