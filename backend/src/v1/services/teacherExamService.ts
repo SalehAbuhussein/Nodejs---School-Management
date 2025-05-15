@@ -142,8 +142,20 @@ export const updateTeacherExam = async (teacherExamId: string, teacherExamData: 
   }
 };
 
+/**
+ * Check if a teacher exam exists
+ */
+export const checkTeacherExam = async (teacherExamId: string) => {
+  try {
+    return await getTeacherExamById(teacherExamId);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default {
   getTeacherExamById,
   createTeacherExam,
   updateTeacherExam,
+  checkTeacherExam,
 };
