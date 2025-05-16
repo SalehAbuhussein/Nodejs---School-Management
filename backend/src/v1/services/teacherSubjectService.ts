@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { ClientSession } from 'mongoose';
 
 import Subject from 'src/db/models/subject.model';
 import Teacher from 'src/db/models/teacher.model';
@@ -48,10 +48,17 @@ export const getSubjectTeachers = async (subjectId: string, semester: 'First' | 
  * @returns {Promise<ITeacherSubject>} Promise with the created assignment
  * @throws {Error} If database operation fails
  */
-export const assignTeacherToSubject = async (params: AssignTeacherParams): Promise<ITeacherSubject> => {
+export const assignTeacherToSubject = async (params: AssignTeacherParams, existingSession?: ClientSession): Promise<ITeacherSubject> => {
   const { teacherId, subjectId, semester, assignedDate = new Date() } = params;
-  const session = await mongoose.startSession();
-  session.startTransaction();
+
+    // Use existing session or create a new one
+    const useExistingSession = !!existingSession;
+    const session = existingSession || await mongoose.startSession();
+    
+    if (!useExistingSession) {
+      session.startTransaction();
+    }
+
 
   try {
     const teacher = await Teacher.findById(teacherId).session(session);

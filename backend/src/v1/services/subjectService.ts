@@ -4,6 +4,7 @@ import Subject, { ISubject } from 'src/db/models/subject.model';
 import TeacherSubject from 'src/db/models/teacherSubject.model';
 
 import TeacherService from './teacherService';
+import TeacherSubjectService from './teacherSubjectService';
 
 import { PostSubjectBody, UpdateSubjectBody } from 'src/v1/controllers/types/subjectController.types';
 
@@ -60,6 +61,11 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
   session.startTransaction();
 
   try {
+    const teacher = await TeacherService.getTeacherById(subjectData.teacherId, session);;
+    if (!teacher) {
+      throw new CustomError('Teacher Not Found', 404);
+    }
+
     const totalSlotsNumber = parseInt(subjectData.totalSlots);
     const newSubject = await new Subject(
       {
@@ -70,23 +76,17 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
       { session },
     ).save({ session });
 
-    const teacher = await TeacherService.getTeacherById(subjectData.teacherId, session);;
-    if (!teacher) {
-      throw new CustomError('Teacher Not Found', 404);
-    }
-
     const currentMonth = new Date().getMonth();
     const semester = currentMonth < 6 ? 'First' : 'Second';
 
-    await TeacherSubject.create([
-      {
-        teacherId: subjectData.teacherId,
-        subjectId: newSubject._id,
-        semester,
-      }
-    ], { session })
+    // link teacher to subject
+    await TeacherSubjectService.assignTeacherToSubject({
+      teacherId: subjectData.teacherId,
+      subjectId: newSubject.id,
+      semester,
+    }, session);
 
-    
+
     await session.commitTransaction();
     return newSubject;
   } catch (error) {
