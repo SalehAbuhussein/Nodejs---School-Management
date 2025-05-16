@@ -14,7 +14,14 @@ import { DeleteStudentTierParams, GetStudentTierParams, PostStudentTierBody, Upd
 export const getStudentTier = async (req: Request, res: Response<GetStudentTierResponse>, next: NextFunction) => {
   try {
     const { studentTierId }: GetStudentTierParams = req.params as GetStudentTierParams;
-    const studentTier = await StudentTierService.getStudentTierById(studentTierId);
+    const studentTier = await StudentTierService.findStudentTierById(studentTierId);
+    if (!studentTier) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Student Tier Not Found!',
+        data: null,
+      });
+    }
 
     return res.json({
       status: 200,
@@ -97,8 +104,14 @@ export const updateStudentTier = async (req: Request, res: Response<UpdateStuden
 export const deleteStudentTier = async (req: Request, res: Response<DeleteStudentTierResponse>, next: NextFunction) => {
   try {
     const { studentTierId }: DeleteStudentTierParams = req.params as DeleteStudentTierParams;
-
-    await StudentTierService.deleteStudentTier(studentTierId);
+    const isDeleted = await StudentTierService.deleteStudentTier(studentTierId);
+    if (!isDeleted) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Student Tier Not Found!',
+        data: null,
+      });
+    }
 
     return res.json({
       status: 200,

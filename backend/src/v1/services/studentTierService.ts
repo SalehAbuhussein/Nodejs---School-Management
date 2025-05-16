@@ -26,14 +26,9 @@ export const getAllStudentTiers = async (): Promise<IStudentTier[]> => {
  * @returns {Promise<IStudentTier>} A promise that resolves to the student tier
  * @throws {CustomError} If student tier not found or database operation fails
  */
-export const getStudentTierById = async (studentTierId: string): Promise<IStudentTier> => {
+export const findStudentTierById = async (studentTierId: string): Promise<IStudentTier | null> => {
   try {
     const studentTier = await StudentTier.findById(studentTierId);
-
-    if (!studentTier) {
-      throw new CustomError('Not Found', 404);
-    }
-
     return studentTier;
   } catch (error) {
     if (error instanceof CustomError) {
@@ -74,7 +69,6 @@ export const createStudentTier = async (studentTier: IStudentTier): Promise<IStu
 export const updateStudentTier = async (studentTierId: string, studentTierData: IStudentTier): Promise<IStudentTier> => {
   try {
     let studentTier = await StudentTier.findById(studentTierId);
-
     if (!studentTier) {
       throw new CustomError('Not Found', 404);
     }
@@ -106,11 +100,6 @@ export const updateStudentTier = async (studentTierId: string, studentTierData: 
 export const deleteStudentTier = async (studentTierId: string): Promise<boolean> => {
   try {
     const result = await StudentTier.deleteOne({ _id: studentTierId });
-
-    if (result.deletedCount === 0) {
-      throw new CustomError('Not Found', 404);
-    }
-
     return result.deletedCount > 0;
   } catch (error) {
     if (error instanceof CustomError) {
@@ -141,7 +130,7 @@ export const checkStudentTierExists = async (studentTierId: string): Promise<boo
 
 export default {
   getAllStudentTiers,
-  getStudentTierById,
+  getStudentTierById: findStudentTierById,
   createStudentTier,
   updateStudentTier,
   deleteStudentTier,
