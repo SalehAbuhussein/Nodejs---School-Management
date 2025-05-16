@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
-export interface ISubject {
+import { SoftDeleteModel, softDeletePlugin } from 'soft-delete-plugin-mongoose';
+
+export interface ISubject extends mongoose.Document {
   name: string;
-  teachers: mongoose.Types.ObjectId[];
-  enrollments: mongoose.Types.ObjectId[];
   totalSlots: number;
   currentSlots: number;
   isActive: boolean;
@@ -17,18 +17,6 @@ const SubjectSchema = new mongoose.Schema<ISubject>(
       required: true,
       unique: true,
     },
-    teachers: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: 'Teacher',
-      },
-    ],
-    enrollments: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: 'Enrollment',
-      },
-    ],
     totalSlots: {
       type: Number,
       required: true,
@@ -55,4 +43,6 @@ const SubjectSchema = new mongoose.Schema<ISubject>(
   { timestamps: true },
 );
 
-export default mongoose.model<ISubject>('Subject', SubjectSchema);
+SubjectSchema.plugin(softDeletePlugin);
+
+export default mongoose.model<ISubject, SoftDeleteModel<ISubject>>('Subject', SubjectSchema);

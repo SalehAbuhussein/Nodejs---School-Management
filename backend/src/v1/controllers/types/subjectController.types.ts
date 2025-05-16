@@ -8,7 +8,7 @@ export type PostSubjectBody = {
   totalSlots: string;
 };
 
-export type UpdateSubjectBody = Omit<PostSubjectBody, 'teacherId'> & { isActive: boolean; teachersIds: string[] };
+export type UpdateSubjectBody = Omit<PostSubjectBody, 'teacherId'> & { isActive: boolean; };
 
 export type UpdateSubjectParams = { subjectId: string };
 

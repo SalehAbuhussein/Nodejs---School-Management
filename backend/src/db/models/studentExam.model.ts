@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export interface IStudentExam {
+export interface IStudentExam extends mongoose.Document {
   title: string;
   teacherExamId: mongoose.Types.ObjectId;
   subjectId: mongoose.Types.ObjectId;
@@ -19,7 +19,7 @@ export interface ICreateStudentExam {
   year: number;
 }
 
-const ExamSchema = new mongoose.Schema<IStudentExam>(
+const StudentExamSchema = new mongoose.Schema<IStudentExam>(
   {
     title: {
       type: String,
@@ -57,4 +57,4 @@ const ExamSchema = new mongoose.Schema<IStudentExam>(
   { timestamps: true },
 );
 
-export default mongoose.model<IStudentExam>('StudentExam', ExamSchema);
+export default mongoose.model<IStudentExam>('StudentExam', StudentExamSchema);

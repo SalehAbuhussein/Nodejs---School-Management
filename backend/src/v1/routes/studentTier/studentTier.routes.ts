@@ -4,11 +4,7 @@ import { body, param } from 'express-validator';
 
 import * as studentTierController from 'src/v1/controllers/studentTier/studentTierController';
 
-import * as StudentTierService from 'src/v1/services/studentTierService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-
-import { isObjectId } from 'src/shared/validators';
 
 const router = Router();
 
@@ -40,9 +36,8 @@ router.get('/:studentTierId',
     .notEmpty()
     .withMessage('student tier id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentTierService.checkStudentTierExists),
+    .isMongoId()
+    .withMessage('student tier id must be a valid id'),
   handleValidation as Application,
   studentTierController.getStudentTier as Application
 );
@@ -132,9 +127,8 @@ router.patch('/:studentTierId',
     .notEmpty()
     .withMessage('student tier id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentTierService.checkStudentTierExists),
+    .isMongoId()
+    .withMessage('student tier id must be a valid id'),
   body('tierName')
     .trim()
     .notEmpty()
@@ -175,9 +169,8 @@ router.delete('/:studentTierId',
     .notEmpty()
     .withMessage('student tier id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentTierService.checkStudentTierExists),
+    .isMongoId()
+    .withMessage('student tier id must be a valid id'),
   studentTierController.deleteStudentTier as Application
 );
 

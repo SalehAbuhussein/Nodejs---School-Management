@@ -4,12 +4,7 @@ import { body, param } from 'express-validator';
 
 import * as subjectController from 'src/v1/controllers/subject/subjectController';
 
-import * as SubjectService from 'src/v1/services/subjectService';
-import * as TeacherService from 'src/v1/services/teacherService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-
-import { isObjectId, isObjectIds } from 'src/shared/validators';
 
 const router = Router();
 
@@ -42,9 +37,8 @@ router.get('/:subjectId',
     .notEmpty()
     .withMessage('subject id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(SubjectService.checkSubjectExists),
+    .isMongoId()
+    .withMessage('subject id should be valid'),
   handleValidation as Application,
   subjectController.getSubject as Application
 );
@@ -87,9 +81,8 @@ router.post('/',
     .notEmpty()
     .withMessage('can not be created without teacher!')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(TeacherService.checkTeacherExists),
+    .isMongoId()
+    .withMessage('teacher id should be valid'),
   body('totalSlots')
     .trim()
     .notEmpty()
@@ -145,21 +138,12 @@ router.patch('/:subjectId',
     .notEmpty()
     .withMessage('Subject id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(SubjectService.checkSubjectExists),
+    .isMongoId()
+    .withMessage('Subject id should be valid'),
   body('name')
     .trim()
     .notEmpty()
     .withMessage('Subject name can not be empty!'),
-  body('teachersIds')
-    .isArray({ min: 1 })
-    .withMessage('Teachers can not be empty!')
-    .customSanitizer(teachersIds => [...(new Set(teachersIds))])
-    .bail()
-    .custom(isObjectIds)
-    .bail()
-    .custom(TeacherService.checkTeachersExists),
   handleValidation as Application,
   subjectController.updateSubject as Application
 );
@@ -176,9 +160,8 @@ router.delete('/:subjectId',
     .notEmpty()
     .withMessage('subject id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(SubjectService.checkSubjectExists),
+    .isMongoId()
+    .withMessage('subject id should be valid'),
   subjectController.deleteSubject as Application
 );
 

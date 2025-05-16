@@ -3,9 +3,9 @@ import { ITeacher } from 'src/db/models/teacher.model';
 
 export type GetTeacherParams = { teacherId: string };
 
-export type PostTeacherBody = { firstName: string; secondName: string; thirdName: string | null; lastName: string; userId: mongoose.Types.ObjectId };
+export type PostTeacherBody = { firstName: string; secondName: string; thirdName: string | null; lastName: string; userId: string };
 
-export type UpdateTeacherBody = Omit<PostTeacherBody, 'userId'> & { isActive: boolean; subjects: mongoose.Types.ObjectId[] };
+export type UpdateTeacherBody = Omit<PostTeacherBody, 'userId'> & { isActive: boolean; };
 
 export type UpdateTeacherParams = { teacherId: string };
 

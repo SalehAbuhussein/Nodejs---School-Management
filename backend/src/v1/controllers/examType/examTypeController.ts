@@ -18,7 +18,11 @@ import { CustomError } from 'src/shared/utils/CustomError';
 export const getExamType = async (req: Request, res: Response<GetExamTypeResponse>, next: NextFunction) => {
   try {
     const { examTypeId }: GetExamTypeParams = req.params as GetExamTypeParams;
-    const examType = await ExamTypeService.getExamType(examTypeId);
+    
+    const examType = await ExamTypeService.findExamTypeById(examTypeId);
+    if (!examType) {
+      throw new CustomError('Exam type not found', 404);
+    }
 
     return res.json({
       status: 200,
@@ -54,8 +58,7 @@ export const getExamType = async (req: Request, res: Response<GetExamTypeRespons
 export const createExamType = async (req: Request, res: Response<CreateExamTypeResponse>, next: NextFunction) => {
   try {
     const { name }: PostExamTypeBody = req.body;
-
-    const newExamType = await new ExamType({ name }).save();
+    const newExamType = await ExamTypeService.createExamType(name);
 
     return res.status(201).json({
       status: 201,
@@ -90,33 +93,6 @@ export const updateExamType = async (req: Request, res: Response<UpdateExamTypeR
       status: 200,
       data: examType ?? null,
       message: 'Exam type Updated Successfully!',
-    });
-  } catch (error: any) {
-    return res.status(error.statusCode).json({
-      status: error.statusCode,
-      message: error.message,
-      data: null,
-      error: error.originalError,
-    });
-  }
-};
-
-/**
- * Update examType
- *
- * @param { Request } req
- * @param { Response<DeleteExamTypeResponse> } res
- * @param { NextFunction } next
- */
-export const deleteExamType = async (req: Request, res: Response<DeleteExamTypeResponse>, next: NextFunction) => {
-  try {
-    const { examTypeId }: DeleteExamTypeParams = req.params as DeleteExamTypeParams;
-    await ExamTypeService.deleteExamType(examTypeId);
-
-    return res.json({
-      status: 200,
-      message: 'Exam type Deleted Successfully!',
-      data: null,
     });
   } catch (error: any) {
     return res.status(error.statusCode).json({

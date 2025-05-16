@@ -6,12 +6,6 @@ import { handleValidation } from 'src/shared/middlewares/validators.middleware';
 
 import * as teacherController from 'src/v1/controllers/teacher/teacherController';
 
-import * as SubjectService from 'src/v1/services/subjectService';
-import * as TeacherService from 'src/v1/services/teacherService';
-import * as UserService from 'src/v1/services/userService';
-
-import { isObjectId, isObjectIds } from 'src/shared/validators';
-
 const router = Router();
 
 // prettier-ignore
@@ -43,9 +37,8 @@ router.get('/:teacherId',
     .notEmpty()
     .withMessage('teacher id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(TeacherService.checkTeacherExists),
+    .isMongoId()
+    .withMessage('teacher id should be valid id'),
   handleValidation as Application, 
   teacherController.getTeacher as Application
 );
@@ -114,9 +107,8 @@ router.post('/',
     .notEmpty()
     .withMessage('User id can not be empty!')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(UserService.checkUserExists),
+    .isMongoId()
+    .withMessage('User id should be valid id'),
   handleValidation as Application,
   teacherController.createTeacher as Application
 );
@@ -178,9 +170,8 @@ router.patch('/:teacherId',
     .notEmpty()
     .withMessage('teacher id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(TeacherService.checkTeacherExists),
+    .isMongoId()
+    .withMessage('teacher id should be valid id'),
   body('firstName')
     .trim()
     .notEmpty()
@@ -197,15 +188,6 @@ router.patch('/:teacherId',
     .trim()
     .notEmpty()
     .withMessage('Last name can not be empty!'),
-  body('subjects')
-    .optional()
-    .isArray({ min: 1 })
-    .withMessage('subjects must be array')
-    .bail()
-    .customSanitizer(subjects => [...(new Set(subjects))])
-    .custom(isObjectIds)
-    .bail()
-    .custom(SubjectService.checkSubjectsExists),
   handleValidation as Application,
   teacherController.updateTeacher as Application
 );
@@ -239,9 +221,8 @@ router.delete('/:teacherId',
     .notEmpty()
     .withMessage('teacher id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(TeacherService.checkTeacherExists),
+    .isMongoId()
+    .withMessage('teacher id should be valid id'),
   handleValidation as Application, 
   teacherController.deleteTeacher as Application
 );

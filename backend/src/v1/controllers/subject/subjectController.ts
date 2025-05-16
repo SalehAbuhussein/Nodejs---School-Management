@@ -14,8 +14,15 @@ import { CreateSubjectResponse, DeleteSubjectParams, DeleteSubjectResponse, GetS
 export const getSubject = async (req: Request, res: Response<GetSubjectResponse>, next: NextFunction) => {
   try {
     const { subjectId }: GetSubjectParams = req.params as GetSubjectParams;
-
     const subject = await SubjectService.getSubjectById(subjectId);
+
+    if (!subject) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Subject not found!',
+        data: null,
+      });
+    }
 
     return res.json({
       status: 200,
@@ -68,10 +75,9 @@ export const createSubject = async (req: Request, res: Response<CreateSubjectRes
  */
 export const updateSubject = async (req: Request, res: Response<UpdateSubjectResponse>, next: NextFunction) => {
   try {
-    const { name, isActive, teachersIds }: UpdateSubjectBody = req.body;
+    const { name, isActive }: UpdateSubjectBody = req.body;
     const { subjectId }: UpdateSubjectParams = req.params as UpdateSubjectParams;
-
-    const subject = await SubjectService.updateSubject(subjectId, { name, teachersIds, isActive });
+    const subject = await SubjectService.updateSubject(subjectId, { name, isActive });
 
     return res.json({
       status: 200,
@@ -98,7 +104,6 @@ export const updateSubject = async (req: Request, res: Response<UpdateSubjectRes
 export const deleteSubject = async (req: Request, res: Response<DeleteSubjectResponse>, next: NextFunction) => {
   try {
     const { subjectId }: DeleteSubjectParams = req.params as DeleteSubjectParams;
-
     await SubjectService.deleteSubject(subjectId);
 
     return res.json({

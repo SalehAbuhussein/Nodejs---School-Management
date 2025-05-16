@@ -3,7 +3,7 @@ import { IRole } from 'src/db/models/role.model';
 
 export type GetRoleParams = { roleId: string };
 
-export type PostRoleBody = { roleName: string; permissions: mongoose.Schema.Types.ObjectId[]; users: mongoose.Schema.Types.ObjectId[] };
+export type PostRoleBody = { roleName: string; permissions: string[]; users: string[] };
 
 export type UpdateRoleBody = PostRoleBody;
 

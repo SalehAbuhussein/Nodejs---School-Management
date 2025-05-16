@@ -7,7 +7,6 @@ import * as examController from 'src/v1/controllers/studentExam/studentExamContr
 import * as StudentExamService from 'src/v1/services/studentExamService';
 
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-import { isObjectId } from 'src/shared/validators';
 
 const router = Router();
 
@@ -36,9 +35,12 @@ const router = Router();
  */
 router.get('/:examId',
   param('examId')
-    .custom(isObjectId)
+    .trim()
+    .notEmpty()
+    .withMessage('exam id can not be empty')
     .bail()
-    .custom(StudentExamService.checkExamExists),
+    .isMongoId()
+    .withMessage('exam id is not valid'),
   handleValidation as Application,
   examController.getExam as Application
 );
@@ -97,10 +99,6 @@ router.post('/',
     .trim()
     .notEmpty()
     .withMessage('Subject Id can not be empty!'),
-  body('examTypeId')
-    .trim()
-    .notEmpty()
-    .withMessage('Exam type Id can not be empty!'),
   handleValidation as Application,
   examController.createExam as Application
 );
@@ -157,9 +155,8 @@ router.patch('/:examId',
     .notEmpty()
     .withMessage('exam id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentExamService.checkExamExists),
+    .isMongoId()
+    .withMessage('exam id is not valid'),
   body('title')
     .trim()
     .notEmpty()
@@ -168,18 +165,6 @@ router.patch('/:examId',
     .trim()
     .notEmpty()
     .withMessage('Student grade can not be empty!'),
-  body('fullExamGrade')
-    .trim()
-    .notEmpty()
-    .withMessage('Full exam grade can not be empty!'),
-  body('subjectId')
-    .trim()
-    .notEmpty()
-    .withMessage('Subject Id can not be empty!'),
-  body('examTypeId')
-    .trim()
-    .notEmpty()
-    .withMessage('Exam type Id can not be empty!'),
   handleValidation as Application,
   examController.updateExam as Application
 );
@@ -196,9 +181,8 @@ router.delete('/:examId',
     .notEmpty()
     .withMessage('exam id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentExamService.checkExamExists),
+    .isMongoId()
+    .withMessage('exam id is not valid'),
   handleValidation as Application,
   examController.deleteExam as Application
 );
@@ -210,7 +194,8 @@ router.post('/:teacherExamId/take',
     .notEmpty()
     .withMessage('Exam ID cannot be empty')
     .bail()
-    .custom(isObjectId)
+    .isMongoId()
+    .withMessage('Exam ID is not valid')
     .bail()
     .custom(StudentExamService.checkExamExists),
   body('studentId')
@@ -218,7 +203,8 @@ router.post('/:teacherExamId/take',
     .notEmpty()
     .withMessage('Student ID cannot be empty')
     .bail()
-    .custom(isObjectId),
+    .isMongoId()
+    .withMessage('Student ID is not valid'),
   body('grade')
     .isNumeric()
     .withMessage('Grade must be a number'),

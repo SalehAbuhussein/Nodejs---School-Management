@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
-export interface IRole {
+export interface IRole extends mongoose.Document {
   roleName: string;
-  permissions: mongoose.Schema.Types.ObjectId[];
-  users: mongoose.Schema.Types.ObjectId[];
+  permissions: string[];
+  users: string[];
 }
 
 const RoleSchema = new mongoose.Schema<IRole>(

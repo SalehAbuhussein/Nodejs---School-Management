@@ -4,12 +4,7 @@ import { body, param } from 'express-validator';
 
 import * as studentController from 'src/v1/controllers/student/studentController';
 
-import * as StudentService from 'src/v1/services/studentService';
-import * as UserService from 'src/v1/services/userService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-
-import { isObjectId } from 'src/shared/validators';
 
 const router = Router();
 
@@ -42,9 +37,8 @@ router.get('/:studentId',
     .notEmpty()
     .withMessage('student id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentService.checkStudentExists),
+    .isMongoId()
+    .withMessage('student id is not valid'),
   handleValidation as Application,
   studentController.getStudent as Application
 );
@@ -108,8 +102,8 @@ router.post('/',
     .trim()
     .notEmpty()
     .withMessage('User id can not be empty')
-    .bail()
-    .custom(UserService.checkUserExists),
+    .isMongoId()
+    .withMessage('User id is not valid'),
   handleValidation as Application,
   studentController.createStudent as Application
 );
@@ -164,9 +158,8 @@ router.patch('/:studentId',
     .notEmpty()
     .withMessage('student id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentService.checkStudentExists),
+    .isMongoId()
+    .withMessage('student id is not valid'),
   body('firstName')
     .trim()
     .notEmpty()
@@ -183,11 +176,6 @@ router.patch('/:studentId',
     .trim()
     .notEmpty()
     .withMessage('Last name can not be empty!'),
-  body('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('User id can not be empty!')
-    .custom(UserService.checkUserExists),
   handleValidation as Application,
   studentController.updateStudent as Application
 );
@@ -221,9 +209,8 @@ router.delete('/:studentId',
     .notEmpty()
     .withMessage('student id can not be empty')
     .bail()
-    .custom(isObjectId)
-    .bail()
-    .custom(StudentService.checkStudentExists),
+    .isMongoId()
+    .withMessage('student id is not valid'),
   handleValidation as Application,
   studentController.deleteStudent as Application
 );

@@ -1,7 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose, { ClientSession } from 'mongoose';
 
 import Subject, { ISubject } from 'src/db/models/subject.model';
-import Teacher from 'src/db/models/teacher.model';
+import TeacherSubject from 'src/db/models/teacherSubject.model';
+
+import TeacherService from './teacherService';
+import TeacherSubjectService from './teacherSubjectService';
 
 import { PostSubjectBody, UpdateSubjectBody } from 'src/v1/controllers/types/subjectController.types';
 
@@ -31,15 +34,13 @@ export const getAllSubjects = async (): Promise<ISubject[]> => {
  * @returns {Promise<ISubject>} A promise that resolves to the subject
  * @throws {CustomError} If subject not found or database operation fails
  */
-export const getSubjectById = async (subjectId: string): Promise<ISubject> => {
+export const getSubjectById = async (subjectId: string, session?: ClientSession): Promise<ISubject | null> => {
   try {
-    const subject = await Subject.findById(subjectId);
-
-    if (!subject) {
-      throw new CustomError('Subject Not Found', 404);
+    if (session) {
+      return await Subject.findById(subjectId).session(session);
     }
 
-    return subject;
+    return await Subject.findById(subjectId);
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -60,37 +61,42 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
   session.startTransaction();
 
   try {
+    const teacher = await TeacherService.getTeacherById(subjectData.teacherId, session);;
+    if (!teacher) {
+      throw new CustomError('Teacher Not Found', 404);
+    }
+
     const totalSlotsNumber = parseInt(subjectData.totalSlots);
     const newSubject = await new Subject(
       {
         name: subjectData.name,
-        teachers: [subjectData.teacherId],
         totalSlots: totalSlotsNumber,
       },
       null,
       { session },
     ).save({ session });
 
-    const teacher = await Teacher.findById(subjectData.teacherId).session(session);
+    const currentMonth = new Date().getMonth();
+    const semester = currentMonth < 6 ? 'First' : 'Second';
 
-    if (!teacher) {
-      await session.abortTransaction();
-      throw new CustomError('Teacher Not Found', 404);
-    }
+    // link teacher to subject
+    await TeacherSubjectService.assignTeacherToSubject({
+      teacherId: subjectData.teacherId,
+      subjectId: newSubject.id,
+      semester,
+    }, session);
 
-    if (!teacher.subjects.includes(newSubject._id)) {
-      teacher.subjects.push(newSubject._id);
-      await teacher.save({ session });
-    }
 
     await session.commitTransaction();
-
     return newSubject;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
+  } finally {
+    await session.abortTransaction();
+    await session.endSession();
   }
 };
 
@@ -103,9 +109,11 @@ export const createSubject = async (subjectData: PostSubjectBody): Promise<ISubj
  * @throws {CustomError} If subject not found or database operation fails
  */
 export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateSubjectBody, 'totalSlots'>): Promise<ISubject> => {
-  try {
-    let subject = await Subject.findById(subjectId);
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
+  try {
+    let subject = await getSubjectById(subjectId, session);
     if (!subject) {
       throw new CustomError('Subject Not Found', 404);
     }
@@ -118,21 +126,15 @@ export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateS
       subject.isActive = subjectData.isActive;
     }
 
-    if (subjectData.teachersIds && subjectData.teachersIds.length > 0) {
-      // Use Mongoose's $addToSet to add teachers, ensuring no duplicates
-      subject = await Subject.findByIdAndUpdate(
-        subjectId,
-        { $addToSet: { teachers: { $each: subjectData.teachersIds } } }, // $each allows adding multiple teachers at once
-        { new: true }, // Return the updated subject document
-      );
-    }
-
-    return await subject!.save();
+    return await subject.save({ session });;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
+  } finally {
+    await session.abortTransaction();
+    await session.endSession();
   }
 };
 
@@ -145,8 +147,8 @@ export const updateSubject = async (subjectId: string, subjectData: Omit<UpdateS
  */
 export const deleteSubject = async (subjectId: string): Promise<boolean> => {
   try {
-    const subject = await Subject.deleteOne({ _id: subjectId });
-    return subject.deletedCount > 0;
+    const subject = await Subject.softDelete({ _id: subjectId });
+    return subject.deleted === 1;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -197,7 +199,7 @@ export const checkSubjectsExists = async (subjectesIds: string[]) => {
 export const checkSubjectIsAvailable = async (subjectId: string) => {
   try {
     const subject = await getSubjectById(subjectId);
-    return subject.isLocked;
+    return subject && subject.isLocked;
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;

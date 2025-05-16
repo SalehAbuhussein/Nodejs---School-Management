@@ -11,7 +11,7 @@ export type PostStudentExamBody = {
   year: number;
 };
 
-export type UpdateStudentExamBody = Omit<PostStudentExamBody, 'studentId' | 'subjectId'>;
+export type UpdateStudentExamBody = Omit<PostStudentExamBody, 'studentId' | 'subjectId' | 'year' | 'semester'>;
 
 export type UpdateStudentExamParams = { examId: string };
 

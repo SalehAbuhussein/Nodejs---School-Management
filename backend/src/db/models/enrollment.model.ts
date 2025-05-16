@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 
 export interface IEnrollment extends mongoose.Document {
@@ -42,6 +43,11 @@ const EnrollmentSchema = new mongoose.Schema<IEnrollment>(
   },
   { timestamps: true },
 );
+
+EnrollmentSchema.index({ studentId: 1 });
+EnrollmentSchema.index({ subjectId: 1 });
+EnrollmentSchema.index({ studentId: 1, subjectId: 1 }, { unique: true });
+EnrollmentSchema.index({ semester: 1, year: 1 });
 
 EnrollmentSchema.plugin(softDeletePlugin);
 

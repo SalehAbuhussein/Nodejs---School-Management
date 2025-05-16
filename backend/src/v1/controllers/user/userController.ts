@@ -24,9 +24,7 @@ type PostLoginBody = { email: string; password: string };
 export const getUser = async (req: Request, res: Response<GetUserResponse>, next: NextFunction) => {
   try {
     const params: GetUserParams = req.params as GetUserParams;
-
     const user = await UserService.findUserById(params.userId);
-
     if (!user) {
       return res.status(404).json({
         status: 404,
@@ -59,14 +57,14 @@ export const getUser = async (req: Request, res: Response<GetUserResponse>, next
  */
 export const createUser = async (req: IGetUserAuthInfoRequest, res: Response<CreateUserResponse>, next: NextFunction) => {
   try {
-    const { name, email, password }: PostUserBody = req.body;
-
+    const { name, email, password, role }: PostUserBody = req.body;
     const userObject = await UserService.createUser({
       name: name,
       email: email,
       password: password,
       profileImg: req.file?.filename,
-    } as IUser);
+      role: role,
+    });
 
     return res.status(201).json({
       status: 201,
@@ -123,7 +121,6 @@ export const updateUser = async (req: Request, res: Response<UpdateUserResponse>
 export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>, next: NextFunction) => {
   try {
     const { userId }: DeleteUserParams = req.params as DeleteUserParams;
-
     const isDeleted = await UserService.deleteUser(userId);
 
     if (!isDeleted) {

@@ -14,11 +14,9 @@ import { CreateStudentExamResponse, DeleteStudentExamParams, DeleteStudentExamRe
  * @param { NextFunction } next
  */
 export const getExam = async (req: Request, res: Response<GetStudentExamResponse>, next: NextFunction) => {
-  const { examId }: GetStudentExamParams = req.params as GetStudentExamParams;
-
   try {
-    const exam = await StudentExam.findById(examId);
-
+    const { examId }: GetStudentExamParams = req.params as GetStudentExamParams;
+    const exam = await StudentExamService.findExamById(examId);
     if (!exam) {
       return res.status(404).json({
         status: 404,
@@ -88,7 +86,6 @@ export const updateExam = async (req: Request, res: Response<UpdateStudentExamRe
   try {
     const { title, studentGrade }: UpdateStudentExamBody = req.body;
     const { examId }: UpdateStudentExamParams = req.params as UpdateStudentExamParams;
-
     const exam = await StudentExamService.updateExam(examId, { title, studentGrade });
 
     return res.json({
@@ -116,7 +113,6 @@ export const updateExam = async (req: Request, res: Response<UpdateStudentExamRe
 export const deleteExam = async (req: Request, res: Response<DeleteStudentExamResponse>, next: NextFunction) => {
   try {
     const { examId }: DeleteStudentExamParams = req.params as DeleteStudentExamParams;
-
     await StudentExamService.deleteExam(examId);
 
     return res.json({
@@ -143,7 +139,6 @@ export const takeExam = async (req: Request, res: Response<TakeTeacherExamRespon
   try {
     const { teacherExamId } = req.params as TakeTeacherExamParams;
     const { studentId, grade, semester, year } = req.body as TakeTeacherExamBody;
-
     const newStudentExam = await StudentExamService.takeExam(teacherExamId, studentId, grade, semester, year);
 
     return res.json({

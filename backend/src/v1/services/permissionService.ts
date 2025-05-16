@@ -1,4 +1,8 @@
+import { ClientSession } from 'mongoose';
+
 import Permission, { IPermission } from 'src/db/models/permission.model';
+
+import { PostPermissionBody, UpdatePermissionBody } from '../controllers/types/permissionController.types';
 
 import { CustomError } from 'src/shared/utils/CustomError';
 
@@ -26,15 +30,10 @@ export const getAllPermissions = async (): Promise<IPermission[]> => {
  * @returns {Promise<IPermission>} A promise that resolves to the permission
  * @throws {CustomError} If permission not found or database operation fails
  */
-export const getPermission = async (permissionId: string): Promise<IPermission> => {
+export const getPermissionById = async (permissionId: string, session?: ClientSession): Promise<IPermission | null> => {
   try {
-    const permission = await Permission.findById(permissionId);
-
-    if (!permission) {
-      throw new CustomError('Permission not found', 404);
-    }
-
-    return permission;
+    const options = session ? { session } : {};
+    return await Permission.findById(permissionId, {}, options);
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -44,16 +43,34 @@ export const getPermission = async (permissionId: string): Promise<IPermission> 
 };
 
 /**
+ * Retrieve a specific permission by name
+ *
+ * @param {string} permissionId - The ID of the permission to retrieve
+ * @returns {Promise<IPermission>} A promise that resolves to the permission
+ * @throws {CustomError} If permission not found or database operation fails
+ */
+export const getPermissionByName = async (name: string, session?: ClientSession): Promise<IPermission | null> => {
+  try {
+    const options = session ? { session } : {};
+    return await Permission.findOne({ name }, {}, options);
+  } catch (error) {
+        if (error instanceof CustomError) {
+      throw error;
+    }
+    throw new CustomError('Failed to retrieve permission', 500);
+  }
+};
+
+/**
  * Create a new permission
  *
- * @param {IPermission} permissionData - The name of the permission to create
+ * @param {PostPermissionBody} permissionData - The name of the permission to create
  * @returns {Promise<IPermission>} A promise that resolves to the created permission
  * @throws {CustomError} If validation fails or database operation fails
  */
-export const createPermission = async (permissionData: IPermission): Promise<IPermission> => {
+export const createPermission = async (permissionData: PostPermissionBody): Promise<IPermission> => {
   try {
-    const existingPermission = await Permission.findOne({ name: permissionData.name });
-
+    const existingPermission = await getPermissionByName(permissionData.name);
     if (existingPermission) {
       throw new CustomError('Permission already exists', 400);
     }
@@ -72,14 +89,13 @@ export const createPermission = async (permissionData: IPermission): Promise<IPe
  * Update an existing permission
  *
  * @param {string} permissionId - The ID of the permission to update
- * @param {IPermission} permissionData - The updated permission data
+ * @param {UpdatePermissionBody} permissionData - The updated permission data
  * @returns {Promise<IPermission>} A promise that resolves to the updated permission
  * @throws {CustomError} If permission not found or database operation fails
  */
-export const updatePermission = async (permissionId: string, permissionData: IPermission): Promise<IPermission> => {
+export const updatePermission = async (permissionId: string, permissionData: UpdatePermissionBody): Promise<IPermission> => {
   try {
     const permission = await Permission.findById(permissionId);
-
     if (!permission) {
       throw new CustomError('Permission not found', 404);
     }
@@ -111,11 +127,6 @@ export const updatePermission = async (permissionId: string, permissionData: IPe
 export const deletePermission = async (permissionId: string): Promise<boolean> => {
   try {
     const result = await Permission.deleteOne({ _id: permissionId });
-
-    if (result.deletedCount === 0) {
-      throw new CustomError('Permission not found', 404);
-    }
-
     return result.deletedCount > 0;
   } catch (error) {
     if (error instanceof CustomError) {
@@ -165,10 +176,10 @@ export const checkPermissionsExist = async (permissionIds: string[]): Promise<bo
 
 export default {
   getAllPermissions,
-  getPermission,
+  getPermissionById,
   createPermission,
   updatePermission,
   deletePermission,
-  permissionExists: checkPermissionExists,
+  checkPermissionExists,
   checkPermissionsExist,
 };
