@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import { softDeletePlugin, SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 
 export interface IEnrollment extends mongoose.Document {

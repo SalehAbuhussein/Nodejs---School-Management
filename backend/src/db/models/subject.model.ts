@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import { SoftDeleteModel, softDeletePlugin } from 'soft-delete-plugin-mongoose';
 
 export interface ISubject extends mongoose.Document {

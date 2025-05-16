@@ -183,7 +183,6 @@ export const updateTeacher = async (teacherId: string, teacherData: UpdateTeache
  *   @param {string} [teacherData.thirdName] - Teacher's third name (optional)
  *   @param {string} teacherData.lastName - Teacher's last name
  *   @param {boolean} [teacherData.isActive] - Teacher's active status
- *   @param {string[]} [teacherData.subjects] - Array of subject IDs
  * 
  * @returns {Promise<void>} A promise that resolves if validation passes
  * 
@@ -199,7 +198,6 @@ export const updateTeacher = async (teacherId: string, teacherData: UpdateTeache
  *     secondName: "David",
  *     lastName: "Smith",
  *     isActive: true,
- *     subjects: ["60d5ecb2f682fbd12a0b4d8c"]
  *   });
  *   // Validation passed, proceed with teacher update
  * } catch (error) {
@@ -258,6 +256,20 @@ export const checkTeacherExists = async (teacherId: string): Promise<boolean> =>
   }
 };
 
+/**
+ * Check if a teacher exists by user ID
+ *
+ * @param {string} userId - The user ID to check for an associated teacher record
+ * @returns {Promise<boolean>} A promise that resolves to true if a teacher exists with the given user ID, false otherwise
+ * @throws {CustomError} If database operation fails
+ * 
+ * @example
+ * // Check if a user is already registered as a teacher
+ * const isTeacher = await checkTeacherExistsByUserId('60d5ec9af682fbd12a0b4d8b');
+ * if (isTeacher) {
+ *   console.log('User is already registered as a teacher');
+ * }
+ */
 export const checkTeacherExistsByUserId = async (userId: string): Promise<boolean> => {
   try {
     const teacher = await Teacher.findOne({ userId });
