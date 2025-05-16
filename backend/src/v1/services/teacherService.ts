@@ -300,6 +300,6 @@ export default {
   createTeacher,
   updateTeacher,
   deleteTeacher,
-  teacherExists: checkTeacherExists,
-  teachersExists: checkTeachersExists,
+  checkTeacherExists,
+  checkTeachersExists,
 };

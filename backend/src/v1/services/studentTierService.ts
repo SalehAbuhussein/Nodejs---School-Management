@@ -130,9 +130,9 @@ export const checkStudentTierExists = async (studentTierId: string): Promise<boo
 
 export default {
   getAllStudentTiers,
-  getStudentTierById: findStudentTierById,
+  findStudentTierById,
   createStudentTier,
   updateStudentTier,
   deleteStudentTier,
-  studentTierExist: checkStudentTierExists,
+  checkStudentTierExists,
 };

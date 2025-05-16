@@ -231,7 +231,7 @@ export const checkStudentExists = async (studentId: string) => {
 };
 
 export default {
-  getStudentById: findStudentById,
+  findStudentById,
   createStudent,
   updateStudent,
   deleteStudent,

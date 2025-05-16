@@ -233,5 +233,5 @@ export default {
   createRole,
   updateRole,
   deleteRole,
-  roleExists: checkRoleExists,
+  checkRoleExists,
 };

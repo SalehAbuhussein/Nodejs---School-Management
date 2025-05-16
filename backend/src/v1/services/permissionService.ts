@@ -1,9 +1,10 @@
+import { ClientSession } from 'mongoose';
+
 import Permission, { IPermission } from 'src/db/models/permission.model';
 
 import { PostPermissionBody, UpdatePermissionBody } from '../controllers/types/permissionController.types';
 
 import { CustomError } from 'src/shared/utils/CustomError';
-import { ClientSession } from 'mongoose';
 
 /**
  * Retrieve all permissions from the database
@@ -31,11 +32,8 @@ export const getAllPermissions = async (): Promise<IPermission[]> => {
  */
 export const getPermissionById = async (permissionId: string, session?: ClientSession): Promise<IPermission | null> => {
   try {
-    if (session) {
-      return await Permission.findOne({ _id: permissionId }, {}, { session });
-    }
-
-    return await Permission.findById(permissionId);
+    const options = session ? { session } : {};
+    return await Permission.findById(permissionId, {}, options);
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -53,11 +51,8 @@ export const getPermissionById = async (permissionId: string, session?: ClientSe
  */
 export const getPermissionByName = async (name: string, session?: ClientSession): Promise<IPermission | null> => {
   try {
-    if (session) {
-      return await Permission.findOne({ name }, {}, { session });
-    }
-
-    return await Permission.findOne({ name });
+    const options = session ? { session } : {};
+    return await Permission.findOne({ name }, {}, options);
   } catch (error) {
         if (error instanceof CustomError) {
       throw error;
@@ -181,10 +176,10 @@ export const checkPermissionsExist = async (permissionIds: string[]): Promise<bo
 
 export default {
   getAllPermissions,
-  getPermission: getPermissionById,
+  getPermissionById,
   createPermission,
   updatePermission,
   deletePermission,
-  permissionExists: checkPermissionExists,
+  checkPermissionExists,
   checkPermissionsExist,
 };

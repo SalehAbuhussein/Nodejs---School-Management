@@ -4,11 +4,7 @@ import { body, param } from 'express-validator';
 
 import * as studentTierController from 'src/v1/controllers/studentTier/studentTierController';
 
-import * as StudentTierService from 'src/v1/services/studentTierService';
-
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
-
-import { isObjectId } from 'src/shared/validators';
 
 const router = Router();
 

@@ -18,9 +18,14 @@ import { CustomError } from 'src/shared/utils/CustomError';
  * @returns {Promise<IEnrollment|null>} Promise with enrollment or null if not found
  * @throws {Error} If database operation fails
  */
-export const getEnrollmentById = async (enrollmentId: string): Promise<IEnrollment | null> => {
+export const getEnrollmentById = async (enrollmentId: string, session?: ClientSession): Promise<IEnrollment | null> => {
   try {
-    return await Enrollment.where('isDeleted').equals(false).findById(enrollmentId).populate('subjectId').populate('studentId');
+    const query = { _id: enrollmentId, isDeleted: false };
+    const options = session ? { session } : {};
+
+    return await Enrollment.findOne(query, {}, options)
+      .populate('subjectId')
+      .populate('studentId');
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -42,7 +47,7 @@ export const enrollStudent = async (enrollmentData: PostEnrollmentBody): Promise
 
   try {
     const { studentId, subjectId, enrollmentFees, enrollmentDate = new Date(), semester = 'First' } = enrollmentData;
-    await handleEnrollValidation(enrollmentData);
+    await validateEnrollStudentBody(enrollmentData);
 
     const enrollment = await Enrollment.create(
       [
@@ -116,7 +121,7 @@ export const enrollStudent = async (enrollmentData: PostEnrollmentBody): Promise
  *   // Handle specific validation failure with error.message and error.statusCode
  * }
  */
-export const handleEnrollValidation = async (enrollmentData: PostEnrollmentBody): Promise<void> => {
+export const validateEnrollStudentBody = async (enrollmentData: PostEnrollmentBody): Promise<void> => {
   const { studentId, subjectId } = enrollmentData;
 
   const isStudentExist = await StudentService.checkStudentExists(studentId);
@@ -147,7 +152,7 @@ export const unenrollStudent = async (enrollmentId: string): Promise<{ success: 
   session.startTransaction();
 
   try {
-    const { subject } = await handleUnenrollValidation(enrollmentId, session);
+    const { subject } = await validateUnenrollBody(enrollmentId, session);
     await Enrollment.softDelete({ _id: enrollmentId }, { session });
 
     if (subject.currentSlots > 0) {
@@ -185,7 +190,7 @@ export const unenrollStudent = async (enrollmentId: string): Promise<{ success: 
  * @throws {CustomError} If validation fails with appropriate status code and message
  * @private
  */
-export const handleUnenrollValidation = async (enrollmentId: string, session: ClientSession) => {
+export const validateUnenrollBody = async (enrollmentId: string, session: ClientSession) => {
   try {
     const enrollment = await EnrollmentService.checkEnrollmentExist(enrollmentId, session);
     if (!enrollment) {
@@ -234,9 +239,27 @@ export const isStudentEnrolled = async (studentId: string, subjectId: string): P
   }
 };
 
-export const getStudentEnrollments = async (studentId: string): Promise<IEnrollment[]> => {
+/**
+ * Retrieve all enrollments for a specific student
+ *
+ * @param {string} studentId - The ID of the student whose enrollments to retrieve
+ * @param {ClientSession} [session] - Optional MongoDB session for transactions
+ * @param {number} [year=current year] - The academic year to filter enrollments by
+ * @param {'First' | 'Second'} [semester='First'] - The semester to filter enrollments by
+ * @returns {Promise<IEnrollment[]>} A promise that resolves to an array of student enrollments
+ * @throws {CustomError} If database operation fails
+ */
+export const getStudentEnrollments = async (
+    studentId: string,
+    session?: ClientSession,
+    year: number = new Date().getFullYear(),
+    semester: 'First' | 'Second' = 'First'
+  ): Promise<IEnrollment[]> => {
   try {
-    return await Enrollment.where('isDeleted').equals(false).find({ studentId }).populate('subjectId');
+    const query = { isDeleted: false, id: studentId, semester, year };
+    const options = session ? { session } : {};
+
+    return await Enrollment.find(query, {}, options).populate('subjectId');
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;

@@ -318,6 +318,6 @@ export default {
   createExam,
   updateExam,
   deleteExam,
-  examExists: checkExamExists,
+  checkExamExists,
   takeExam,
 };

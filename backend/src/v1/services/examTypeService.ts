@@ -1,8 +1,10 @@
 import { ClientSession } from 'mongoose';
+
 import ExamType, { IExamType } from 'src/db/models/examType.model';
 
-import { CustomError } from 'src/shared/utils/CustomError';
 import { UpdateExamTypeBody } from '../controllers/types/examTypeController.types';
+
+import { CustomError } from 'src/shared/utils/CustomError';
 
 /**
  * Retrieve a specific exam type by ID
