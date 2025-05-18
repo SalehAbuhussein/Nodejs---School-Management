@@ -1,4 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@use "./app/design-system" as var;
+@use "sass:meta";
+
+@include meta.load-css("app/assets/fonts");
+
+* {
+  font-family: Inter;
+}
 
 html,
 body {
