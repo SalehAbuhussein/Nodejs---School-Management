@@ -8,7 +8,7 @@ export interface ITeacher extends mongoose.Document {
   thirdName: string | null;
   lastName: string;
   isActive: boolean;
-  userId: mongoose.Types.ObjectId;
+  userId: mongoose.Schema.Types.ObjectId;
 }
 
 const TeacherSchema = new mongoose.Schema<ITeacher>(

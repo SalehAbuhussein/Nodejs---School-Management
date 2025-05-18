@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 export interface IStudentExam extends mongoose.Document {
   title: string;
-  teacherExamId: mongoose.Types.ObjectId;
-  subjectId: mongoose.Types.ObjectId;
-  studentId: mongoose.Types.ObjectId;
+  teacherExamId: mongoose.Schema.Types.ObjectId;
+  subjectId: mongoose.Schema.Types.ObjectId;
+  studentId: mongoose.Schema.Types.ObjectId;
   studentGrade: number;
   semester: 'First' | 'Second';
   year: number;
