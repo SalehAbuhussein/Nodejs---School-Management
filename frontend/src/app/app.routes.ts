@@ -8,4 +8,13 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     loadChildren: () => import('./core/auth/auth.routes').then(r => r.routes)
   },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'auth/login'
+  },
+  {
+    path: '**',
+    redirectTo: 'auth/login'
+  }
 ];
