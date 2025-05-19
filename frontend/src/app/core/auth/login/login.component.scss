@@ -3,3 +3,9 @@
 .login-container {
   height: calc(100% - var.$headerHeight - var.$footerHeight);
 }
+
+@media #{var.$media-tablet-portrait} {
+  .login-container {
+    height: calc(100% - var.$headerHeightMobile - var.$footerHeightMobile);
+  }
+}

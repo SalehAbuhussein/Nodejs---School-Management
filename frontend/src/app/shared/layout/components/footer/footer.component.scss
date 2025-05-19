@@ -9,3 +9,10 @@
   color: var.$white;
   text-align: center;
 }
+
+@media #{var.$media-tablet-portrait} {
+  .footer-container {
+    font-size: var.$fs-14;
+    padding: 15px 20px;
+  } 
+}

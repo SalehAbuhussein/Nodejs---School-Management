@@ -3,24 +3,66 @@
 :host {
   @include var.flex($align-items: center, $justify-content: center);
   background-color: var.$white-5;
+  color: var.$black;
   height: 100%;
 }
 
 .login-form-container {
   background-color: var.$white;
   border-radius: 8px;
-  max-width: 400px;
+  min-width: 400px;
   padding: 30px;
+}
+
+.login-form {
+  @include var.flex($flex-direction: column, $gap: 16px);
+  margin-bottom: 20px;
 }
 
 .login-form-img {
   @include var.size(100px);
   display: block;
   margin-bottom: 24px;
+  margin-inline: auto;
 }
 
 .login-form-title {
   color: var.$main-blue;
   margin-bottom: 20px;
+  text-align: center;
 }
 
+.field-label {
+  margin-bottom: 4px;
+  width: fit-content;
+}
+
+.submit-btn {
+  all: unset;
+  background-color: var.$main-blue;
+  border-radius: 4px;
+  color: var.$white;
+  cursor: pointer;
+  height: 42px;
+  margin-bottom: 16px;
+  text-align: center;
+  transition: all 0.3s;
+  width: 100%;
+
+  &:hover {
+    background-color: rgba(var.$main-blue, 0.9);
+  }
+}
+
+.forget-password-text {
+  text-align: center
+}
+
+@media #{var.$media-tablet-portrait} {
+  .login-form-container {
+    @include var.size(100%, 100%);
+    @include var.flex($flex-direction: column, $align-items: center, $justify-content: center);
+    border-radius: unset;
+    min-width: unset;
+  }
+}

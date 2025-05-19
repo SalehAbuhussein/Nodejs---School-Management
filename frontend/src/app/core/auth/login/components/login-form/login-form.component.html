@@ -4,12 +4,34 @@
   <h2 class="login-form-title">Welcome to EduManage</h2>
 
   <div class="login-form">
-    <p>email input</p>
+    <div class="form-field email-field">
+      <div class="field-label">Email</div>
 
-    <p>password input</p>
+      <app-basic-input
+        [inputAttributes]="{
+          id: 'email',
+          name: 'email',
+          maxLength: 10,
+        }"
+        placeholder="Enter your email"
+      />
+    </div>
 
-    <button class="submit-btn">Login</button>
+    <div class="form-field password-field">
+      <div class="field-label">Password</div>
 
-    <p>Forgot your password? <a class="reset-password-link" routerLink="">Reset it here</a></p>
+      <app-basic-input 
+        [inputAttributes]="{
+          id: 'password',
+          name: 'password',
+          maxLength: 10,
+        }"
+        placeholder="Enter your password"
+      />
+    </div>
   </div>
+
+  <button class="submit-btn">Login</button>
+
+  <p class="forget-password-text">Forgot your password? <a class="reset-password-link" routerLink="">Reset it here</a></p>
 </div>

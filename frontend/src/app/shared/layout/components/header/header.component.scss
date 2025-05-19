@@ -9,3 +9,9 @@
   color: var.$white;
   font-size: var.$fs-24;
 }
+
+@media #{var.$media-tablet-portrait} {
+  .header-container {
+    padding: 15px 20px;
+  } 
+}

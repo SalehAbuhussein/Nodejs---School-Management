@@ -4,6 +4,7 @@
 @include meta.load-css("app/assets/fonts");
 
 * {
+  box-sizing: border-box;
   font-family: Inter;
 }
 
