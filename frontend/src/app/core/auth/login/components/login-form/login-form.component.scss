@@ -1,0 +1,26 @@
+@use "./app/design-system" as var;
+
+:host {
+  @include var.flex($align-items: center, $justify-content: center);
+  background-color: var.$white-5;
+  height: 100%;
+}
+
+.login-form-container {
+  background-color: var.$white;
+  border-radius: 8px;
+  max-width: 400px;
+  padding: 30px;
+}
+
+.login-form-img {
+  @include var.size(100px);
+  display: block;
+  margin-bottom: 24px;
+}
+
+.login-form-title {
+  color: var.$main-blue;
+  margin-bottom: 20px;
+}
+

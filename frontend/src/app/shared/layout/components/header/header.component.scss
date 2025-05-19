@@ -1,7 +1,11 @@
-.header-container {
+@use "./app/design-system" as var;
 
+.header-container {
+  background-color: var.$main-blue;
+  padding: 35px 20px;
 }
 
 .header-title {
-  
+  color: var.$white;
+  font-size: var.$fs-24;
 }

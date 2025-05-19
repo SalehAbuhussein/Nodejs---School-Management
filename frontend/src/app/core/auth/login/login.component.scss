@@ -1,0 +1,5 @@
+@use "./app/design-system" as var;
+
+.login-container {
+  height: calc(100% - var.$headerHeight - var.$footerHeight);
+}
