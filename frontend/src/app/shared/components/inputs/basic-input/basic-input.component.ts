@@ -1,14 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 import { InputAttributes } from '../types/input.types';
 
-import { generalConstants } from 'constants/general-constants';
+import { AutoFillDirective } from 'app/shared/directives/auto-fill/auto-fill.directive';
 
 @Component({
   selector: 'app-basic-input',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, AutoFillDirective],
   templateUrl: './basic-input.component.html',
   styleUrl: './basic-input.component.scss'
 })
@@ -17,8 +17,9 @@ export class BasicInputComponent {
   @Input() value = "";
   @Input({ required: true }) inputAttributes!: InputAttributes;
   @Input({ required: true }) placeholder = '';
-  @Input() inputChangeFn: (event: Event) => void = generalConstants.noop;
-  @Input() inputPasteFn: (event: ClipboardEvent) => void = generalConstants.noop;
   @Input() isValidationRequired?: boolean = true;
   @Input() errorMessage: string = '';
+
+  @Output() inputChanged = new EventEmitter<Event>();
+  @Output() inputPasted = new EventEmitter<ClipboardEvent>();
 }

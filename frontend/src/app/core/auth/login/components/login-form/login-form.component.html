@@ -12,22 +12,35 @@
           id: 'email',
           name: 'email',
           maxLength: 10,
+          autocomplete: 'email',
         }"
         placeholder="Enter your email"
+        (inputChanged)="onEmailChange($event)"
       />
+
+      @if (!!loginForm.email.error) {
+        <div class="error">{{ loginForm.email.error }}</div>
+      }
     </div>
 
     <div class="form-field password-field">
       <div class="field-label">Password</div>
 
-      <app-basic-input 
+      <app-basic-input
         [inputAttributes]="{
           id: 'password',
+          type: 'password',
           name: 'password',
           maxLength: 10,
+          autocomplete: 'new-password',
         }"
         placeholder="Enter your password"
+        (inputChanged)="onPasswordChange($event)"
       />
+
+      @if (!!loginForm.password.error) {
+        <div class="error">{{ loginForm.password.error }}</div>
+      }
     </div>
   </div>
 

@@ -10,6 +10,7 @@
 .login-form-container {
   background-color: var.$white;
   border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   min-width: 400px;
   padding: 30px;
 }
@@ -58,11 +59,31 @@
   text-align: center
 }
 
+.error {
+  @include var.flex($align-items: center, $gap: 4px);
+  color: red;
+  font-size: var.$fs-12;
+  margin-top: 8px;
+}
+
 @media #{var.$media-tablet-portrait} {
   .login-form-container {
     @include var.size(100%, 100%);
     @include var.flex($flex-direction: column, $align-items: center, $justify-content: center);
     border-radius: unset;
+    box-shadow: unset;
     min-width: unset;
+  }
+
+  .login-form-title {
+    font-size: var.$fs-21;
+  }
+
+  .field-label {
+    font-size: var.$fs-14;
+  }
+
+  .forget-password-text {
+    font-size: var.$fs-14;
   }
 }
