@@ -9,6 +9,9 @@ export interface IUser extends mongoose.Document {
   password: string;
   isActive: boolean;
   tokenVersion: number;
+  isDeleted: boolean;
+  deletedAt: Date | null;
+  __v?: number;
 }
 
 const UserSchema = new mongoose.Schema<IUser>(
