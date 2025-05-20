@@ -24,13 +24,13 @@ import { CustomError } from 'src/shared/utils/CustomError';
  * @returns {Promise<IUser | null>} Promise with user or null if not found
  * @throws {Error} If database operation fails
  */
-export const findUserById = async (userId: string, session?: ClientSession): Promise<IUser | null> => {
+export const findUserById = async (userId: string, properties = '', session?: ClientSession): Promise<IUser | null> => {
   try {
     if (session) {
-      return await User.findById(userId).session(session);
+      return await User.findById(userId).select(properties).session(session);
     }
 
-    return await User.findById(userId);
+    return await User.findById(userId).select(properties);
   } catch (error) {
     if (error instanceof CustomError) {
       throw error;
@@ -46,15 +46,16 @@ export const findUserById = async (userId: string, session?: ClientSession): Pro
  * @returns {Promise<IUser | null>} Promise with user or null if not found
  * @throws {Error} If database operation fails
  */
-export const findUserByEmail = async (email: string, session?: ClientSession): Promise<IUser | null> => {
+export const findUserByEmail = async (email: string, properties = '', session?: ClientSession): Promise<IUser | null> => {
   try {
     if (session) {
-      return await User.findOne({ email }).session(session);
+      return await User.findOne({ email }).select(properties).session(session);
     }
 
-    return User.findOne({ email });
+    return User.findOne({ email }).select(properties);
   } catch (error) {
     if (error instanceof CustomError) {
+      console.log(error);
       throw error;
     }
     throw new CustomError('Server Error', 500, error);
@@ -281,7 +282,7 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
  */
 export const loginUser = async (email: string, password: string) => {
   try {
-    const user = await findUserByEmail(email);
+    const user = await findUserByEmail(email, '-tokenVersion -isDeleted -deletedAt -__v -createdAt -updatedAt');
     if (!user) {
       throw new CustomError('Invalid email or password', 401);
     }
@@ -303,6 +304,7 @@ export const loginUser = async (email: string, password: string) => {
 
     return { user: userObject, token: jwtToken, refreshToken };
   } catch (error) {
+    console.log(error);
     if (error instanceof CustomError) {
       throw error;
     }
