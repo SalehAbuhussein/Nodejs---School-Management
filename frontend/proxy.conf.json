@@ -1,0 +1,11 @@
+{
+  "/v1/**": {
+    "target": "http://test-app.com/v1",
+    "changeOrigin": true,
+    "secure": false,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/v1": ""
+    }
+  }
+}
