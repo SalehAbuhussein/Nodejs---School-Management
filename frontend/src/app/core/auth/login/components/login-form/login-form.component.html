@@ -44,7 +44,9 @@
     </div>
   </div>
 
-  <button class="submit-btn">Login</button>
+  <button class="submit-btn" [disabled]="!loginForm.password.isValid || !loginForm.email.isValid">
+    Login
+  </button>
 
   <p class="forget-password-text">Forgot your password? <a class="reset-password-link" routerLink="">Reset it here</a></p>
 </div>

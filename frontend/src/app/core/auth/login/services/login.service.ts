@@ -15,6 +15,6 @@ export class LoginService {
    * @param password password form field
    */
   login = (username: string, password: string) => {
-    this.apiService
+    console.log(username);
   }
 }
