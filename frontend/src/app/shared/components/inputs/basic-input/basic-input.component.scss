@@ -1,0 +1,33 @@
+@use "./app/design-system" as var;
+
+input {
+  all: unset;
+  background-color: var.$white;
+  border-radius: 4px;
+  border: 1px solid var.$input-border;
+  box-sizing: border-box;
+  color: var.$black;
+  font-size: var.$fs-16;
+  height: 40px;
+  padding: 11px;
+  width: 100%;
+
+  &::placeholder {
+    color: var.$input-placeholder;
+  }
+
+  &.error {
+    border-color: red;
+
+    &:focus,
+    &:focus-visible {
+      border-color: red;
+    }
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  }
+}
