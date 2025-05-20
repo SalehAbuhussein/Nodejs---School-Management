@@ -90,17 +90,17 @@ app.use(express.json());
 app.use(mongoSanitize());
 
 // Routes
-app.use('v1/users', v1UserRoutes);
-app.use('v1/roles', v1RoleRoutes);
-app.use('v1/teachers', v1TeacherRoutes);
-app.use('v1/students', v1StudentRoutes);
-app.use('v1/studentTiers', v1StudentTierRoutes);
-app.use('v1/subjects', v1SubjectRoutes);
-app.use('v1/studentExams', v1StudentExamRoutes);
-app.use('v1/teacherExams', v1TeacherExamRoutes);
-app.use('v1/examTypes', v1ExamTypeRoutes);
-app.use('v1/permissions', v1PermissionRoutes);
-app.use('v1/enrollments', v1EnrollmentRoutes);
+app.use('/v1/users', v1UserRoutes);
+app.use('/v1/roles', v1RoleRoutes);
+app.use('/v1/teachers', v1TeacherRoutes);
+app.use('/v1/students', v1StudentRoutes);
+app.use('/v1/studentTiers', v1StudentTierRoutes);
+app.use('/v1/subjects', v1SubjectRoutes);
+app.use('/v1/studentExams', v1StudentExamRoutes);
+app.use('/v1/teacherExams', v1TeacherExamRoutes);
+app.use('/v1/examTypes', v1ExamTypeRoutes);
+app.use('/v1/permissions', v1PermissionRoutes);
+app.use('/v1/enrollments', v1EnrollmentRoutes);
 app.use(v1ProtectedRoutes);
 
 mongoConnect(() => {

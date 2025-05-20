@@ -238,7 +238,7 @@ router.delete('/:userId',
  *       500:
  *         description: Server error
  */
-router.post('/login', 
+router.post('/login',
   body('email')
     .trim()
     .notEmpty()

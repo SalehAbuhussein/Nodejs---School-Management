@@ -33,7 +33,7 @@ const seedAdmin = async () => {
       password: await bcrypt.hash('123', 10),
       isActive: true,
       tokenVersion: 0,
-    };
+    } as unknown as IUser;
 
     await new User(adminCredintals).save();
   }
