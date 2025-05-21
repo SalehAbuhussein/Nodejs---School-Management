@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { InputService } from 'app/shared/components/inputs/services/input.service';
+import { LoginService } from 'app/core/auth/login/services/login.service';
 import { StringService } from 'app/shared/services/string/string.service';
 
 import { BasicInputComponent } from 'app/shared/components/inputs/basic-input/basic-input.component';
@@ -38,6 +39,7 @@ export class LoginFormComponent {
 
   constructor(
     public inputService: InputService,
+    public loginService: LoginService,
     public stringService: StringService,
   ) {}
 
@@ -114,5 +116,13 @@ export class LoginFormComponent {
       isValid: true,
       error: ''
     };
+  }
+
+  logUserIn = (): void => {
+    const { email: { value: emailValue }, password: { value: passwordValue } } = this.loginForm;
+
+    this.loginService.login(emailValue, passwordValue).subscribe(value => {
+      console.log(value);
+    });
   }
 }

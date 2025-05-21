@@ -44,7 +44,10 @@
     </div>
   </div>
 
-  <button class="submit-btn" [disabled]="!loginForm.password.isValid || !loginForm.email.isValid">
+  <button
+    class="submit-btn" 
+    [disabled]="!loginForm.password.isValid || !loginForm.email.isValid" 
+    (click)="logUserIn()">
     Login
   </button>
 
