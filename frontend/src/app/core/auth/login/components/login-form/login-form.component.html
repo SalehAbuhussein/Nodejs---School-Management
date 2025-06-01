@@ -11,7 +11,6 @@
         [inputAttributes]="{
           id: 'email',
           name: 'email',
-          maxLength: 10,
           autocomplete: 'email',
         }"
         placeholder="Enter your email"
@@ -45,10 +44,14 @@
   </div>
 
   <button
-    class="submit-btn" 
-    [disabled]="!loginForm.password.isValid || !loginForm.email.isValid" 
-    (click)="logUserIn()">
-    Login
+    class="submit-btn"
+    [disabled]="!loginForm.password.isValid || !loginForm.email.isValid || isFormBeingSubmitted"
+    (click)="logUserin()">
+    @if (isFormBeingSubmitted) {
+      Loading...
+    } @else {
+      Login
+    }
   </button>
 
   <p class="forget-password-text">Forgot your password? <a class="reset-password-link" routerLink="">Reset it here</a></p>

@@ -1,12 +1,13 @@
 import path from 'path';
 import { Application, Router } from 'express';
 
-import { body, param } from 'express-validator';
+import { body, cookie, param } from 'express-validator';
 import multer from 'multer';
 
 import * as userController from 'src/v1/controllers/user/userController';
 
 import { handleValidation } from 'src/shared/middlewares/validators.middleware';
+import { validateJwtToken } from 'src/shared/middlewares/validateJwtToken.middleware';
 
 const router = Router();
 
@@ -253,6 +254,19 @@ router.post('/login',
   userController.postLogin,
 );
 
-router.post('/refresh-token', userController.refreshToken);
+// prettier-ignore
+router.post('/user-info',
+  validateJwtToken,
+  userController.getUserInfo
+);
+
+router.post('/refresh-token',
+  cookie('refreshToken')
+    .trim()
+    .notEmpty()
+    .withMessage('Something went wrong'),
+  handleValidation as Application,
+  userController.refreshToken
+);
 
 export default router;

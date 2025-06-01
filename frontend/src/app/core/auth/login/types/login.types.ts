@@ -1,9 +1,4 @@
-export type UserData = {
-  _id: string;
-  email: string;
-  name: string;
-  isActive: boolean;
-};
+import { UserData } from "app/core/auth/shared/services/user/user.types";
 
 export type LoginResponse = {
   status: number;

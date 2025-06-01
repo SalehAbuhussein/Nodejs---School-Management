@@ -17,9 +17,6 @@ export class ApiService {
 
   public headers: Record<string, string> = {
     'accept': '*/*',
-    'x-app-name': 'motory',
-    'x-device-type': 'web',
-    'x-app-version': 'web',
   };
 
   constructor(public httpClient: HttpClient) { }
@@ -65,12 +62,10 @@ export class ApiService {
     body: any,
     additionalHeaders?: Record<string, string>,
     withCredentials?: boolean,
-    withContentType: boolean = true
   ): Observable<HttpResponse<T>> {
     const headerOptions: Record<string, string> = {
       ...this.headers,
       ...additionalHeaders,
-      ...(withContentType && ApiService.FORM_REQUEST)
     };
 
     return this.httpClient.post<T>(url, body, {

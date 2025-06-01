@@ -21,11 +21,11 @@ export class LoginService {
   /**
    * Sends login credentials to the authentication endpoint
    * 
-   * @param username The user's username for authentication
+   * @param email The user's email for authentication
    * @param password The user's password for authentication
    * @returns An Observable containing the login response after extraction
    */
-  login = (username: string, password: string) => {
-    return this.apiService.post<LoginResponse>(this._loginUrl, { username, password }).pipe(map(this.apiService.extractTypeFromMessage));
+  login = (email: string, password: string) => {
+    return this.apiService.post<LoginResponse>(this._loginUrl, { email, password }).pipe(map(this.apiService.extractTypeFromMessage));
   }
 }
