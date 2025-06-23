@@ -1,0 +1,18 @@
+@use "./app/design-system" as var;
+
+.footer-container {
+  background-color: var.$black;
+  padding: 35px 20px;
+}
+
+.footer-text {
+  color: var.$white;
+  text-align: center;
+}
+
+@media #{var.$media-tablet-portrait} {
+  .footer-container {
+    font-size: var.$fs-14;
+    padding: 15px 20px;
+  } 
+}

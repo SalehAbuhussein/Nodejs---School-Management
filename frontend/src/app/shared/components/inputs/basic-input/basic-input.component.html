@@ -1,0 +1,27 @@
+<div class="input-container">
+  <input
+    #input
+    class="input-field"
+    id="{{ inputAttributes.id }}"
+    [ngClass]="{'error': hasError && isValidationRequired}"
+    [type]="inputAttributes.type"
+
+    [style.--border-focus-color]="inputAttributes.focusBorderColor"
+    [style.--border-color]="inputAttributes.borderColor"
+    [style.--border-radius]="inputAttributes.borderRadius"
+    [style.caret-color]="inputAttributes.caretColor"
+
+    (blur)="inputChanged.emit($event)"
+    (input)="inputChanged.emit($event)"
+    (nativeAutofill)="inputChanged.emit($event)"
+    (paste)="inputPasted.emit($event)"
+    [maxLength]="inputAttributes.maxLength"
+    [value]="value"
+    [autocomplete]="inputAttributes.autocomplete"
+    [attr.autocomplete]="inputAttributes.autocomplete || null"
+    [attr.maxLength]="inputAttributes.maxLength || null"
+    [name]="inputAttributes.name"
+    [placeholder]="placeholder"
+    appAutoFill
+  />
+</div>

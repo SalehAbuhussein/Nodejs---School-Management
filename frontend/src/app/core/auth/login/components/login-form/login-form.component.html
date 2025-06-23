@@ -1,0 +1,58 @@
+<div class="login-form-container">
+  <img class="login-form-img" [src]="constants.assetsPath + 'images/login/login-img.png'" alt="" />
+
+  <h2 class="login-form-title">Welcome to EduManage</h2>
+
+  <div class="login-form">
+    <div class="form-field email-field">
+      <div class="field-label">Email</div>
+
+      <app-basic-input
+        [inputAttributes]="{
+          id: 'email',
+          name: 'email',
+          autocomplete: 'email',
+        }"
+        placeholder="Enter your email"
+        (inputChanged)="onEmailChange($event)"
+      />
+
+      @if (!!loginForm.email.error) {
+        <div class="error">{{ loginForm.email.error }}</div>
+      }
+    </div>
+
+    <div class="form-field password-field">
+      <div class="field-label">Password</div>
+
+      <app-basic-input
+        [inputAttributes]="{
+          id: 'password',
+          type: 'password',
+          name: 'password',
+          maxLength: 10,
+          autocomplete: 'new-password',
+        }"
+        placeholder="Enter your password"
+        (inputChanged)="onPasswordChange($event)"
+      />
+
+      @if (!!loginForm.password.error) {
+        <div class="error">{{ loginForm.password.error }}</div>
+      }
+    </div>
+  </div>
+
+  <button
+    class="submit-btn"
+    [disabled]="!loginForm.password.isValid || !loginForm.email.isValid || isFormBeingSubmitted"
+    (click)="logUserin()">
+    @if (isFormBeingSubmitted) {
+      Loading...
+    } @else {
+      Login
+    }
+  </button>
+
+  <p class="forget-password-text">Forgot your password? <a class="reset-password-link" routerLink="">Reset it here</a></p>
+</div>

@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+@use "./app/design-system" as var;
+@use "sass:meta";
+
+@include meta.load-css("app/assets/fonts");
+
+* {
+  box-sizing: border-box;
+  font-family: Inter;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+p, h1, h2, h3, h4, h5, h6,
+body {
+  margin: 0;
+  padding: 0;
+}

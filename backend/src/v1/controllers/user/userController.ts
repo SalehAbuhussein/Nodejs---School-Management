@@ -156,8 +156,7 @@ export const deleteUser = async (req: Request, res: Response<DeleteUserResponse>
 export const postLogin = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const { email, password }: PostLoginBody = req.body;
-
-    const { token, user, refreshToken } = await UserService.loginUser(email, password);
+    const { token, user, refreshToken } = await UserService.loginUser(email, password);    
 
     res.cookie('refreshToken', refreshToken, { httpOnly: true });
 
@@ -187,7 +186,6 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
 export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     const { jwtToken, newRefreshToken } = await UserService.generateNewJwtToken(req.cookies.refreshToken);
-
     res.cookie('refreshToken', newRefreshToken, { httpOnly: true });
 
     return res.status(200).json({
@@ -196,11 +194,39 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
       token: jwtToken,
     });
   } catch (error: any) {
+    res.clearCookie('refreshToken', { httpOnly: true });
+
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
       data: null,
       error: error.originalError,
     });
+  }
+};
+
+/**
+ * Get current user information based on JWT token
+ * 
+ * @param { Request & { userId?: string } } req - Express request object with userId from JWT token
+ * @param { Response } res - Express response object
+ * @param { NextFunction } next - Express next function
+ * @returns { Promise<any> } - Promise resolving to the response
+ */
+export const getUserInfo = async (req: Request & { userId?: string }, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const user = await UserService.getUserInfo(req.userId);
+
+    return res.status(200).json({
+      status: 200,
+      message: 'sent successfully',
+      data: user,
+    });
+  } catch (error: any) {
+    return res.status(error.statusCode || 500).json({
+      status: error.statusCode || 500,
+      message: error.message || 'Server error',
+      data: null,
+    })
   }
 };

@@ -282,7 +282,7 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
  */
 export const loginUser = async (email: string, password: string) => {
   try {
-    const user = await findUserByEmail(email, '-tokenVersion -isDeleted -deletedAt -__v -createdAt -updatedAt');
+    const user = await findUserByEmail(email, '-isDeleted -deletedAt -__v -createdAt -updatedAt');
     if (!user) {
       throw new CustomError('Invalid email or password', 401);
     }
@@ -293,10 +293,10 @@ export const loginUser = async (email: string, password: string) => {
       throw new CustomError('Invalid email or password', 401);
     }
 
-    const jwtToken = generateAuthToken({ email, userId: user.id });
-    const refreshToken = generateRefreshToken({ email, userId: user.id });
+    const jwtToken = generateAuthToken({ email, userId: user.id, tokenVersion: user.tokenVersion });
+    const refreshToken = generateRefreshToken({ email, userId: user.id, tokenVersion: user.tokenVersion });
 
-    const refreshTokenSchema = new RefreshToken({ token: refreshToken, userId: user._id, tokenVersion: user.tokenVersion });
+    const refreshTokenSchema = new RefreshToken({ token: refreshToken, userId: user._id});
     await refreshTokenSchema.save();
 
     const userObject = user.toObject() as Partial<IUser>;
@@ -319,40 +319,40 @@ export const loginUser = async (email: string, password: string) => {
  * @returns {Promise<{jwtToken: string, newRefreshToken: string}>} New tokens
  * @throws {CustomError} If token generation fails
  */
-export const generateNewJwtToken = async (refreshToken: string) => {
+export const generateNewJwtToken = async (refreshToken: string): Promise<{ jwtToken: string; newRefreshToken: string; }> => {
   if (!refreshToken) {
     throw new CustomError('Unable to generate access token', 403);
   }
 
   try {
-    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN as string) as { email: string; userId: number; tokenVersion: number };
+    const refreshTokenPayload = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN as string) as { email: string; userId: number; tokenVersion: number };
 
     /**
      * After 7 days the TTL index will delete the token from the database
      * so this will prevent old refresh token from being used to generate
      * a new access token
      */
-    const storedToken = await RefreshToken.findOne({ userId: payload.userId });
+    const storedToken = await RefreshToken.findOne({ userId: refreshTokenPayload.userId });
     if (!storedToken) {
       throw new CustomError('Unable to generate access token', 403);
     }
 
-    const user = await User.findOne({ email: payload.email });
+    const user = await User.findOne({ email: refreshTokenPayload.email });
     if (!user) {
       // Delete Refresh Token (refresh token exist in database)
-      await RefreshToken.deleteOne({ userId: payload.userId });
+      await RefreshToken.deleteOne({ userId: refreshTokenPayload.userId });
       throw new CustomError('Unable to generate access token', 403);
     }
 
-    if (user.tokenVersion !== payload.tokenVersion) {
+    if (user.tokenVersion !== refreshTokenPayload.tokenVersion) {
       // Delete Refresh Token (refresh token exist in database)
-      await RefreshToken.deleteOne({ userId: payload.userId });
+      await RefreshToken.deleteOne({ userId: refreshTokenPayload.userId });
       throw new CustomError('Unable to generate access token', 403);
     }
 
-    const jwtToken = generateAuthToken({ email: user.email, userId: user.id });
-    const newRefreshToken = generateRefreshToken({ email: user.email, userId: user.id });
-    await RefreshToken.findOneAndUpdate({ userId: payload.userId }, { token: newRefreshToken }, { new: true });
+    const jwtToken = generateAuthToken({ email: user.email, userId: user.id, tokenVersion: user.tokenVersion });
+    const newRefreshToken = generateRefreshToken({ email: user.email, userId: user.id, tokenVersion: user.tokenVersion });
+    await RefreshToken.findOneAndUpdate({ userId: refreshTokenPayload.userId }, { token: newRefreshToken }, { new: true });
 
     return { jwtToken, newRefreshToken };
   } catch (error) {
@@ -417,6 +417,22 @@ export const checkUserExists = async (userId: string): Promise<boolean> => {
   }
 };
 
+export const getUserInfo = async (userId?: string) => {
+  try {
+    if (!userId) {
+      throw new CustomError('something went wrong', 401);
+    }
+  
+    const user = await findUserById(userId, '-password -tokenVersion -createdAt -updatedAt -isDeleted -deletedAt -__v');
+    return user;
+  } catch (error) {
+    if (error instanceof CustomError) {
+      throw error;
+    }
+    throw new CustomError('Something went wrong', 500);
+  }
+};
+
 export default {
   findUserById,
   findUserByEmail,
@@ -427,4 +443,5 @@ export default {
   generateNewJwtToken,
   changePassword,
   checkUserExists,
+  getUserInfo,
 };
