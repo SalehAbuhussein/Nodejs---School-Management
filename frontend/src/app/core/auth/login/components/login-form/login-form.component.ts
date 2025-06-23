@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { CookieService } from 'ngx-cookie-service';
 import { InputService } from 'app/shared/components/inputs/services/input.service';
 import { LoginService } from 'app/core/auth/login/services/login.service';
 import { StringService } from 'app/shared/services/string/string.service';
@@ -37,11 +38,12 @@ export class LoginFormComponent {
   isFormBeingSubmitted = false;
 
   constructor(
+    public cookieService: CookieService,
     public inputService: InputService,
     public loginService: LoginService,
     public stringService: StringService,
     public tokenService: TokenService,
-    public userService: UserService
+    public userService: UserService,
   ) {}
 
   /**
@@ -137,9 +139,9 @@ export class LoginFormComponent {
     this.loginService.login(emailValue, passwordValue).subscribe({
       next: (value) => {
         this.isFormBeingSubmitted = false;
-        this.tokenService.token = value?.token ?? '';
+        this.tokenService.accessToken = value?.token ?? '';
         this.userService.user = value?.user ?? null;
-        console.log(value);
+        this.cookieService.set('token', this.tokenService.accessToken);
       },
       error: (error) => {
         this.isFormBeingSubmitted = false;

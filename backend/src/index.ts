@@ -101,7 +101,6 @@ app.use('/v1/teacherExams', v1TeacherExamRoutes);
 app.use('/v1/examTypes', v1ExamTypeRoutes);
 app.use('/v1/permissions', v1PermissionRoutes);
 app.use('/v1/enrollments', v1EnrollmentRoutes);
-app.use(v1ProtectedRoutes);
 
 mongoConnect(() => {
   app.listen(process.env.PORT);

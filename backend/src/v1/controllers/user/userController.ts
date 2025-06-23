@@ -8,8 +8,6 @@ import { IGetUserAuthInfoRequest } from 'src/shared/middlewares/validateJwtToken
 
 import { DeleteUserParams, GetUserParams, PostUserBody, UpdateUserBody, UpdateUserParams, GetUserResponse, CreateUserResponse, UpdateUserResponse, DeleteUserResponse } from 'src/v1/controllers/types/userController.types';
 
-import { CustomError } from 'src/shared/utils/CustomError';
-
 export interface UserRequest extends Request {
   user: IUser;
 }
@@ -196,6 +194,8 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
       token: jwtToken,
     });
   } catch (error: any) {
+    res.clearCookie('refreshToken', { httpOnly: true });
+
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
@@ -215,12 +215,8 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
  */
 export const getUserInfo = async (req: Request & { userId?: string }, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const userId = req.userId;
-    if (!userId) {
-      throw new CustomError('something went wrong', 401)
-    }
+    const user = await UserService.getUserInfo(req.userId);
 
-    const user = await UserService.findUserById(userId, '-password -tokenVersion -createdAt -updatedAt -isDeleted -deletedAt -__v');
     return res.status(200).json({
       status: 200,
       message: 'sent successfully',
@@ -233,4 +229,4 @@ export const getUserInfo = async (req: Request & { userId?: string }, res: Respo
       data: null,
     })
   }
-}
+};

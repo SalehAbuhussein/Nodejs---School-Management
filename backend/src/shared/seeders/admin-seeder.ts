@@ -1,11 +1,14 @@
 import process from 'process';
 
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 
 import Permission from 'src/db/models/permission.model';
 import Role from 'src/db/models/role.model';
 import User, { IUser } from 'src/db/models/user.model';
+
+dotenv.config();
 
 /**
  * Seed Admin User

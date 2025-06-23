@@ -25,37 +25,6 @@ const upload = multer({ storage });
 // prettier-ignore
 /**
  * @openapi
- * /users/{userId}:
- *   get:
- *     tags:
- *       - User Controller
- *     summary: Get a single user
- *     parameters:
- *       - name: userId
- *         in: path
- *         description: The user ID
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: User fetched successfully
- *       404:
- *         description: User not found
- *       500:
- *         description: Server error
- */
-router.get('/:userId',
-  param('userId')
-    .isMongoId()
-    .withMessage('user id should be valid id'),
-  handleValidation as Application,
-  userController.getUser as Application
-);
-
-// prettier-ignore
-/**
- * @openapi
  * /users:
  *   post:
  *     tags:
@@ -107,6 +76,97 @@ router.post('/',
   handleValidation as Application,
   upload.single('profileImg'),
   userController.createUser as Application
+);
+
+// prettier-ignore
+/**
+ * @openapi
+ * /login:
+ *   post:
+ *     tags:
+ *       - Auth Controller
+ *     summary: user login
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Authentication successfull!
+ *       401:
+ *         description: Invalid username or password
+ *       500:
+ *         description: Server error
+ */
+router.post('/login',
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email can not be empty!')
+    .isEmail()
+    .withMessage('Email is not valid Email!'),
+  body('password')
+    .trim()
+    .notEmpty()
+    .withMessage('Password can not be empty!'),
+  handleValidation as Application,
+  userController.postLogin,
+);
+
+// prettier-ignore
+router.get('/user-info',
+  validateJwtToken,
+  userController.getUserInfo
+);
+
+router.get('/refresh-token',
+  cookie('refreshToken')
+    .trim()
+    .notEmpty()
+    .withMessage('Something went wrong'),
+  handleValidation as Application,
+  userController.refreshToken
+);
+
+// prettier-ignore
+/**
+ * @openapi
+ * /users/{userId}:
+ *   get:
+ *     tags:
+ *       - User Controller
+ *     summary: Get a single user
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         description: The user ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User fetched successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:userId',
+  param('userId')
+    .isMongoId()
+    .withMessage('user id should be valid id'),
+  handleValidation as Application,
+  userController.getUser as Application
 );
 
 // prettier-ignore
@@ -207,66 +267,6 @@ router.delete('/:userId',
     .withMessage('user id should be valid id'),
   handleValidation as Application,
   userController.deleteUser as Application
-);
-
-// prettier-ignore
-/**
- * @openapi
- * /login:
- *   post:
- *     tags:
- *       - Auth Controller
- *     summary: user login
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Authentication successfull!
- *       401:
- *         description: Invalid username or password
- *       500:
- *         description: Server error
- */
-router.post('/login',
-  body('email')
-    .trim()
-    .notEmpty()
-    .withMessage('Email can not be empty!')
-    .isEmail()
-    .withMessage('Email is not valid Email!'),
-  body('password')
-    .trim()
-    .notEmpty()
-    .withMessage('Password can not be empty!'),
-  handleValidation as Application,
-  userController.postLogin,
-);
-
-// prettier-ignore
-router.post('/user-info',
-  validateJwtToken,
-  userController.getUserInfo
-);
-
-router.post('/refresh-token',
-  cookie('refreshToken')
-    .trim()
-    .notEmpty()
-    .withMessage('Something went wrong'),
-  handleValidation as Application,
-  userController.refreshToken
 );
 
 export default router;
