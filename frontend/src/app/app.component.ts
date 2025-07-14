@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
 
 import { UserService } from './core/auth/shared/services/user/user.service';
 
@@ -30,8 +29,16 @@ export class AppComponent implements OnInit {
    * Initialize Component Data
    */
   initializeComponent = () => {
-    if (isPlatformBrowser(this.platformId)) {
-      this.userService.getUserInfo().subscribe();
-    }
+    this.userService.getUserInfo().subscribe({
+      next: (response) => {
+        console.log(response);
+        if (response && response.status === 200 && response.data) {
+          this.userService.user = response.data;
+        }
+      },
+      error: () => {
+        console.log('Error getting user info');
+      },
+    });
   }
 }

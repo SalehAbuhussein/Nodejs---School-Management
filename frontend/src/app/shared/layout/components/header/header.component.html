@@ -1,3 +1,9 @@
-<header class="header-container">
-  <h1 class="header-title">EduManage</h1>
-</header>
+<mat-toolbar>
+  @if (userService.user) {
+    <button mat-icon-button>
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
+
+  <h1>EduManage</h1>
+</mat-toolbar>

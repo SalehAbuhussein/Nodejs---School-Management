@@ -1,17 +1,20 @@
 @use "./app/design-system" as var;
 
-.header-container {
+mat-toolbar {
   background-color: var.$main-blue;
-  padding: 35px 20px;
+  height: var.$headerHeight;
 }
 
-.header-title {
+button {
   color: var.$white;
-  font-size: var.$fs-24;
+}
+
+h1 {
+  color: var.$white;
 }
 
 @media #{var.$media-tablet-portrait} {
-  .header-container {
-    padding: 15px 20px;
-  } 
+  mat-toolbar {
+    height: var.$headerHeightMobile;
+  }
 }

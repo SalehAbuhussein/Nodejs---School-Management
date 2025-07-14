@@ -4,3 +4,9 @@ export type UserData = {
   name: string;
   isActive: boolean;
 };
+
+export type UserInfoResponse = {
+  status: number;
+  message: string;
+  data: UserData;
+};
