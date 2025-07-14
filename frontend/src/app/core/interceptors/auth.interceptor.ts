@@ -177,7 +177,7 @@ const handleRefreshToken = (
 ) => {
   if (response.status === 200) {
     tokenService.accessToken = response.token || '';
-    cookieService.set('token', response.token || '');
+    cookieService.set('token', response.token || '', undefined, '/');
     userService.user = response.user as UserData;
 
     const updatedReq = req.clone({
