@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { CookieService } from 'ngx-cookie-service';
 import { InputService } from 'app/shared/components/inputs/services/input.service';
@@ -41,6 +41,7 @@ export class LoginFormComponent {
     public cookieService: CookieService,
     public inputService: InputService,
     public loginService: LoginService,
+    public router: Router,
     public stringService: StringService,
     public tokenService: TokenService,
     public userService: UserService,
@@ -127,7 +128,6 @@ export class LoginFormComponent {
    * Extracts email and password values from the login form, sends login request
    * to the authentication service, and handles the response by storing user data
    * and token, then logging the response.
-   *
    */
   logUserin = () => {
     const {
@@ -141,7 +141,8 @@ export class LoginFormComponent {
         this.isFormBeingSubmitted = false;
         this.tokenService.accessToken = value?.token ?? '';
         this.userService.user = value?.user ?? null;
-        this.cookieService.set('token', this.tokenService.accessToken);
+        this.cookieService.set('token', this.tokenService.accessToken, undefined, '/');
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
       },
       error: (error) => {
         this.isFormBeingSubmitted = false;
