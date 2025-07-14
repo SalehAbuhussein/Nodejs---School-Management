@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, makeStateKey } from '@angular/core';
 
 import { map } from 'rxjs';
 
 import { ApiService } from 'app/core/services/api.service';
 
-import { UserData } from './user.types';
+import { UserData, UserInfoResponse } from './user.types';
 
 import { generalConstants } from 'constants/general-constants';
 
@@ -24,8 +24,8 @@ export class UserService {
    * @returns
    */
   getUserInfo = () => {
-    return this.apiService.get(`${this._userInfoUrl}`).pipe(
-      map(this.apiService.extractTypeFromMessage)
-    );
-  }
+    return this.apiService
+      .get<UserInfoResponse>(`${this._userInfoUrl}`)
+      .pipe(map(this.apiService.extractTypeFromMessage));
+  };
 }

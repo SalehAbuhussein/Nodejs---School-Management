@@ -2,6 +2,7 @@
 
 mat-toolbar {
   background-color: var.$main-blue;
+  height: var.$headerHeight;
 }
 
 button {
@@ -10,4 +11,10 @@ button {
 
 h1 {
   color: var.$white;
+}
+
+@media #{var.$media-tablet-portrait} {
+  mat-toolbar {
+    height: var.$headerHeightMobile;
+  }
 }
