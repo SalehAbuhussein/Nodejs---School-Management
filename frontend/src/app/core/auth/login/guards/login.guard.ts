@@ -4,7 +4,7 @@ import { isPlatformServer } from '@angular/common';
 
 import { CookieService } from 'ngx-cookie-service';
 
-export const loginGuardGuard: CanActivateFn = (route, state) => {
+export const loginGuard: CanActivateFn = (route, state) => {
   const cookieService = inject(CookieService);
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
