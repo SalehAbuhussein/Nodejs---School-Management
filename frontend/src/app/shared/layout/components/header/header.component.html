@@ -1,6 +1,6 @@
 <mat-toolbar>
   @if (userService.user) {
-    <button mat-icon-button>
+    <button mat-icon-button (click)="headerService.isSideMenuOpened = !headerService.isSideMenuOpened">
       <mat-icon>menu</mat-icon>
     </button>
   }
