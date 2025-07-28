@@ -1,0 +1,13 @@
+@use "./app/design-system" as var;
+
+.menu-item {
+  @include var.flex($align-items: center, $gap: 4px);
+  color: var.$white;
+  text-decoration: none;
+}
+
+.menu-item-link {
+  color: var.$white;
+  text-decoration: none;
+  width: 100%;
+}

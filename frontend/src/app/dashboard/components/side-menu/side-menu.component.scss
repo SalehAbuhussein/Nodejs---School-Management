@@ -1,0 +1,7 @@
+@use "./app/design-system" as var;
+
+.side-menu-container {
+  @include var.size(100%);
+  background-color: var.$side-menu-color;
+  padding: 16px;
+}

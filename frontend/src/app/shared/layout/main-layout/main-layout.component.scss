@@ -1,0 +1,17 @@
+@use "./app/design-system" as var;
+
+:host {
+  display: grid;
+  grid-template-rows: minmax(var.$headerHeight, auto) 1fr minmax(var.$footerHeight, auto);
+  min-height: 100dvh;
+}
+
+router-outlet {
+  display: none;
+}
+
+@media #{var.$media-tablet-portrait} {
+  :host {
+    grid-template-rows: minmax(var.$headerHeightMobile, auto) 1fr minmax(var.$footerHeightMobile, auto);
+  }
+}

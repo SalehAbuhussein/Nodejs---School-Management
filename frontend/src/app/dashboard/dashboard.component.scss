@@ -1,0 +1,13 @@
+@use "./app/design-system" as var;
+
+.dashboard-container {
+  color: var.$white;
+  display: grid;
+  grid-template-columns: minmax(150px, var.$sideMenuWidth) 1fr;
+  height: 100%;
+}
+
+app-side-menu {
+  display: block;
+  max-width: var.$sideMenuWidth;
+}

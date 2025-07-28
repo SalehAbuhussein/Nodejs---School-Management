@@ -2,7 +2,7 @@
 
 mat-toolbar {
   background-color: var.$main-blue;
-  height: var.$headerHeight;
+  min-height: var.$headerHeight;
 }
 
 button {
@@ -15,6 +15,6 @@ h1 {
 
 @media #{var.$media-tablet-portrait} {
   mat-toolbar {
-    height: var.$headerHeightMobile;
+    min-height: var.$headerHeightMobile;
   }
 }

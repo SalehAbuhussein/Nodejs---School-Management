@@ -37,11 +37,9 @@ export class AppComponent implements OnInit {
    * Initialize Component Data
    */
   initializeComponent = () => {
-    // debugger
     if (!this.commonService.isAuthGuardedRoute(this.location.path())) {
       this.userService.getUserInfo().subscribe({
         next: (response) => {
-          console.log(response);
           if (response && response.status === 200 && response.data) {
             this.userService.user = response.data;
           }
