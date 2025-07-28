@@ -1,7 +1,8 @@
 <div class="dashboard-container">
-  <app-side-menu />
+  <app-side-menu [ngClass]="{ 'side-menu-opened': headerService.isSideMenuOpened}" />
 
-  <div class="side-menu-content">
+  <div class="side-menu-content" [ngClass]="{ 'side-menu-opened': headerService.isSideMenuOpened }">
+    TEST
     <router-outlet></router-outlet>
   </div>
 </div>

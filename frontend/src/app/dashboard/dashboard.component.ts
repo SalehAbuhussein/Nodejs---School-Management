@@ -1,23 +1,22 @@
 import { Component } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { HeaderService } from 'app/shared/layout/components/header/services/header.service';
+
 import { SideMenuComponent } from "./components/side-menu/side-menu.component";
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    MatIconModule,
-    MatListModule,
-    MatSidenavModule,
+    NgClass,
+    RouterOutlet,
     SideMenuComponent,
-    RouterOutlet
-],
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
+  constructor(public headerService: HeaderService) {}
 }

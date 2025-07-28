@@ -1,13 +1,33 @@
 @use "./app/design-system" as var;
 
-.dashboard-container {
-  color: var.$white;
-  display: grid;
-  grid-template-columns: minmax(150px, var.$sideMenuWidth) 1fr;
+app-side-menu {
+  @include var.toggle-transition;
   height: 100%;
+  position: absolute;
+  transform: translateX(-100%);
+
+  &.side-menu-opened {
+    @include var.size(100%);
+    max-width: var.$sideMenuWidth;
+    transform: translateX(0);
+  }
 }
 
-app-side-menu {
-  display: block;
-  max-width: var.$sideMenuWidth;
+.dashboard-container {
+  color: var.$white;
+  height: 100%;
+  position: relative;
+}
+
+.side-menu-content {
+  @include var.size(100%);
+  @include var.toggle-transition;
+  background-color: rgba(gray, 0.05);
+  color: black;
+  margin-left: 0;
+
+  &.side-menu-opened {
+    @include var.size(calc(100% - var.$sideMenuWidth), 100%);
+    margin-left: var.$sideMenuWidth;
+  }
 }
