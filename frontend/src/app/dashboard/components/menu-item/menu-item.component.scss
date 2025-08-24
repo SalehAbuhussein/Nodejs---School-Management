@@ -4,6 +4,10 @@
   @include var.flex($align-items: center, $gap: 4px);
   color: var.$white;
   text-decoration: none;
+
+  &.active {
+    color: var.$main-blue;
+  }
 }
 
 .menu-item-link {

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 
@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     MatIconModule,
     RouterLink,
+    RouterLinkActive,
   ],
   templateUrl: './menu-item.component.html',
   styleUrl: './menu-item.component.scss'

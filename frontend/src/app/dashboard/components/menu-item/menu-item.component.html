@@ -1,6 +1,6 @@
 <div class="menu-item-container">
   @if (link) {
-    <a class="menu-item" [routerLink]="link">
+    <a class="menu-item" [routerLink]="link" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">
       <mat-icon>{{ iconName }}</mat-icon>
 
       <span class="menu-item-link-text">{{ text }}</span>

@@ -1,7 +1,45 @@
 @use "./app/design-system" as var;
 
+:host {
+  &::ng-deep {
+    mat-expansion-panel-header {
+      padding: 0;
+    }
+  }
+}
+
+mat-expansion-panel-header {
+  padding: 6px
+}
+
+mat-expansion-panel {
+  box-shadow: none !important;
+}
+
 .side-menu-container {
   @include var.size(100%);
+  @include var.flex($flex-direction: column, $gap: 12px);
   background-color: var.$side-menu-color;
+  overflow: auto;
   padding: 16px;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
